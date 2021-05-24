@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kanban/screens/task_screen.dart';
 
-import 'screens/homepage_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget{
     return MaterialApp(
       title: 'KanBan',
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: LoginScreen(),
       routes: {
         TaskScreen.routeName:(ctx)=>TaskScreen(),
       },
