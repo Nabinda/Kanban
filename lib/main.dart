@@ -3,7 +3,7 @@ import 'package:kanban/provider/task_provider.dart';
 import 'package:kanban/screens/task_screen.dart';
 import 'package:provider/provider.dart';
 
-import 'screens/homepage_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,6 +11,7 @@ void main() {
 class MyApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return MultiProvider(
 
       providers: [
@@ -24,6 +25,15 @@ class MyApp extends StatelessWidget{
           TaskScreen.routeName:(ctx)=>TaskScreen(),
         },
       ),
+=======
+    return MaterialApp(
+      title: 'KanBan',
+      debugShowCheckedModeBanner: false,
+      home: LoginScreen(),
+      routes: {
+        TaskScreen.routeName:(ctx)=>TaskScreen(),
+      },
+>>>>>>> f49079e46efbc10573f981cafb07babafa9f040b
     );
   }
 }
