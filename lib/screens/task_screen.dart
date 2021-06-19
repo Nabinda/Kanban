@@ -27,7 +27,7 @@ class _TaskScreenState extends State<TaskScreen> {
       _listData = Provider.of<TaskProvider>(context,listen: false).boardList();
     List<BoardList> _lists = [];
     for (int i = 0; i < _listData.length; i++) {
-      _lists.add(_createBoardList(_listData[i]) as BoardList);
+      _lists.add(_createBoardList(_listData[i], i) as BoardList);
     }
     return Scaffold(
       appBar: AppBar(
@@ -70,18 +70,16 @@ class _TaskScreenState extends State<TaskScreen> {
         ));
   }
 
-  Widget _createBoardList(BoardListObject list) {
+  Widget _createBoardList(BoardListObject list, int listIndex) {
     List<BoardItem> items = [];
     for (int i = 0; i < list.items.length; i++) {
       items.insert(i, buildBoardItem(list.items[i]) as BoardItem);
     }
     return BoardList(
       footer: IconButton(icon:Icon(Icons.add),onPressed: (){
-
         setState(() {
-          Provider.of<TaskProvider>(context,listen: false).add("Test");
+          Provider.of<TaskProvider>(context,listen: false).add(listIndex, "Test");
         });
-
       },),
       onStartDragList: (int listIndex) {
 

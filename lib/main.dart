@@ -11,29 +11,19 @@ void main() {
 class MyApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return MultiProvider(
 
+    return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_)=>TaskProvider())
       ],
       child: MaterialApp(
         title: 'KanBan',
         debugShowCheckedModeBanner: false,
-        home: HomePage(),
+        home: LoginScreen(),
         routes: {
           TaskScreen.routeName:(ctx)=>TaskScreen(),
         },
       ),
-=======
-    return MaterialApp(
-      title: 'KanBan',
-      debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
-      routes: {
-        TaskScreen.routeName:(ctx)=>TaskScreen(),
-      },
->>>>>>> f49079e46efbc10573f981cafb07babafa9f040b
     );
   }
 }

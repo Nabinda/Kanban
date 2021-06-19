@@ -18,8 +18,8 @@ class TaskProvider extends ChangeNotifier{
     return _list;
   }
 
-  void add(String text){
-    _list[0].items.add(BoardItemObject(title: text));
+  void add(int listIndex, String text){
+    _list[listIndex].items.add(BoardItemObject(title: text));
     notifyListeners();
   }
   void deleteItem(index1, index2){
