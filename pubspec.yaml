@@ -30,7 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   expandable: ^5.0.1
   boardview: ^0.2.0
-  get: ^4.1.4
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
