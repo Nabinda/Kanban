@@ -1,29 +1,28 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:kanban/provider/task_provider.dart';
-import 'package:kanban/screens/task_screen.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
+import 'package:kanban/ui/my_app.dart';
 
-import 'screens/login_screen.dart';
+import 'di/components/service_locator.dart';
 
-void main() {
-  runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await setPreferredOrientations();
+  await setupLocator();
+  return runZonedGuarded(() async {
+    runApp(MyApp());
+  }, (error, stack) {
+    print(stack);
+    print(error);
+  });
 }
-class MyApp extends StatelessWidget{
-  @override
-  Widget build(BuildContext context) {
 
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_)=>TaskProvider())
-      ],
-      child: MaterialApp(
-        title: 'KanBan',
-        debugShowCheckedModeBanner: false,
-        home: LoginScreen(),
-        routes: {
-          TaskScreen.routeName:(ctx)=>TaskScreen(),
-        },
-      ),
-    );
-  }
+Future<void> setPreferredOrientations() {
+  return SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeRight,
+    DeviceOrientation.landscapeLeft,
+  ]);
 }
