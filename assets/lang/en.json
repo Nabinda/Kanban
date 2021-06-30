@@ -19,6 +19,11 @@
   "home_tv_error": "Error",
   "home_tv_no_post_found": "No posts found",
   "home_tv_choose_language": "Choose Language",
-  "home_end": "-------------------------------------------------------------------------------------"
+  "home_end": "-------------------------------------------------------------------------------------",
 
+  "organization_start": "Below are list of strings for organization",
+  "organization_tv_organizations": "Organizations",
+  "organization_tv_error": "Error",
+  "organization_tv_no_organization_found": "No organization found",
+  "organization_end": "-------------------------------------------------------------------------------------"
 }

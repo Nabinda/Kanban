@@ -30,7 +30,7 @@ abstract class _LanguageStore with Store {
 
   // store variables:-----------------------------------------------------------
   @observable
-  String _locale = "en";
+  String _locale = "ne";
 
   @computed
   String get locale => _locale;
@@ -71,8 +71,4 @@ abstract class _LanguageStore with Store {
       _locale = _repository.currentLanguage!;
     }
   }
-
-  // dispose:-------------------------------------------------------------------
-  @override
-  dispose() {}
 }

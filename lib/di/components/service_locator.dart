@@ -1,6 +1,9 @@
 import 'package:kanban/data/local/datasources/post/post_datasource.dart';
+import 'package:kanban/data/network/apis/board/boardItem_api.dart';
+import 'package:kanban/data/network/apis/board/board_api.dart';
 import 'package:kanban/data/network/apis/organizations/organization_api.dart';
 import 'package:kanban/data/network/apis/posts/post_api.dart';
+import 'package:kanban/data/network/apis/projects/project_api.dart';
 import 'package:kanban/data/network/dio_client.dart';
 import 'package:kanban/data/network/rest_client.dart';
 import 'package:kanban/data/repository.dart';
@@ -41,7 +44,10 @@ Future<void> setupLocator() async {
 
   // api's:---------------------------------------------------------------------
   getIt.registerSingleton(PostApi(getIt<DioClient>(), getIt<RestClient>()));
-  getIt.registerSingleton(OrganizationApi(getIt<DioClient>(), getIt<RestClient>()));
+  getIt.registerSingleton(OrganizationApi(getIt<DioClient>()));
+  getIt.registerSingleton(ProjectApi(getIt<DioClient>()));
+  getIt.registerSingleton(BoardApi(getIt<DioClient>()));
+  getIt.registerSingleton(BoardItemApi(getIt<DioClient>()));
 
   // data sources
   getIt.registerSingleton(PostDataSource(await getIt.getAsync<Database>()));
@@ -50,6 +56,9 @@ Future<void> setupLocator() async {
   getIt.registerSingleton(Repository(
     getIt<PostApi>(),
     getIt<OrganizationApi>(),
+    getIt<ProjectApi>(),
+    getIt<BoardApi>(),
+    getIt<BoardItemApi>(),
     getIt<SharedPreferenceHelper>(),
     getIt<PostDataSource>(),
   ));

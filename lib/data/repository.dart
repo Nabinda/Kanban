@@ -3,13 +3,19 @@ import 'dart:async';
 import 'package:kanban/data/local/datasources/post/post_datasource.dart';
 import 'package:kanban/data/network/apis/organizations/organization_api.dart';
 import 'package:kanban/data/sharedpref/shared_preference_helper.dart';
+import 'package:kanban/models/board/board_list.dart';
+import 'package:kanban/models/boardItem/boardItem_list.dart';
 import 'package:kanban/models/organization/organization_list.dart';
 import 'package:kanban/models/post/post.dart';
 import 'package:kanban/models/post/post_list.dart';
+import 'package:kanban/models/project/project_list.dart';
 import 'package:sembast/sembast.dart';
 
 import 'local/constants/db_constants.dart';
+import 'network/apis/board/boardItem_api.dart';
+import 'network/apis/board/board_api.dart';
 import 'network/apis/posts/post_api.dart';
+import 'network/apis/projects/project_api.dart';
 
 class Repository {
   // data source object
@@ -18,12 +24,15 @@ class Repository {
   // api objects
   final PostApi _postApi;
   final OrganizationApi _organizationApi;
+  final ProjectApi _projectApi;
+  final BoardApi _boardApi;
+  final BoardItemApi _boardItemApi;
 
   // shared pref object
   final SharedPreferenceHelper _sharedPrefsHelper;
 
   // constructor
-  Repository(this._postApi, this._organizationApi, this._sharedPrefsHelper,
+  Repository(this._postApi, this._organizationApi, this._projectApi, this._boardApi, this._boardItemApi, this._sharedPrefsHelper,
       this._postDataSource);
 
   // Post: ---------------------------------------------------------------------
@@ -72,12 +81,35 @@ class Repository {
 
   // Organization: ---------------------------------------------------------------------
   Future<OrganizationList> getOrganizations() async {
-    // check to see if posts are present in database, then fetch from database
-    // else make a network call to get all posts, store them into database for
-    // later use
     return await _organizationApi
         .getOrganizations()
-        .then((postsList) => postsList)
+        .then((organizationsList) => organizationsList)
+        .catchError((error) => throw error);
+  }
+
+  // Project: ---------------------------------------------------------------------
+  Future<ProjectList> getProjects(int organizationId) async {
+    return await _projectApi
+        .getProjects(organizationId)
+        .then((projectsList) => projectsList)
+        .catchError((error) => throw error);
+  }
+
+  // Board: ---------------------------------------------------------------------
+  Future<BoardList> getBoards(int projectId) async {
+    // later use
+    return await _boardApi
+        .getBoards(projectId)
+        .then((boardsList) => boardsList)
+        .catchError((error) => throw error);
+  }
+
+  // BoardItem: ---------------------------------------------------------------------
+  Future<BoardItemList> getBoardItems(int boardId) async {
+    // later use
+    return await _boardItemApi
+        .getBoardItems(boardId)
+        .then((boardItemsList) => boardItemsList)
         .catchError((error) => throw error);
   }
 

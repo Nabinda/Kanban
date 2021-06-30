@@ -7,7 +7,7 @@ class SignupScreen extends StatelessWidget {
         children: <Widget>[
           SizedBox(height: 30.0,),
           SizedBox(height: 20.0,),
-          _buildLoginForm(),
+          _buildLoginForm(context),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -26,7 +26,7 @@ class SignupScreen extends StatelessWidget {
     );
   }
 
-  Container _buildLoginForm() {
+  Container _buildLoginForm(context) {
     final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
       primary: Colors.blueAccent, //background color of button
       side: BorderSide(width:3, color:Colors.blue.shade500), //border width and color
@@ -99,7 +99,9 @@ class SignupScreen extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: ElevatedButton(
                 onPressed: (){},
-                child: Text("Sign Up", style: TextStyle(color: Colors.white70)),
+                child: Text("Sign Up",
+                    style: Theme.of(context).textTheme.button!.copyWith(color: Colors.white),
+                ),
                 style: raisedButtonStyle,
               ),
             ),

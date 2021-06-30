@@ -1,25 +1,25 @@
 class Board {
-  int? userId;
+  int? projectId;
   int? id;
   String? title;
   String? description;
 
   Board({
-    this.userId,
+    this.projectId,
     this.id,
     this.title,
     this.description,
   });
 
   factory Board.fromMap(Map<String, dynamic> json) => Board(
-    userId: json["userId"],
+    projectId: json["userId"],
     id: json["id"],
     title: json["title"],
     description: json["description"],
   );
 
   Map<String, dynamic> toMap() => {
-    "userId": userId,
+    "userId": projectId,
     "id": id,
     "title": title,
     "description": description,
