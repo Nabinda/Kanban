@@ -119,34 +119,33 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
     );
   }
 
-  Widget _buildProjectsContent(){
-    return Observer(
-      builder: (context){
-        return _organizationStore.loading
-            ? CustomProgressIndicatorWidget()
-            : Material(child: _buildProjectsExpansion());
-      }
-    );
+  Widget _buildProjectsContent() {
+    return Observer(builder: (context) {
+      return _organizationStore.loading
+          ? CustomProgressIndicatorWidget()
+          : Material(child: _buildProjectsExpansion());
+    });
   }
 
-  Widget _buildProjectsExpansion(){
+  Widget _buildProjectsExpansion() {
     return _organizationStore.organizationList != null
         ? ListView.builder(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      physics: BouncingScrollPhysics(),
-      itemCount:
-      _organizationStore.organizationList!.organizations!.length,
-      itemBuilder: (BuildContext context, int index) {
-        return _buildProjectItem(_organizationStore.organizationList!.organizations![index]);
-      },
-    )
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            physics: BouncingScrollPhysics(),
+            itemCount:
+                _organizationStore.organizationList!.organizations!.length,
+            itemBuilder: (BuildContext context, int index) {
+              return _buildProjectItem(
+                  _organizationStore.organizationList!.organizations![index]);
+            },
+          )
         : Center(
-      child: Text(
-        AppLocalizations.of(context)
-            .translate('organization_tv_no_organization_found'),
-      ),
-    );
+            child: Text(
+              AppLocalizations.of(context)
+                  .translate('organization_tv_no_organization_found'),
+            ),
+          );
   }
 
   Widget _buildProjectItem(Organization organization) {

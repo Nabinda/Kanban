@@ -38,7 +38,7 @@ abstract class _ProjectStore with Store {
 
   // actions:-------------------------------------------------------------------
   @action
-  Future getBoards(int organizationId) async {
+  Future getProjects(int organizationId) async {
     final future = _repository.getProjects(organizationId);
     fetchBoardsFuture = ObservableFuture(future);
 

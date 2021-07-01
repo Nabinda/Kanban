@@ -61,11 +61,12 @@ mixin _$ProjectStore on _ProjectStore, Store {
     });
   }
 
-  final _$getBoardsAsyncAction = AsyncAction('_ProjectStore.getBoards');
+  final _$getProjectsAsyncAction = AsyncAction('_ProjectStore.getProjects');
 
   @override
-  Future<dynamic> getBoards(int organizationId) {
-    return _$getBoardsAsyncAction.run(() => super.getBoards(organizationId));
+  Future<dynamic> getProjects(int organizationId) {
+    return _$getProjectsAsyncAction
+        .run(() => super.getProjects(organizationId));
   }
 
   @override
