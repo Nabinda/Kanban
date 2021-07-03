@@ -72,6 +72,20 @@ mixin _$OrganizationStore on _OrganizationStore, Store {
     return _$getOrganizationsAsyncAction.run(() => super.getOrganizations());
   }
 
+  final _$_OrganizationStoreActionController =
+      ActionController(name: '_OrganizationStore');
+
+  @override
+  void addProjectToOrganization(int? orgId, ProjectList projectList) {
+    final _$actionInfo = _$_OrganizationStoreActionController.startAction(
+        name: '_OrganizationStore.addProjectToOrganization');
+    try {
+      return super.addProjectToOrganization(orgId, projectList);
+    } finally {
+      _$_OrganizationStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
   @override
   String toString() {
     return '''

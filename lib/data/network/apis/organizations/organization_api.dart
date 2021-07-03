@@ -27,8 +27,14 @@ class OrganizationApi {
         ),
         Organization(
           userId: 1,
-          id: 1,
+          id: 2,
           title: "Organization 2",
+          description: "lorem ipsum doret",
+        ),
+        Organization(
+          userId: 1,
+          id: 3,
+          title: "Organization 3",
           description: "lorem ipsum doret",
         ),
       ];

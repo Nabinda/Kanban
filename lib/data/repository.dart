@@ -8,6 +8,7 @@ import 'package:kanban/models/boardItem/boardItem_list.dart';
 import 'package:kanban/models/organization/organization_list.dart';
 import 'package:kanban/models/post/post.dart';
 import 'package:kanban/models/post/post_list.dart';
+import 'package:kanban/models/project/project.dart';
 import 'package:kanban/models/project/project_list.dart';
 import 'package:sembast/sembast.dart';
 

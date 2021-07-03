@@ -1,5 +1,7 @@
 import 'package:kanban/data/repository.dart';
+import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/organization/organization_list.dart';
+import 'package:kanban/models/project/project_list.dart';
 import 'package:kanban/stores/error/error_store.dart';
 import 'package:kanban/utils/dio/dio_error_util.dart';
 import 'package:mobx/mobx.dart';
@@ -20,11 +22,11 @@ abstract class _OrganizationStore with Store {
 
   // store variables:-----------------------------------------------------------
   static ObservableFuture<OrganizationList?> emptyOrganizationResponse =
-  ObservableFuture.value(null);
+      ObservableFuture.value(null);
 
   @observable
   ObservableFuture<OrganizationList?> fetchOrganizationsFuture =
-  ObservableFuture<OrganizationList?>(emptyOrganizationResponse);
+      ObservableFuture<OrganizationList?>(emptyOrganizationResponse);
 
   @observable
   OrganizationList? organizationList;
@@ -42,9 +44,26 @@ abstract class _OrganizationStore with Store {
     fetchOrganizationsFuture = ObservableFuture(future);
 
     future.then((organizationList) {
-      this.organizationList = organizationList;
+      if (organizationList.organizations != null) {
+        for (Organization org in organizationList.organizations!) {
+          final futureProjects = _repository.getProjects(org.id!);
+          futureProjects.then((projectList) {
+            org.projectList = projectList;
+          }).catchError((error) {
+            errorStore.errorMessage = DioErrorUtil.handleError(error);
+          });
+        }
+        this.organizationList = organizationList;
+      }
     }).catchError((error) {
       errorStore.errorMessage = DioErrorUtil.handleError(error);
     });
+  }
+
+  @action
+  void addProjectToOrganization(int? orgId, ProjectList projectList) {
+    Organization orgX =
+        organizationList!.organizations!.firstWhere((org) => org.id == orgId);
+    orgX.projectList = projectList;
   }
 }

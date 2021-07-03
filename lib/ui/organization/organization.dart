@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:kanban/data/sharedpref/constants/preferences.dart';
 import 'package:kanban/models/organization/organization.dart';
+import 'package:kanban/models/project/project.dart';
+import 'package:kanban/models/project/project_list.dart';
 import 'package:kanban/stores/language/language_store.dart';
 import 'package:kanban/stores/organization/organization_store.dart';
 import 'package:kanban/stores/theme/theme_store.dart';
@@ -151,20 +153,27 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   Widget _buildProjectItem(Organization organization) {
     return Card(
       child: ExpansionTile(
-        title: Text(
-          organization.title!,
-          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
-        ),
-        children: <Widget>[
-          ListTile(
-            title: Text(
-              organization.description!,
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          )
-        ],
-      ),
+          title: Text(
+            organization.title!,
+            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
+          ),
+          children: <Widget>[
+            Builder(builder: (_) {
+              return _buildProjectList(organization.projectList);
+            })
+          ]),
     );
+  }
+
+  Widget _buildProjectList(ProjectList? projectList) {
+    if (projectList != null && projectList.projects!.length != 0) {
+      List<Widget> reasonList = [];
+      for (Project p in projectList.projects!) {
+        reasonList.add(ListTile(title: Text(p.title!)));
+      }
+      return Column(children: reasonList);
+    }
+    return ListTile(title: Text("No Projects!"));
   }
 
   Widget _handleErrorMessage() {

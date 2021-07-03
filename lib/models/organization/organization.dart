@@ -1,8 +1,11 @@
+import 'package:kanban/models/project/project_list.dart';
+
 class Organization {
   int? userId;
   int? id;
   String? title;
   String? description;
+  ProjectList? projectList;
 
   Organization({
     this.userId,

@@ -21,11 +21,11 @@ abstract class _ProjectStore with Store {
 
   // store variables:-----------------------------------------------------------
   static ObservableFuture<ProjectList?> emptyBoardResponse =
-  ObservableFuture.value(null);
+      ObservableFuture.value(null);
 
   @observable
   ObservableFuture<ProjectList?> fetchBoardsFuture =
-  ObservableFuture<ProjectList?>(emptyBoardResponse);
+      ObservableFuture<ProjectList?>(emptyBoardResponse);
 
   @observable
   ProjectList? projectList;
