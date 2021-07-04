@@ -158,6 +158,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   }
 
   Widget _buildProjectItem(OrganizationStore organizationStore) {
+    print(organizationStore.loading);
     return Card(
       child: ExpansionTile(
           title: Text(
@@ -165,14 +166,15 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
             style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
           ),
           children: <Widget>[
+            organizationStore.loading ? ListTile(title: Text("loading..")):
             Observer(builder: (_) {
-              return _buildProjectList(organizationStore.projectList);
+              return _buildProjectItemList(organizationStore.projectList);
             })
           ]),
     );
   }
 
-  Widget _buildProjectList(ObservableList<Project>? projectList) {
+  Widget _buildProjectItemList(ObservableList<Project>? projectList) {
     if (projectList != null && projectList.length != 0) {
       List<Widget> reasonList = [];
       for (Project p in projectList) {

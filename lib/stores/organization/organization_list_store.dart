@@ -49,14 +49,6 @@ abstract class _OrganizationListStore with Store {
     future.then((organizationList) {
       if(organizationList.organizations != null){
         for (Organization org in organizationList.organizations!) {
-          final futureProjects = _repository.getProjects(org.id!);
-          futureProjects.then((projectList) {
-            for(Project project in projectList.projects!){
-              addProjectToOrganization(org, project);
-            }
-          }).catchError((error) {
-            errorStore.errorMessage = DioErrorUtil.handleError(error);
-          });
           addOrganization(org);
         }
       }
@@ -67,13 +59,8 @@ abstract class _OrganizationListStore with Store {
 
   @action
   void addOrganization(Organization org){
-    OrganizationStore o = OrganizationStore(userId: org.userId, id: org.id, title: org.title, description: org.description);
+    OrganizationStore o = OrganizationStore(_repository, userId: org.userId, id: org.id, title: org.title, description: org.description);
     organizationList.add(o);
-  }
-
-  @action
-  void addProjectToOrganization(Organization organization, Project pro){
-    OrganizationStore org = organizationList.firstWhere((element) => element.id == organization.id);
-    org.addProject(pro);
+    o.getProjects(org.id!);
   }
 }
