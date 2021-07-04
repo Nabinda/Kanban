@@ -13,7 +13,7 @@ import 'package:kanban/di/module/network_module.dart';
 import 'package:kanban/stores/error/error_store.dart';
 import 'package:kanban/stores/form/form_store.dart';
 import 'package:kanban/stores/language/language_store.dart';
-import 'package:kanban/stores/organization/organization_store.dart';
+import 'package:kanban/stores/organization/organization_list_store.dart';
 import 'package:kanban/stores/post/post_store.dart';
 import 'package:kanban/stores/theme/theme_store.dart';
 import 'package:kanban/stores/user/user_store.dart';
@@ -66,7 +66,7 @@ Future<void> setupLocator() async {
   // stores:--------------------------------------------------------------------
   getIt.registerSingleton(LanguageStore(getIt<Repository>()));
   getIt.registerSingleton(PostStore(getIt<Repository>()));
-  getIt.registerSingleton(OrganizationStore(getIt<Repository>()));
+  getIt.registerSingleton(OrganizationListStore(getIt<Repository>()));
   getIt.registerSingleton(ThemeStore(getIt<Repository>()));
   getIt.registerSingleton(UserStore(getIt<Repository>()));
 }

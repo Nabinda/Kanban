@@ -5,7 +5,6 @@ class Organization {
   int? id;
   String? title;
   String? description;
-  ProjectList? projectList;
 
   Organization({
     this.userId,

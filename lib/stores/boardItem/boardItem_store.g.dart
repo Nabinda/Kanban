@@ -35,13 +35,13 @@ mixin _$BoardItemStore on _BoardItemStore, Store {
   final _$boardListAtom = Atom(name: '_BoardItemStore.boardList');
 
   @override
-  BoardItemList? get boardList {
+  ObservableList<BoardItem>? get boardList {
     _$boardListAtom.reportRead();
     return super.boardList;
   }
 
   @override
-  set boardList(BoardItemList? value) {
+  set boardList(ObservableList<BoardItem>? value) {
     _$boardListAtom.reportWrite(value, super.boardList, () {
       super.boardList = value;
     });

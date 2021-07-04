@@ -1,8 +1,11 @@
+import 'package:kanban/models/boardItem/boardItem.dart';
+
 class Board {
   int? projectId;
   int? id;
   String? title;
   String? description;
+  List<BoardItem>? boardItems;
 
   Board({
     this.projectId,

@@ -1,4 +1,5 @@
 import 'package:kanban/data/repository.dart';
+import 'package:kanban/models/board/board.dart';
 import 'package:kanban/models/board/board_list.dart';
 import 'package:kanban/stores/error/error_store.dart';
 import 'package:kanban/utils/dio/dio_error_util.dart';
@@ -27,7 +28,7 @@ abstract class _BoardStore with Store {
   ObservableFuture<BoardList?>(emptyBoardResponse);
 
   @observable
-  BoardList? boardList;
+  ObservableList<Board>? boardList;
 
   @observable
   bool success = false;
@@ -42,7 +43,9 @@ abstract class _BoardStore with Store {
     fetchBoardsFuture = ObservableFuture(future);
 
     future.then((boardList) {
-      this.boardList = boardList;
+      boardList.boards!.forEach((element) {
+        this.boardList!.add(element);
+      });
     }).catchError((error) {
       errorStore.errorMessage = DioErrorUtil.handleError(error);
     });

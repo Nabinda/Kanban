@@ -2,7 +2,7 @@ import 'package:kanban/constants/app_theme.dart';
 import 'package:kanban/constants/strings.dart';
 import 'package:kanban/data/repository.dart';
 import 'package:kanban/di/components/service_locator.dart';
-import 'package:kanban/stores/organization/organization_store.dart';
+import 'package:kanban/stores/organization/organization_list_store.dart';
 import 'package:kanban/utils/routes/routes.dart';
 import 'package:kanban/stores/language/language_store.dart';
 import 'package:kanban/stores/post/post_store.dart';
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   // with Hot Reload than creating it directly in the `build` function.
   final ThemeStore _themeStore = ThemeStore(getIt<Repository>());
   final PostStore _postStore = PostStore(getIt<Repository>());
-  final OrganizationStore _organizationStore = OrganizationStore(getIt<Repository>());
+  final OrganizationListStore _organizationListStore = OrganizationListStore(getIt<Repository>());
   final LanguageStore _languageStore = LanguageStore(getIt<Repository>());
   final UserStore _userStore = UserStore(getIt<Repository>());
 
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<ThemeStore>(create: (_) => _themeStore),
         Provider<PostStore>(create: (_) => _postStore),
-        Provider<OrganizationStore>(create: (_) => _organizationStore),
+        Provider<OrganizationListStore>(create: (_) => _organizationListStore),
         Provider<LanguageStore>(create: (_) => _languageStore),
       ],
       child: Observer(

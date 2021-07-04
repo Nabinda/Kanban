@@ -5,6 +5,7 @@ import 'package:kanban/data/network/apis/organizations/organization_api.dart';
 import 'package:kanban/data/sharedpref/shared_preference_helper.dart';
 import 'package:kanban/models/board/board_list.dart';
 import 'package:kanban/models/boardItem/boardItem_list.dart';
+import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/organization/organization_list.dart';
 import 'package:kanban/models/post/post.dart';
 import 'package:kanban/models/post/post_list.dart';

@@ -6,12 +6,14 @@ import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/project/project.dart';
 import 'package:kanban/models/project/project_list.dart';
 import 'package:kanban/stores/language/language_store.dart';
+import 'package:kanban/stores/organization/organization_list_store.dart';
 import 'package:kanban/stores/organization/organization_store.dart';
 import 'package:kanban/stores/theme/theme_store.dart';
 import 'package:kanban/utils/locale/app_localization.dart';
 import 'package:kanban/utils/routes/routes.dart';
 import 'package:kanban/widgets/progress_indicator_widget.dart';
 import 'package:material_dialog/material_dialog.dart';
+import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +24,7 @@ class OrganizationScreen extends StatefulWidget {
 
 class _OrganizationScreenState extends State<OrganizationScreen> {
   //stores:---------------------------------------------------------------------
-  late OrganizationStore _organizationStore;
+  late OrganizationListStore _organizationListStore;
   late ThemeStore _themeStore;
   late LanguageStore _languageStore;
 
@@ -38,11 +40,11 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
     // initializing stores
     _languageStore = Provider.of<LanguageStore>(context);
     _themeStore = Provider.of<ThemeStore>(context);
-    _organizationStore = Provider.of<OrganizationStore>(context);
+    _organizationListStore = Provider.of<OrganizationListStore>(context);
 
     // check to see if already called api
-    if (!_organizationStore.loading) {
-      _organizationStore.getOrganizations();
+    if (!_organizationListStore.loading) {
+      _organizationListStore.getOrganizations();
     }
   }
 
@@ -123,23 +125,28 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
 
   Widget _buildProjectsContent() {
     return Observer(builder: (context) {
-      return _organizationStore.loading
+      return _organizationListStore.loading
           ? CustomProgressIndicatorWidget()
           : Material(child: _buildProjectsExpansion());
     });
   }
 
   Widget _buildProjectsExpansion() {
-    return _organizationStore.organizationList != null
+    // print(_organizationListStore.organizationList);
+    return _organizationListStore.organizationList.length != 0
         ? ListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             physics: BouncingScrollPhysics(),
             itemCount:
-                _organizationStore.organizationList!.organizations!.length,
+                _organizationListStore.organizationList.length,
             itemBuilder: (BuildContext context, int index) {
-              return _buildProjectItem(
-                  _organizationStore.organizationList!.organizations![index]);
+              // print(index);
+
+              return Observer(builder: (_) {
+                return _buildProjectItem(
+                    _organizationListStore.organizationList[index]);
+              });
             },
           )
         : Center(
@@ -150,26 +157,28 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
           );
   }
 
-  Widget _buildProjectItem(Organization organization) {
+  Widget _buildProjectItem(OrganizationStore organizationStore) {
     return Card(
       child: ExpansionTile(
           title: Text(
-            organization.title!,
+            organizationStore.title!,
             style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
           ),
           children: <Widget>[
-            Builder(builder: (_) {
-              return _buildProjectList(organization.projectList);
+            Observer(builder: (_) {
+              return _buildProjectList(organizationStore.projectList);
             })
           ]),
     );
   }
 
-  Widget _buildProjectList(ProjectList? projectList) {
-    if (projectList != null && projectList.projects!.length != 0) {
+  Widget _buildProjectList(ObservableList<Project>? projectList) {
+    if (projectList != null && projectList.length != 0) {
       List<Widget> reasonList = [];
-      for (Project p in projectList.projects!) {
-        reasonList.add(ListTile(title: Text(p.title!)));
+      for (Project p in projectList) {
+        reasonList.add(ListTile(title: Text(p.title!), onTap: (){
+          Navigator.pushNamed(context, Routes.board);
+        }));
       }
       return Column(children: reasonList);
     }
@@ -179,8 +188,8 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   Widget _handleErrorMessage() {
     return Observer(
       builder: (context) {
-        if (_organizationStore.errorStore.errorMessage.isNotEmpty) {
-          return _showErrorMessage(_organizationStore.errorStore.errorMessage);
+        if (_organizationListStore.errorStore.errorMessage.isNotEmpty) {
+          return _showErrorMessage(_organizationListStore.errorStore.errorMessage);
         }
 
         return SizedBox.shrink();
