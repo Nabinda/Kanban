@@ -1,5 +1,4 @@
 import 'package:kanban/data/repository.dart';
-import 'package:kanban/models/board/board_list.dart';
 import 'package:kanban/models/project/project_list.dart';
 import 'package:kanban/stores/error/error_store.dart';
 import 'package:kanban/utils/dio/dio_error_util.dart';

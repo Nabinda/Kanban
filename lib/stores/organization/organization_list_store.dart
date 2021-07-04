@@ -1,7 +1,6 @@
 import 'package:kanban/data/repository.dart';
 import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/organization/organization_list.dart';
-import 'package:kanban/models/project/project.dart';
 import 'package:kanban/stores/error/error_store.dart';
 import 'package:kanban/stores/organization/organization_store.dart';
 import 'package:kanban/utils/dio/dio_error_util.dart';
@@ -9,7 +8,8 @@ import 'package:mobx/mobx.dart';
 
 part 'organization_list_store.g.dart';
 
-class OrganizationListStore = _OrganizationListStore with _$OrganizationListStore;
+class OrganizationListStore = _OrganizationListStore
+    with _$OrganizationListStore;
 
 abstract class _OrganizationListStore with Store {
   // repository instance
@@ -23,14 +23,15 @@ abstract class _OrganizationListStore with Store {
 
   // store variables:-----------------------------------------------------------
   static ObservableFuture<OrganizationList?> emptyOrganizationResponse =
-  ObservableFuture.value(null);
+      ObservableFuture.value(null);
 
   @observable
   ObservableFuture<OrganizationList?> fetchOrganizationsFuture =
-  ObservableFuture<OrganizationList?>(emptyOrganizationResponse);
+      ObservableFuture<OrganizationList?>(emptyOrganizationResponse);
 
   @observable
-  ObservableList<OrganizationStore> organizationList = ObservableList<OrganizationStore>();
+  ObservableList<OrganizationStore> organizationList =
+      ObservableList<OrganizationStore>();
 
   @observable
   bool success = false;
@@ -47,9 +48,9 @@ abstract class _OrganizationListStore with Store {
     organizationList.clear();
 
     future.then((organizationList) {
-      if(organizationList.organizations != null){
-        for (Organization org in organizationList.organizations!) {
-          addOrganization(org);
+      if (organizationList.organizations != null) {
+        for (Organization organization in organizationList.organizations!) {
+          addOrganization(organization);
         }
       }
     }).catchError((error) {
@@ -58,9 +59,13 @@ abstract class _OrganizationListStore with Store {
   }
 
   @action
-  void addOrganization(Organization org){
-    OrganizationStore o = OrganizationStore(_repository, userId: org.userId, id: org.id, title: org.title, description: org.description);
-    organizationList.add(o);
-    o.getProjects(org.id!);
+  void addOrganization(Organization org) {
+    OrganizationStore organizationStore = OrganizationStore(_repository,
+        userId: org.userId,
+        id: org.id,
+        title: org.title,
+        description: org.description);
+    organizationList.add(organizationStore);
+    organizationStore.getProjects(org.id!);
   }
 }

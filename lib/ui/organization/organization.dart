@@ -2,9 +2,7 @@ import 'package:another_flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:kanban/data/sharedpref/constants/preferences.dart';
-import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/project/project.dart';
-import 'package:kanban/models/project/project_list.dart';
 import 'package:kanban/stores/language/language_store.dart';
 import 'package:kanban/stores/organization/organization_list_store.dart';
 import 'package:kanban/stores/organization/organization_store.dart';
@@ -132,7 +130,6 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   }
 
   Widget _buildProjectsExpansion() {
-    // print(_organizationListStore.organizationList);
     return _organizationListStore.organizationList.length != 0
         ? ListView.builder(
             scrollDirection: Axis.vertical,
@@ -141,7 +138,6 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
             itemCount:
                 _organizationListStore.organizationList.length,
             itemBuilder: (BuildContext context, int index) {
-              // print(index);
 
               return Observer(builder: (_) {
                 return _buildProjectItem(
@@ -158,7 +154,6 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   }
 
   Widget _buildProjectItem(OrganizationStore organizationStore) {
-    print(organizationStore.loading);
     return Card(
       child: ExpansionTile(
           title: Text(

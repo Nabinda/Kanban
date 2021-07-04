@@ -16,22 +16,23 @@ abstract class _OrganizationStore extends Organization with Store {
   // store for handling errors
   final ErrorStore errorStore = ErrorStore();
 
-  _OrganizationStore(Repository repository, {
+  _OrganizationStore(
+    Repository repository, {
     userId,
     id,
     title,
     description,
-  }) : super(userId: userId, id: id, title: title, description: description){
+  }) : super(userId: userId, id: id, title: title, description: description) {
     this._repository = repository;
   }
 
   // store variables:-----------------------------------------------------------
   static ObservableFuture<ProjectList?> emptyProjectResponse =
-  ObservableFuture.value(null);
+      ObservableFuture.value(null);
 
   @observable
   ObservableFuture<ProjectList?> fetchProjectFuture =
-  ObservableFuture<ProjectList?>(emptyProjectResponse);
+      ObservableFuture<ProjectList?>(emptyProjectResponse);
 
   @observable
   bool success = false;
@@ -48,7 +49,7 @@ abstract class _OrganizationStore extends Organization with Store {
     fetchProjectFuture = ObservableFuture(future);
 
     future.then((projectList) {
-      if(projectList.projects != null){
+      if (projectList.projects != null) {
         for (Project project in projectList.projects!) {
           addProject(project);
         }
@@ -59,7 +60,7 @@ abstract class _OrganizationStore extends Organization with Store {
   }
 
   @action
-  void addProject(Project project){
+  void addProject(Project project) {
     projectList.add(project);
   }
 }
