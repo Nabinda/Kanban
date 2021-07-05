@@ -48,4 +48,22 @@ class OrganizationApi {
       throw e;
     }
   }
+
+  Future<Organization> insertOrganizations(String title, String description) async {
+    try {
+      //final res = await _dioClient.post(Endpoints.getOrganization + organization.id.toString());
+      //return OrganizationList.fromJson(res);
+
+      Organization org = new Organization(
+          id: DateTime.now().millisecond,
+          title: title,
+          description: description,
+          userId: 1);
+
+      return await Future.delayed(Duration(seconds: 1), () => org);
+    } catch (e) {
+      print(e.toString());
+      throw e;
+    }
+  }
 }

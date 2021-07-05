@@ -71,11 +71,11 @@ mixin _$BoardStore on _BoardStore, Store {
   final _$_BoardStoreActionController = ActionController(name: '_BoardStore');
 
   @override
-  void addBoardItemList(BoardItem board) {
+  void addBoardItemList(BoardItem boardItem) {
     final _$actionInfo = _$_BoardStoreActionController.startAction(
         name: '_BoardStore.addBoardItemList');
     try {
-      return super.addBoardItemList(board);
+      return super.addBoardItemList(boardItem);
     } finally {
       _$_BoardStoreActionController.endAction(_$actionInfo);
     }

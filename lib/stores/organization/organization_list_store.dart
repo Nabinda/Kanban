@@ -2,6 +2,7 @@ import 'package:kanban/data/repository.dart';
 import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/organization/organization_list.dart';
 import 'package:kanban/stores/error/error_store.dart';
+import 'package:kanban/stores/form/form_store.dart';
 import 'package:kanban/stores/organization/organization_store.dart';
 import 'package:kanban/utils/dio/dio_error_util.dart';
 import 'package:mobx/mobx.dart';
@@ -44,15 +45,24 @@ abstract class _OrganizationListStore with Store {
   Future getOrganizations() async {
     final future = _repository.getOrganizations();
     fetchOrganizationsFuture = ObservableFuture(future);
-
     organizationList.clear();
-
     future.then((organizationList) {
       if (organizationList.organizations != null) {
         for (Organization organization in organizationList.organizations!) {
           addOrganization(organization);
         }
       }
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
+  }
+
+  @action
+  Future insertOrganizations(String title, String description) async {
+    final future = _repository.insertOrganization(title, description);
+    //fetchOrganizationsFuture = ObservableFuture(future);
+    future.then((organization) {
+      addOrganization(organization);
     }).catchError((error) {
       errorStore.errorMessage = DioErrorUtil.handleError(error);
     });

@@ -6,10 +6,15 @@ import 'package:kanban/models/project/project.dart';
 import 'package:kanban/stores/language/language_store.dart';
 import 'package:kanban/stores/organization/organization_list_store.dart';
 import 'package:kanban/stores/organization/organization_store.dart';
+import 'package:kanban/stores/organization/organization_store_validation.dart';
 import 'package:kanban/stores/theme/theme_store.dart';
+import 'package:kanban/utils/device/device_utils.dart';
 import 'package:kanban/utils/locale/app_localization.dart';
 import 'package:kanban/utils/routes/routes.dart';
+import 'package:kanban/widgets/action_button.dart';
+import 'package:kanban/widgets/expandable_fab.dart';
 import 'package:kanban/widgets/progress_indicator_widget.dart';
+import 'package:kanban/widgets/textfield_widget.dart';
 import 'package:material_dialog/material_dialog.dart';
 import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
@@ -23,8 +28,85 @@ class OrganizationScreen extends StatefulWidget {
 class _OrganizationScreenState extends State<OrganizationScreen> {
   //stores:---------------------------------------------------------------------
   late OrganizationListStore _organizationListStore;
+  late OrganizationStoreValidation _organizationStoreValidation =
+      new OrganizationStoreValidation();
   late ThemeStore _themeStore;
   late LanguageStore _languageStore;
+
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
+
+  void _showAction(BuildContext context, int index) {
+    showModalBottomSheet(
+        context: context,
+        builder: (ctx) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter stateSetter) {
+            return Container(
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildTitleField(),
+                  _buildDescriptionField(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 20,
+                      ),
+                      index == 1
+                          ?
+                          // DropdownButton<String>(
+                          //   iconEnabledColor: style.CustomTheme.themeColor,
+                          //   dropdownColor: style.CustomTheme.themeColor,
+                          //   items: bloodGroupCategories.map((dropdownItem){
+                          //     return DropdownMenuItem<String>(
+                          //       value: dropdownItem,
+                          //       child: Text(dropdownItem),
+                          //     );
+                          //   }).toList(),
+                          //   value: selectedBloodGroup,
+                          //   onChanged: (value){
+                          //     stateSetter((){
+                          //       selectedBloodGroup = value;
+                          //     });
+                          //   },
+                          // )
+                          Container(
+                              //TODO: Dropdown
+                              )
+                          : Container(),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      if (_organizationStoreValidation.canAdd) {
+                        DeviceUtils.hideKeyboard(context);
+                        _organizationListStore.insertOrganizations(
+                            _titleController.text, _descriptionController.text);
+                      } else {
+                        _showErrorMessage('Please fill in all fields');
+                      }
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.only(
+                          top: 20, left: 30, right: 30, bottom: 10),
+                      height: 50,
+                      // decoration: style.CustomTheme.buttonDecoration,
+                      child: Text(
+                        'Submit',
+                        // style: style.CustomTheme.buttonText,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          });
+        });
+  }
 
   @override
   void initState() {
@@ -49,8 +131,73 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: ExpandableFab(
+        distance: 112.0,
+        children: [
+          ActionButton(
+            onPressed: () => _showAction(context, 0),
+            text: "Organization",
+            icon: Icon(Icons.home),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 1),
+            text: "Projects",
+            icon: Icon(Icons.file_copy_sharp),
+          ),
+        ],
+      ),
       appBar: _buildAppBar(),
       body: _buildBody(),
+    );
+  }
+
+  Widget _buildTitleField() {
+    return Observer(
+      builder: (context) {
+        return TextFieldWidget(
+          hint: AppLocalizations.of(context).translate('login_et_user_email'),
+          inputType: TextInputType.emailAddress,
+          icon: Icons.person,
+          iconColor:
+              _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+          textController: _titleController,
+          inputAction: TextInputAction.next,
+          autoFocus: false,
+          onChanged: (value) {
+            _organizationStoreValidation.setTitle(_titleController.text);
+          },
+          onFieldSubmitted: (value) {
+            //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+          },
+          errorText: _organizationStoreValidation.organizationErrorStore.title,
+        );
+      },
+    );
+  }
+
+  Widget _buildDescriptionField() {
+    return Observer(
+      builder: (context) {
+        return TextFieldWidget(
+          hint: AppLocalizations.of(context).translate('login_et_user_email'),
+          inputType: TextInputType.emailAddress,
+          icon: Icons.person,
+          iconColor:
+              _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+          textController: _descriptionController,
+          inputAction: TextInputAction.next,
+          autoFocus: false,
+          onChanged: (value) {
+            _organizationStoreValidation
+                .setDescription(_descriptionController.text);
+          },
+          onFieldSubmitted: (value) {
+            //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+          },
+          errorText:
+              _organizationStoreValidation.organizationErrorStore.description,
+        );
+      },
     );
   }
 
@@ -135,10 +282,8 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             physics: BouncingScrollPhysics(),
-            itemCount:
-                _organizationListStore.organizationList.length,
+            itemCount: _organizationListStore.organizationList.length,
             itemBuilder: (BuildContext context, int index) {
-
               return Observer(builder: (_) {
                 return _buildProjectItem(
                     _organizationListStore.organizationList[index]);
@@ -161,10 +306,11 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
             style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
           ),
           children: <Widget>[
-            organizationStore.loading ? ListTile(title: Text("loading..")):
-            Observer(builder: (_) {
-              return _buildProjectItemList(organizationStore.projectList);
-            })
+            organizationStore.loading
+                ? ListTile(title: Text("loading.."))
+                : Observer(builder: (_) {
+                    return _buildProjectItemList(organizationStore.projectList);
+                  })
           ]),
     );
   }
@@ -173,9 +319,11 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
     if (projectList != null && projectList.length != 0) {
       List<Widget> reasonList = [];
       for (Project p in projectList) {
-        reasonList.add(ListTile(title: Text(p.title!), onTap: (){
-          Navigator.pushNamed(context, Routes.board);
-        }));
+        reasonList.add(ListTile(
+            title: Text(p.title!),
+            onTap: () {
+              Navigator.pushNamed(context, Routes.board);
+            }));
       }
       return Column(children: reasonList);
     }
@@ -186,7 +334,8 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
     return Observer(
       builder: (context) {
         if (_organizationListStore.errorStore.errorMessage.isNotEmpty) {
-          return _showErrorMessage(_organizationListStore.errorStore.errorMessage);
+          return _showErrorMessage(
+              _organizationListStore.errorStore.errorMessage);
         }
 
         return SizedBox.shrink();
