@@ -42,7 +42,7 @@ class OrganizationApi {
       OrganizationList organizationList =
           OrganizationList(organizations: organizations);
 
-      return await Future.delayed(Duration(seconds: 2), () => organizationList);
+      return await Future.delayed(Duration(seconds: 1), () => organizationList);
     } catch (e) {
       print(e.toString());
       throw e;

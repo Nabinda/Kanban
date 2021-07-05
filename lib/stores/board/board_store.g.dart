@@ -19,30 +19,30 @@ mixin _$BoardStore on _BoardStore, Store {
   final _$fetchBoardsFutureAtom = Atom(name: '_BoardStore.fetchBoardsFuture');
 
   @override
-  ObservableFuture<BoardList?> get fetchBoardsFuture {
+  ObservableFuture<BoardItemList?> get fetchBoardsFuture {
     _$fetchBoardsFutureAtom.reportRead();
     return super.fetchBoardsFuture;
   }
 
   @override
-  set fetchBoardsFuture(ObservableFuture<BoardList?> value) {
+  set fetchBoardsFuture(ObservableFuture<BoardItemList?> value) {
     _$fetchBoardsFutureAtom.reportWrite(value, super.fetchBoardsFuture, () {
       super.fetchBoardsFuture = value;
     });
   }
 
-  final _$boardListAtom = Atom(name: '_BoardStore.boardList');
+  final _$boardItemListAtom = Atom(name: '_BoardStore.boardItemList');
 
   @override
-  ObservableList<Board>? get boardList {
-    _$boardListAtom.reportRead();
-    return super.boardList;
+  ObservableList<BoardItemStore> get boardItemList {
+    _$boardItemListAtom.reportRead();
+    return super.boardItemList;
   }
 
   @override
-  set boardList(ObservableList<Board>? value) {
-    _$boardListAtom.reportWrite(value, super.boardList, () {
-      super.boardList = value;
+  set boardItemList(ObservableList<BoardItemStore> value) {
+    _$boardItemListAtom.reportWrite(value, super.boardItemList, () {
+      super.boardItemList = value;
     });
   }
 
@@ -61,18 +61,31 @@ mixin _$BoardStore on _BoardStore, Store {
     });
   }
 
-  final _$getBoardsAsyncAction = AsyncAction('_BoardStore.getBoards');
+  final _$getBoardItemsAsyncAction = AsyncAction('_BoardStore.getBoardItems');
 
   @override
-  Future<dynamic> getBoards(int projectId) {
-    return _$getBoardsAsyncAction.run(() => super.getBoards(projectId));
+  Future<dynamic> getBoardItems(int boardId) {
+    return _$getBoardItemsAsyncAction.run(() => super.getBoardItems(boardId));
+  }
+
+  final _$_BoardStoreActionController = ActionController(name: '_BoardStore');
+
+  @override
+  void addBoardItemList(BoardItem board) {
+    final _$actionInfo = _$_BoardStoreActionController.startAction(
+        name: '_BoardStore.addBoardItemList');
+    try {
+      return super.addBoardItemList(board);
+    } finally {
+      _$_BoardStoreActionController.endAction(_$actionInfo);
+    }
   }
 
   @override
   String toString() {
     return '''
 fetchBoardsFuture: ${fetchBoardsFuture},
-boardList: ${boardList},
+boardItemList: ${boardItemList},
 success: ${success},
 loading: ${loading}
     ''';

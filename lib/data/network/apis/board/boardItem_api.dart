@@ -26,13 +26,13 @@ class BoardItemApi {
           description: "desc 1",
         ),
         BoardItem(
-          boardId: 2,
+          boardId: 1,
           id: 3,
           title: "title 2",
           description: "desc 3",
         ),
         BoardItem(
-          boardId: 3,
+          boardId: 2,
           id: 4,
           title: "title 3",
           description: "desc 4",
@@ -44,7 +44,7 @@ class BoardItemApi {
 
       BoardItemList boardItemList = BoardItemList(boardItemList: filteredItems);
 
-      return await Future.delayed(Duration(seconds: 2), () => boardItemList);
+      return await Future.delayed(Duration(seconds: 1), () => boardItemList);
     } catch (e) {
       print(e.toString());
       throw e;

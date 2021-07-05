@@ -2,13 +2,14 @@ import 'package:kanban/constants/app_theme.dart';
 import 'package:kanban/constants/strings.dart';
 import 'package:kanban/data/repository.dart';
 import 'package:kanban/di/components/service_locator.dart';
+import 'package:kanban/stores/board/board_list_store.dart';
 import 'package:kanban/stores/organization/organization_list_store.dart';
+import 'package:kanban/ui/organization/organization.dart';
 import 'package:kanban/utils/routes/routes.dart';
 import 'package:kanban/stores/language/language_store.dart';
 import 'package:kanban/stores/post/post_store.dart';
 import 'package:kanban/stores/theme/theme_store.dart';
 import 'package:kanban/stores/user/user_store.dart';
-import 'package:kanban/ui/home/home.dart';
 import 'package:kanban/ui/login/login.dart';
 import 'package:kanban/utils/locale/app_localization.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
   final ThemeStore _themeStore = ThemeStore(getIt<Repository>());
   final PostStore _postStore = PostStore(getIt<Repository>());
   final OrganizationListStore _organizationListStore = OrganizationListStore(getIt<Repository>());
+  final BoardListStore _boardListStore = BoardListStore(getIt<Repository>());
   final LanguageStore _languageStore = LanguageStore(getIt<Repository>());
   final UserStore _userStore = UserStore(getIt<Repository>());
 
@@ -33,6 +35,7 @@ class MyApp extends StatelessWidget {
         Provider<ThemeStore>(create: (_) => _themeStore),
         Provider<PostStore>(create: (_) => _postStore),
         Provider<OrganizationListStore>(create: (_) => _organizationListStore),
+        Provider<BoardListStore>(create: (_) => _boardListStore),
         Provider<LanguageStore>(create: (_) => _languageStore),
       ],
       child: Observer(
@@ -57,7 +60,7 @@ class MyApp extends StatelessWidget {
               // Built-in localization of basic text for Cupertino widgets
               GlobalCupertinoLocalizations.delegate,
             ],
-            home: _userStore.isLoggedIn ? HomeScreen() : LoginScreen(),
+            home: _userStore.isLoggedIn ? OrganizationScreen() : LoginScreen(),
           );
         },
       ),

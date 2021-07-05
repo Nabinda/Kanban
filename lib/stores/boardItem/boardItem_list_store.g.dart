@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'boardItem_store.dart';
+part of 'boardItem_list_store.dart';
 
 // **************************************************************************
 // StoreGenerator
@@ -8,16 +8,16 @@ part of 'boardItem_store.dart';
 
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
-mixin _$BoardItemStore on _BoardItemStore, Store {
+mixin _$BoardItemListStore on _BoardItemListStore, Store {
   Computed<bool>? _$loadingComputed;
 
   @override
-  bool get loading => (_$loadingComputed ??=
-          Computed<bool>(() => super.loading, name: '_BoardItemStore.loading'))
+  bool get loading => (_$loadingComputed ??= Computed<bool>(() => super.loading,
+          name: '_BoardItemListStore.loading'))
       .value;
 
   final _$fetchBoardsFutureAtom =
-      Atom(name: '_BoardItemStore.fetchBoardsFuture');
+      Atom(name: '_BoardItemListStore.fetchBoardsFuture');
 
   @override
   ObservableFuture<BoardItemList?> get fetchBoardsFuture {
@@ -32,22 +32,22 @@ mixin _$BoardItemStore on _BoardItemStore, Store {
     });
   }
 
-  final _$boardListAtom = Atom(name: '_BoardItemStore.boardList');
+  final _$boardItemListAtom = Atom(name: '_BoardItemListStore.boardItemList');
 
   @override
-  ObservableList<BoardItem>? get boardList {
-    _$boardListAtom.reportRead();
-    return super.boardList;
+  ObservableList<BoardItemStore>? get boardItemList {
+    _$boardItemListAtom.reportRead();
+    return super.boardItemList;
   }
 
   @override
-  set boardList(ObservableList<BoardItem>? value) {
-    _$boardListAtom.reportWrite(value, super.boardList, () {
-      super.boardList = value;
+  set boardItemList(ObservableList<BoardItemStore>? value) {
+    _$boardItemListAtom.reportWrite(value, super.boardItemList, () {
+      super.boardItemList = value;
     });
   }
 
-  final _$successAtom = Atom(name: '_BoardItemStore.success');
+  final _$successAtom = Atom(name: '_BoardItemListStore.success');
 
   @override
   bool get success {
@@ -63,18 +63,32 @@ mixin _$BoardItemStore on _BoardItemStore, Store {
   }
 
   final _$getBoardItemsAsyncAction =
-      AsyncAction('_BoardItemStore.getBoardItems');
+      AsyncAction('_BoardItemListStore.getBoardItems');
 
   @override
   Future<dynamic> getBoardItems(int boardId) {
     return _$getBoardItemsAsyncAction.run(() => super.getBoardItems(boardId));
   }
 
+  final _$_BoardItemListStoreActionController =
+      ActionController(name: '_BoardItemListStore');
+
+  @override
+  void addBoardItem(BoardItem boardItem) {
+    final _$actionInfo = _$_BoardItemListStoreActionController.startAction(
+        name: '_BoardItemListStore.addBoardItem');
+    try {
+      return super.addBoardItem(boardItem);
+    } finally {
+      _$_BoardItemListStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
   @override
   String toString() {
     return '''
 fetchBoardsFuture: ${fetchBoardsFuture},
-boardList: ${boardList},
+boardItemList: ${boardItemList},
 success: ${success},
 loading: ${loading}
     ''';

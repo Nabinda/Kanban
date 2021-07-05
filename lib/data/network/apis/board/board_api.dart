@@ -27,8 +27,14 @@ class BoardApi {
         ),
         Board(
           projectId: 1,
-          id: 1,
+          id: 2,
           title: "Project 1 Board 2",
+          description: "desc 3",
+        ),
+        Board(
+          projectId: 1,
+          id: 3,
+          title: "Project 1 Board 3",
           description: "desc 3",
         ),
         Board(
@@ -44,7 +50,7 @@ class BoardApi {
 
       BoardList boardList = BoardList(boards: filteredBoards);
 
-      return await Future.delayed(Duration(seconds: 2), () => boardList);
+      return await Future.delayed(Duration(seconds: 1), () => boardList);
     } catch (e) {
       print(e.toString());
       throw e;

@@ -25,5 +25,11 @@
   "organization_tv_organizations": "Organizations",
   "organization_tv_error": "Error",
   "organization_tv_no_organization_found": "No organization found",
-  "organization_end": "-------------------------------------------------------------------------------------"
+  "organization_end": "-------------------------------------------------------------------------------------",
+
+  "board_start": "Below are list of strings for board",
+  "board_tv_boards": "Boards",
+  "board_tv_error": "Error",
+  "board_tv_no_board_found": "No board found",
+  "board_end": "-------------------------------------------------------------------------------------"
 }
