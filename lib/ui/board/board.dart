@@ -63,7 +63,6 @@ class _BoardScreenState extends State<BoardScreen> {
     );
   }
 
-
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
     return Stack(
@@ -85,10 +84,34 @@ class _BoardScreenState extends State<BoardScreen> {
           _lists.add(
               _createBoardList(_boardListStore.boardList[i], i) as BoardList);
         }
+        _lists.add(BoardList(
+          headerBackgroundColor: _themeStore.darkMode
+              ? Colors.white70
+              : Color.fromARGB(255, 235, 236, 240),
+          backgroundColor: _themeStore.darkMode
+              ? Colors.white70
+              : Color.fromARGB(255, 235, 236, 240),
+          footer: SizedBox(
+              width: double.infinity,
+              height: 36.0,
+              child: new TextButton(
+                child: Text("Add Board",
+                    style: TextStyle(
+                        color: _themeStore.darkMode
+                            ? Colors.white70
+                            : Colors.black)),
+                onPressed: () {
+                  // displayBottomSheet(context, "Item", listIndex);
+                },
+              )),
+        ));
         return Material(
-            child: BoardView(
-          lists: _lists,
-          boardViewController: boardViewController,
+            child: Padding(
+          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+          child: BoardView(
+            lists: _lists,
+            boardViewController: boardViewController,
+          ),
         ));
       }
     });
@@ -106,15 +129,23 @@ class _BoardScreenState extends State<BoardScreen> {
       ))));
       return BoardList(
         items: items,
-        headerBackgroundColor: Color.fromARGB(255, 235, 236, 240),
-        backgroundColor: Color.fromARGB(255, 235, 236, 240),
+        headerBackgroundColor: _themeStore.darkMode
+            ? Colors.white70
+            : Color.fromARGB(255, 235, 236, 240),
+        backgroundColor: _themeStore.darkMode
+            ? Colors.white70
+            : Color.fromARGB(255, 235, 236, 240),
         header: [
           Expanded(
               child: Padding(
                   padding: EdgeInsets.all(5),
                   child: Text(
                     boardStore.title!,
-                    style: TextStyle(fontSize: 20),
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: _themeStore.darkMode
+                            ? Colors.black38
+                            : Colors.black),
                   ))),
         ],
       );
@@ -140,37 +171,58 @@ class _BoardScreenState extends State<BoardScreen> {
             // _listData.removeAt(oldListIndex);
             // _listData.insert(listIndex!, list);
           },
-          headerBackgroundColor: Color.fromARGB(255, 235, 236, 240),
-          backgroundColor: Color.fromARGB(255, 235, 236, 240),
+          headerBackgroundColor: _themeStore.darkMode
+              ? Colors.white70
+              : Color.fromARGB(255, 235, 236, 240),
+          backgroundColor: _themeStore.darkMode
+              ? Colors.white70
+              : Color.fromARGB(255, 235, 236, 240),
           header: [
             Expanded(
                 child: Padding(
                     padding: EdgeInsets.all(5),
                     child: Text(
                       boardStore.title!,
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: _themeStore.darkMode
+                              ? Colors.black38
+                              : Colors.black),
                     ))),
           ],
         );
       } else {
         List<BoardItem> items = [];
         items.add(BoardItem(
+            draggable: false,
             item: Card(
-                child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text("No items!"),
-        ))));
+              color: Colors.transparent,
+            )));
         return BoardList(
           items: items,
-          headerBackgroundColor: Color.fromARGB(255, 235, 236, 240),
-          backgroundColor: Color.fromARGB(255, 235, 236, 240),
+          headerBackgroundColor: _themeStore.darkMode
+              ? Colors.white70
+              : Color.fromARGB(255, 235, 236, 240),
+          backgroundColor: _themeStore.darkMode
+              ? Colors.white70
+              : Color.fromARGB(255, 235, 236, 240),
+          footer: IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              // displayBottomSheet(context, "Item", listIndex);
+            },
+          ),
           header: [
             Expanded(
                 child: Padding(
                     padding: EdgeInsets.all(5),
                     child: Text(
                       boardStore.title!,
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: _themeStore.darkMode
+                              ? Colors.black38
+                              : Colors.black),
                     ))),
           ],
         );

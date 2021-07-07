@@ -38,8 +38,8 @@ final ThemeData themeData = new ThemeData(
 final ThemeData themeDataDark = ThemeData(
   fontFamily: FontFamily.productSans,
   brightness: Brightness.dark,
-  primaryColor: AppColors.blue[500],
+  primaryColor: AppColors.blue[900],
   primaryColorBrightness: Brightness.dark,
-  accentColor: AppColors.blue[500],
+  accentColor: AppColors.blue[900],
   accentColorBrightness: Brightness.dark,
 );
