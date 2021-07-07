@@ -60,26 +60,9 @@ class _BoardScreenState extends State<BoardScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       title: Text(AppLocalizations.of(context).translate('board_tv_boards')),
-      actions: _buildActions(context),
     );
   }
 
-  List<Widget> _buildActions(BuildContext context) {
-    return <Widget>[
-      _buildLanguageButton(),
-    ];
-  }
-
-  Widget _buildLanguageButton() {
-    return IconButton(
-      onPressed: () {
-        _buildLanguageDialog();
-      },
-      icon: Icon(
-        Icons.language,
-      ),
-    );
-  }
 
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
