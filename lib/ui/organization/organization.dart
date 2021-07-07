@@ -147,6 +147,36 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
         ],
       ),
       appBar: _buildAppBar(),
+
+      drawer:Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(
+              title: Text('Item 1'),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+              },
+            ),
+            ListTile(
+              title: Text('Item 2'),
+              onTap: () {
+                // Update the state of the app.
+                // ...
+              },
+            ),
+            _buildThemeButton(),
+          ],
+        ),
+      ),
       body: _buildBody(),
     );
   }
@@ -213,7 +243,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   List<Widget> _buildActions(BuildContext context) {
     return <Widget>[
       _buildLanguageButton(),
-      _buildThemeButton(),
+
       _buildLogoutButton(),
     ];
   }
@@ -221,12 +251,15 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   Widget _buildThemeButton() {
     return Observer(
       builder: (context) {
-        return IconButton(
-          onPressed: () {
-            _themeStore.changeBrightnessToDark(!_themeStore.darkMode);
-          },
-          icon: Icon(
-            _themeStore.darkMode ? Icons.brightness_5 : Icons.brightness_3,
+        return ListTile(
+          title: Text("Change Theme"),
+          trailing: IconButton(
+            onPressed: () {
+              _themeStore.changeBrightnessToDark(!_themeStore.darkMode);
+            },
+            icon: Icon(
+              _themeStore.darkMode ? Icons.brightness_5 : Icons.brightness_3,
+            ),
           ),
         );
       },
