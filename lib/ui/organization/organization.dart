@@ -147,8 +147,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
         ],
       ),
       appBar: _buildAppBar(),
-
-      drawer:Drawer(
+      drawer: Drawer(
         child: ListView(
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
@@ -174,6 +173,8 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
               },
             ),
             _buildThemeButton(),
+            _buildLanguageButton(),
+            _buildLogoutButton(),
           ],
         ),
       ),
@@ -236,30 +237,19 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
     return AppBar(
       title: Text(AppLocalizations.of(context)
           .translate('organization_tv_organizations')),
-      actions: _buildActions(context),
     );
-  }
-
-  List<Widget> _buildActions(BuildContext context) {
-    return <Widget>[
-      _buildLanguageButton(),
-
-      _buildLogoutButton(),
-    ];
   }
 
   Widget _buildThemeButton() {
     return Observer(
       builder: (context) {
         return ListTile(
+          onTap: () {
+            _themeStore.changeBrightnessToDark(!_themeStore.darkMode);
+          },
           title: Text("Change Theme"),
-          trailing: IconButton(
-            onPressed: () {
-              _themeStore.changeBrightnessToDark(!_themeStore.darkMode);
-            },
-            icon: Icon(
-              _themeStore.darkMode ? Icons.brightness_5 : Icons.brightness_3,
-            ),
+          trailing: Icon(
+            _themeStore.darkMode ? Icons.brightness_5 : Icons.brightness_3,
           ),
         );
       },
@@ -267,27 +257,25 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   }
 
   Widget _buildLogoutButton() {
-    return IconButton(
-      onPressed: () {
+    return ListTile(
+      onTap: () {
         SharedPreferences.getInstance().then((preference) {
           preference.setBool(Preferences.is_logged_in, false);
           Navigator.of(context).pushReplacementNamed(Routes.login);
         });
       },
-      icon: Icon(
-        Icons.power_settings_new,
-      ),
+      title: Text("Log Out"),
+      trailing: Icon(Icons.logout),
     );
   }
 
   Widget _buildLanguageButton() {
-    return IconButton(
-      onPressed: () {
+    return ListTile(
+      onTap: () {
         _buildLanguageDialog();
       },
-      icon: Icon(
-        Icons.language,
-      ),
+      title: Text("Language"),
+      trailing: Icon(Icons.language),
     );
   }
 
