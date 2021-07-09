@@ -2,18 +2,18 @@ import 'package:kanban/stores/error/error_store.dart';
 import 'package:mobx/mobx.dart';
 import 'package:validators/validators.dart';
 
-part 'form_store.g.dart';
+part 'signUp_form_store.g.dart';
 
-class FormStore = _FormStore with _$FormStore;
+class SignUpFormStore = _SignUpFormStore with _$SignUpFormStore;
 
-abstract class _FormStore with Store {
+abstract class _SignUpFormStore with Store {
   // store for handling form errors
-  final FormErrorStore formErrorStore = FormErrorStore();
+  final SignUpFormErrorStore formErrorStore = SignUpFormErrorStore();
 
   // store for handling error messages
   final ErrorStore errorStore = ErrorStore();
 
-  _FormStore() {
+  _SignUpFormStore() {
     _setupValidations();
   }
 
@@ -24,6 +24,7 @@ abstract class _FormStore with Store {
     _disposers = [
       reaction((_) => userEmail, validateUserEmail),
       reaction((_) => password, validatePassword),
+      reaction((_) => confirmPassword, validateConfirmPassword)
     ];
   }
 
@@ -33,6 +34,9 @@ abstract class _FormStore with Store {
 
   @observable
   String password = '';
+
+  @observable
+  String confirmPassword = '';
 
   @observable
   bool success = false;
@@ -47,6 +51,13 @@ abstract class _FormStore with Store {
       password.isNotEmpty;
 
   @computed
+  bool get canRegister =>
+      !formErrorStore.hasErrorsInRegister &&
+      userEmail.isNotEmpty &&
+      password.isNotEmpty &&
+      confirmPassword.isNotEmpty;
+
+  @computed
   bool get canForgetPassword =>
       !formErrorStore.hasErrorInForgotPassword && userEmail.isNotEmpty;
 
@@ -59,6 +70,11 @@ abstract class _FormStore with Store {
   @action
   void setPassword(String value) {
     password = value;
+  }
+
+  @action
+  void setConfirmPassword(String value) {
+    confirmPassword = value;
   }
 
   @action
@@ -84,7 +100,18 @@ abstract class _FormStore with Store {
   }
 
   @action
-  Future login() async {
+  void validateConfirmPassword(String value) {
+    if (value.isEmpty) {
+      formErrorStore.confirmPassword = "Confirm password can't be empty";
+    } else if (value != password) {
+      formErrorStore.confirmPassword = "Password doen't match";
+    } else {
+      formErrorStore.confirmPassword = null;
+    }
+  }
+
+  @action
+  Future register() async {
     loading = true;
 
     Future.delayed(Duration(milliseconds: 2000)).then((future) {
@@ -120,20 +147,28 @@ abstract class _FormStore with Store {
   void validateAll() {
     validatePassword(password);
     validateUserEmail(userEmail);
+    validateConfirmPassword(confirmPassword);
   }
 }
 
-class FormErrorStore = _FormErrorStore with _$FormErrorStore;
+class SignUpFormErrorStore = _SignUpFormErrorStore with _$SignUpFormErrorStore;
 
-abstract class _FormErrorStore with Store {
+abstract class _SignUpFormErrorStore with Store {
   @observable
   String? userEmail;
 
   @observable
   String? password;
 
+  @observable
+  String? confirmPassword;
+
   @computed
   bool get hasErrorsInLogin => userEmail != null || password != null;
+
+  @computed
+  bool get hasErrorsInRegister =>
+      userEmail != null || password != null || confirmPassword != null;
 
   @computed
   bool get hasErrorInForgotPassword => userEmail != null;

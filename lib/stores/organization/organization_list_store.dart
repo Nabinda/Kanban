@@ -2,7 +2,6 @@ import 'package:kanban/data/repository.dart';
 import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/organization/organization_list.dart';
 import 'package:kanban/stores/error/error_store.dart';
-import 'package:kanban/stores/form/form_store.dart';
 import 'package:kanban/stores/organization/organization_store.dart';
 import 'package:kanban/utils/dio/dio_error_util.dart';
 import 'package:mobx/mobx.dart';

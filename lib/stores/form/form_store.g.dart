@@ -15,13 +15,6 @@ mixin _$FormStore on _FormStore, Store {
   bool get canLogin => (_$canLoginComputed ??=
           Computed<bool>(() => super.canLogin, name: '_FormStore.canLogin'))
       .value;
-  Computed<bool>? _$canRegisterComputed;
-
-  @override
-  bool get canRegister =>
-      (_$canRegisterComputed ??= Computed<bool>(() => super.canRegister,
-              name: '_FormStore.canRegister'))
-          .value;
   Computed<bool>? _$canForgetPasswordComputed;
 
   @override
@@ -60,21 +53,6 @@ mixin _$FormStore on _FormStore, Store {
     });
   }
 
-  final _$confirmPasswordAtom = Atom(name: '_FormStore.confirmPassword');
-
-  @override
-  String get confirmPassword {
-    _$confirmPasswordAtom.reportRead();
-    return super.confirmPassword;
-  }
-
-  @override
-  set confirmPassword(String value) {
-    _$confirmPasswordAtom.reportWrite(value, super.confirmPassword, () {
-      super.confirmPassword = value;
-    });
-  }
-
   final _$successAtom = Atom(name: '_FormStore.success');
 
   @override
@@ -103,13 +81,6 @@ mixin _$FormStore on _FormStore, Store {
     _$loadingAtom.reportWrite(value, super.loading, () {
       super.loading = value;
     });
-  }
-
-  final _$registerAsyncAction = AsyncAction('_FormStore.register');
-
-  @override
-  Future<dynamic> register() {
-    return _$registerAsyncAction.run(() => super.register());
   }
 
   final _$loginAsyncAction = AsyncAction('_FormStore.login');
@@ -158,17 +129,6 @@ mixin _$FormStore on _FormStore, Store {
   }
 
   @override
-  void setConfirmPassword(String value) {
-    final _$actionInfo = _$_FormStoreActionController.startAction(
-        name: '_FormStore.setConfirmPassword');
-    try {
-      return super.setConfirmPassword(value);
-    } finally {
-      _$_FormStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void validateUserEmail(String value) {
     final _$actionInfo = _$_FormStoreActionController.startAction(
         name: '_FormStore.validateUserEmail');
@@ -191,26 +151,13 @@ mixin _$FormStore on _FormStore, Store {
   }
 
   @override
-  void validateConfirmPassword(String value) {
-    final _$actionInfo = _$_FormStoreActionController.startAction(
-        name: '_FormStore.validateConfirmPassword');
-    try {
-      return super.validateConfirmPassword(value);
-    } finally {
-      _$_FormStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 userEmail: ${userEmail},
 password: ${password},
-confirmPassword: ${confirmPassword},
 success: ${success},
 loading: ${loading},
 canLogin: ${canLogin},
-canRegister: ${canRegister},
 canForgetPassword: ${canForgetPassword}
     ''';
   }
@@ -223,13 +170,6 @@ mixin _$FormErrorStore on _FormErrorStore, Store {
   bool get hasErrorsInLogin => (_$hasErrorsInLoginComputed ??= Computed<bool>(
           () => super.hasErrorsInLogin,
           name: '_FormErrorStore.hasErrorsInLogin'))
-      .value;
-  Computed<bool>? _$hasErrorsInRegisterComputed;
-
-  @override
-  bool get hasErrorsInRegister => (_$hasErrorsInRegisterComputed ??=
-          Computed<bool>(() => super.hasErrorsInRegister,
-              name: '_FormErrorStore.hasErrorsInRegister'))
       .value;
   Computed<bool>? _$hasErrorInForgotPasswordComputed;
 
@@ -269,29 +209,12 @@ mixin _$FormErrorStore on _FormErrorStore, Store {
     });
   }
 
-  final _$confirmPasswordAtom = Atom(name: '_FormErrorStore.confirmPassword');
-
-  @override
-  String? get confirmPassword {
-    _$confirmPasswordAtom.reportRead();
-    return super.confirmPassword;
-  }
-
-  @override
-  set confirmPassword(String? value) {
-    _$confirmPasswordAtom.reportWrite(value, super.confirmPassword, () {
-      super.confirmPassword = value;
-    });
-  }
-
   @override
   String toString() {
     return '''
 userEmail: ${userEmail},
 password: ${password},
-confirmPassword: ${confirmPassword},
 hasErrorsInLogin: ${hasErrorsInLogin},
-hasErrorsInRegister: ${hasErrorsInRegister},
 hasErrorInForgotPassword: ${hasErrorInForgotPassword}
     ''';
   }

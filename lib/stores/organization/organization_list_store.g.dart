@@ -72,6 +72,15 @@ mixin _$OrganizationListStore on _OrganizationListStore, Store {
     return _$getOrganizationsAsyncAction.run(() => super.getOrganizations());
   }
 
+  final _$insertOrganizationsAsyncAction =
+      AsyncAction('_OrganizationListStore.insertOrganizations');
+
+  @override
+  Future<dynamic> insertOrganizations(String title, String description) {
+    return _$insertOrganizationsAsyncAction
+        .run(() => super.insertOrganizations(title, description));
+  }
+
   final _$_OrganizationListStoreActionController =
       ActionController(name: '_OrganizationListStore');
 

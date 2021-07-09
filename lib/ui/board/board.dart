@@ -59,7 +59,13 @@ class _BoardScreenState extends State<BoardScreen> {
 // app bar methods:-----------------------------------------------------------
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      title: Text(AppLocalizations.of(context).translate('board_tv_boards')),
+      iconTheme: IconThemeData(
+        color: Colors.white,
+      ),
+      title: Text(
+        AppLocalizations.of(context).translate('board_tv_boards'),
+        style: TextStyle(color: Colors.white),
+      ),
     );
   }
 
@@ -85,9 +91,9 @@ class _BoardScreenState extends State<BoardScreen> {
               _createBoardList(_boardListStore.boardList[i], i) as BoardList);
         }
         _lists.add(BoardList(
-          headerBackgroundColor: _themeStore.darkMode
-              ? Colors.white70
-              : Color.fromARGB(255, 235, 236, 240),
+          // headerBackgroundColor: _themeStore.darkMode
+          //     ? Colors.red
+          //     : Color.fromARGB(255, 235, 236, 240),
           backgroundColor: _themeStore.darkMode
               ? Colors.white70
               : Color.fromARGB(255, 235, 236, 240),
@@ -130,7 +136,7 @@ class _BoardScreenState extends State<BoardScreen> {
       return BoardList(
         items: items,
         headerBackgroundColor: _themeStore.darkMode
-            ? Colors.white70
+            ? Colors.red
             : Color.fromARGB(255, 235, 236, 240),
         backgroundColor: _themeStore.darkMode
             ? Colors.white70

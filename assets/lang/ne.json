@@ -10,6 +10,7 @@
   "signup_start": "Below are list of strings for signup",
   "signup_et_user_email": "नयाँ इमेल",
   "signup_et_user_password": "नयाँ पस्स्वोर्ड",
+  "signup_et_user_confirm_password": "नयाँ पस्स्वोर्ड again",
   "signup_btn_sign_in": "Sign Up",
   "signup_error_fill_fields": "Please fill in all fields",
   "signup_end": "------------------------------------------------------------------------------------",

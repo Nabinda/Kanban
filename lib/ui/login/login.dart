@@ -115,11 +115,34 @@ class _LoginScreenState extends State<LoginScreen> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.all(46.0),
-              child: AppIconWidget(image: 'assets/icons/logo.png'),
+              child: _themeStore.darkMode
+                  ? AppIconWidget(image: 'assets/images/kblogodark.png')
+                  : AppIconWidget(image: 'assets/images/kblogolight.png'),
             ),
             SizedBox(height: 14.0),
-            _buildUserIdField(),
-            _buildPasswordField(),
+            Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: _themeStore.darkMode ? Colors.grey : Colors.white,
+                borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black12,
+                      offset: Offset(0.0, 5.0),
+                      blurRadius: 10.0),
+                  BoxShadow(
+                      color: Colors.black12,
+                      offset: Offset(0.0, -5.0),
+                      blurRadius: 10.0),
+                ],
+              ),
+              child: Column(
+                children: [
+                  _buildUserIdField(),
+                  _buildPasswordField(),
+                ],
+              ),
+            ),
             _buildForgotPasswordButton(),
             _buildSignInButton(),
             _buildSignUpButton()
@@ -133,11 +156,12 @@ class _LoginScreenState extends State<LoginScreen> {
     return Observer(
       builder: (context) {
         return TextFieldWidget(
+          textColor: _themeStore.darkMode ? Colors.black : Colors.blue,
           hint: AppLocalizations.of(context).translate('login_et_user_email'),
           inputType: TextInputType.emailAddress,
           icon: Icons.person,
-          iconColor:
-              _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+          iconColor: _themeStore.darkMode ? Colors.black : Colors.blue,
+          hintColor: _themeStore.darkMode ? Colors.black : Colors.blue,
           textController: _userEmailController,
           inputAction: TextInputAction.next,
           autoFocus: false,
@@ -157,13 +181,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return Observer(
       builder: (context) {
         return TextFieldWidget(
+          textColor: _themeStore.darkMode ? Colors.black : Colors.blue,
           hint:
               AppLocalizations.of(context).translate('login_et_user_password'),
           isObscure: true,
           padding: EdgeInsets.only(top: 16.0),
           icon: Icons.lock,
-          iconColor:
-              _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+          iconColor: _themeStore.darkMode ? Colors.black : Colors.blue,
+          hintColor: _themeStore.darkMode ? Colors.black : Colors.blue,
           textController: _passwordController,
           focusNode: _passwordFocusNode,
           errorText: _store.formErrorStore.password,
@@ -181,10 +206,8 @@ class _LoginScreenState extends State<LoginScreen> {
       child: TextButton(
         child: Text(
           AppLocalizations.of(context).translate('login_btn_forgot_password'),
-          style: Theme.of(context)
-              .textTheme
-              .caption
-              ?.copyWith(color: Colors.blueAccent),
+          style:
+              Theme.of(context).textTheme.caption?.copyWith(color: Colors.blue),
         ),
         onPressed: () {},
       ),
@@ -194,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildSignInButton() {
     return RoundedButtonWidget(
       buttonText: AppLocalizations.of(context).translate('login_btn_sign_in'),
-      buttonColor: Colors.blueAccent,
+      buttonColor: Colors.blue,
       textColor: Colors.white,
       onPressed: () async {
         if (_store.canLogin) {
@@ -213,10 +236,8 @@ class _LoginScreenState extends State<LoginScreen> {
       child: TextButton(
         child: Text(
           AppLocalizations.of(context).translate('signup_btn_sign_in'),
-          style: Theme.of(context)
-              .textTheme
-              .caption
-              ?.copyWith(color: Colors.blueAccent),
+          style:
+              Theme.of(context).textTheme.caption?.copyWith(color: Colors.blue),
         ),
         onPressed: () {
           Navigator.pushNamed(context, Routes.signup);

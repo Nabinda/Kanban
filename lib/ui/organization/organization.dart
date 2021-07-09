@@ -235,8 +235,13 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
 // app bar methods:-----------------------------------------------------------
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      title: Text(AppLocalizations.of(context)
-          .translate('organization_tv_organizations')),
+      iconTheme: IconThemeData(
+        color: Colors.white,
+      ),
+      title: Text(
+        AppLocalizations.of(context).translate('organization_tv_organizations'),
+        style: TextStyle(color: Colors.white),
+      ),
     );
   }
 

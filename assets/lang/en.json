@@ -10,6 +10,7 @@
   "signup_start": "Below are list of strings for signup",
   "signup_et_user_email": "Enter your email",
   "signup_et_user_password": "Enter password",
+  "signup_et_user_confirm_password": "Enter password again",
   "signup_btn_sign_in": "Sign Up",
   "signup_error_fill_fields": "Please fill in all fields",
   "signup_end": "------------------------------------------------------------------------------------",
