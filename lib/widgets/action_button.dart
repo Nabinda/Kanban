@@ -5,13 +5,13 @@ class ActionButton extends StatelessWidget {
   const ActionButton({
     Key? key,
     this.onPressed,
-    required this.text,
+    required this.textWidget,
     required this.icon
   }) : super(key: key);
 
   final VoidCallback? onPressed;
-  final String text;
   final Icon icon;
+  final Widget textWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -19,15 +19,18 @@ class ActionButton extends StatelessWidget {
     return Material(
       color: theme.primaryColor,
       elevation: 4.0,
+      borderRadius: BorderRadius.circular(30.0),
       child: GestureDetector(
         onTap: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              icon,
-              Text(text),
-            ],
+        child: Container(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              children: [
+                icon,
+                textWidget,
+              ],
+            ),
           ),
         ),
       ),

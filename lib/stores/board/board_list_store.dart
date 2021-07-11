@@ -1,6 +1,7 @@
 import 'package:kanban/data/repository.dart';
 import 'package:kanban/models/board/board.dart';
 import 'package:kanban/models/board/board_list.dart';
+import 'package:kanban/models/project/project.dart';
 import 'package:kanban/stores/board/board_store.dart';
 import 'package:kanban/stores/error/error_store.dart';
 import 'package:kanban/utils/dio/dio_error_util.dart';
@@ -22,11 +23,11 @@ abstract class _BoardListStore with Store {
 
   // store variables:-----------------------------------------------------------
   static ObservableFuture<BoardList?> emptyBoardResponse =
-  ObservableFuture.value(null);
+      ObservableFuture.value(null);
 
   @observable
   ObservableFuture<BoardList?> fetchBoardsFuture =
-  ObservableFuture<BoardList?>(emptyBoardResponse);
+      ObservableFuture<BoardList?>(emptyBoardResponse);
 
   @observable
   ObservableList<BoardStore> boardList = ObservableList<BoardStore>();
@@ -36,6 +37,9 @@ abstract class _BoardListStore with Store {
 
   @computed
   bool get loading => fetchBoardsFuture.status == FutureStatus.pending;
+
+  @observable
+  Project? project;
 
   // actions:-------------------------------------------------------------------
   @action
@@ -65,5 +69,10 @@ abstract class _BoardListStore with Store {
         description: board.description);
     boardList.add(boardStore);
     boardStore.getBoardItems(board.id!);
+  }
+
+  @action
+  void setProject(Project project) {
+    this.project = project;
   }
 }

@@ -62,6 +62,21 @@ mixin _$BoardListStore on _BoardListStore, Store {
     });
   }
 
+  final _$projectAtom = Atom(name: '_BoardListStore.project');
+
+  @override
+  Project? get project {
+    _$projectAtom.reportRead();
+    return super.project;
+  }
+
+  @override
+  set project(Project? value) {
+    _$projectAtom.reportWrite(value, super.project, () {
+      super.project = value;
+    });
+  }
+
   final _$getBoardsAsyncAction = AsyncAction('_BoardListStore.getBoards');
 
   @override
@@ -84,11 +99,23 @@ mixin _$BoardListStore on _BoardListStore, Store {
   }
 
   @override
+  void setProject(Project project) {
+    final _$actionInfo = _$_BoardListStoreActionController.startAction(
+        name: '_BoardListStore.setProject');
+    try {
+      return super.setProject(project);
+    } finally {
+      _$_BoardListStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 fetchBoardsFuture: ${fetchBoardsFuture},
 boardList: ${boardList},
 success: ${success},
+project: ${project},
 loading: ${loading}
     ''';
   }

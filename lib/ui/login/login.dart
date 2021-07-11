@@ -121,19 +121,19 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 14.0),
             Container(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 8.0, bottom: 25.0),
               decoration: BoxDecoration(
                 color: _themeStore.darkMode ? Colors.grey : Colors.white,
                 borderRadius: BorderRadius.circular(8.0),
                 boxShadow: [
                   BoxShadow(
                       color: Colors.black12,
-                      offset: Offset(0.0, 5.0),
-                      blurRadius: 10.0),
+                      offset: Offset(0.0, 1.0),
+                      blurRadius: 3.0),
                   BoxShadow(
                       color: Colors.black12,
-                      offset: Offset(0.0, -5.0),
-                      blurRadius: 10.0),
+                      offset: Offset(0.0, -1.0),
+                      blurRadius: 3.0),
                 ],
               ),
               child: Column(

@@ -44,7 +44,7 @@ class _BoardScreenState extends State<BoardScreen> {
 
     // check to see if already called api
     if (!_boardListStore.loading) {
-      _boardListStore.getBoards(1);
+      _boardListStore.getBoards(_boardListStore.project!.id!);
     }
   }
 
@@ -63,7 +63,7 @@ class _BoardScreenState extends State<BoardScreen> {
         color: Colors.white,
       ),
       title: Text(
-        AppLocalizations.of(context).translate('board_tv_boards'),
+        _boardListStore.project!.title!,
         style: TextStyle(color: Colors.white),
       ),
     );
@@ -112,13 +112,11 @@ class _BoardScreenState extends State<BoardScreen> {
               )),
         ));
         return Material(
-            child: Padding(
-          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
           child: BoardView(
             lists: _lists,
             boardViewController: boardViewController,
           ),
-        ));
+        );
       }
     });
   }

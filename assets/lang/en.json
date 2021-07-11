@@ -24,9 +24,19 @@
 
   "organization_start": "Below are list of strings for organization",
   "organization_tv_organizations": "Organizations",
+  "organization_tv_title": "Organization Title",
+  "organization_tv_description": "Organization Description",
   "organization_tv_error": "Error",
   "organization_tv_no_organization_found": "No organization found",
   "organization_end": "-------------------------------------------------------------------------------------",
+
+  "project_start": "Below are list of strings for project",
+  "project_tv_projects": "Projects",
+  "project_tv_title": "Project Title",
+  "project_tv_description": "Project Description",
+  "project_tv_error": "Error",
+  "project_tv_no_project_found": "No project found",
+  "project_end": "-------------------------------------------------------------------------------------",
 
   "board_start": "Below are list of strings for board",
   "board_tv_boards": "Boards",
