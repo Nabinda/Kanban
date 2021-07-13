@@ -39,6 +39,20 @@ abstract class _OrganizationListStore with Store {
   @computed
   bool get loading => fetchOrganizationsFuture.status == FutureStatus.pending;
 
+  // store variables:-----------------------------------------------------------
+  static ObservableFuture<Organization?> emptyOrganizationInsertResponse =
+  ObservableFuture.value(null);
+
+  @observable
+  ObservableFuture<Organization?> fetchOrganizationInsertFuture =
+  ObservableFuture<Organization?>(emptyOrganizationInsertResponse);
+
+  @observable
+  bool insertSuccess = false;
+
+  @computed
+  bool get insertLoading => fetchOrganizationInsertFuture.status == FutureStatus.pending;
+
   // actions:-------------------------------------------------------------------
   @action
   Future getOrganizations() async {
@@ -59,7 +73,7 @@ abstract class _OrganizationListStore with Store {
   @action
   Future insertOrganizations(String title, String description) async {
     final future = _repository.insertOrganization(title, description);
-    //fetchOrganizationsFuture = ObservableFuture(future);
+    fetchOrganizationInsertFuture = ObservableFuture(future);
     future.then((organization) {
       addOrganization(organization);
     }).catchError((error) {
@@ -76,5 +90,10 @@ abstract class _OrganizationListStore with Store {
         description: org.description);
     organizationList.add(organizationStore);
     organizationStore.getProjects(org.id!);
+  }
+
+  @action
+  void deleteOrganization(int id) {
+    organizationList.removeWhere((org) => org.id==id);
   }
 }

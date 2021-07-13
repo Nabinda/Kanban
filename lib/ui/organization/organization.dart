@@ -33,7 +33,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
       new OrganizationStoreValidation();
   late ThemeStore _themeStore;
   late LanguageStore _languageStore;
-
+  String selectedOrganization = "1";
   late BoardListStore _boardListStore;
 
   TextEditingController _titleController = TextEditingController();
@@ -247,25 +247,34 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
       SizedBox(
         height: 40.0,
       ),
-      ElevatedButton(
-          child: Text('Save New Organization',
-              style: TextStyle(color: Colors.white)),
-          style: TextButton.styleFrom(
-              primary: Colors.blue,
-              onSurface: Colors.red,
-              minimumSize: Size(128, 40),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-              )),
-          onPressed: () {
-            if (_organizationStoreValidation.canAdd) {
-              DeviceUtils.hideKeyboard(context);
-              _organizationListStore.insertOrganizations(
-                  _titleController.text, _descriptionController.text);
-            } else {
-              _showErrorMessage('Please fill in all fields');
-            }
-          }),
+      Observer(
+        builder: (context) {
+          return _organizationListStore.insertLoading
+              ? CircularProgressIndicator()
+              : ElevatedButton(
+                  child: Text('Save New Organization',
+                      style: TextStyle(color: Colors.white)),
+                  style: TextButton.styleFrom(
+                      primary: Colors.blue,
+                      onSurface: Colors.red,
+                      minimumSize: Size(128, 40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      )),
+                  onPressed: () {
+                    if (_organizationStoreValidation.canAdd) {
+                      DeviceUtils.hideKeyboard(context);
+                      _organizationListStore.insertOrganizations(
+                          _titleController.text, _descriptionController.text);
+                      Navigator.of(context).pop();
+                      _titleController.clear();
+                      _descriptionController.clear();
+                    } else {
+                      _showErrorMessage('Please fill in all fields');
+                    }
+                  });
+        },
+      ),
     ]);
   }
 
@@ -295,15 +304,19 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                   style: TextStyle(),
                   items: _organizationListStore.organizationList
                       .map((dropdownItem) {
+                    //TODO: Change State
+                    print(dropdownItem.title);
                     return DropdownMenuItem<String>(
                       value: dropdownItem.id.toString(),
                       child: Text(dropdownItem.title!,
                           style: TextStyle(color: Colors.blue)),
                     );
                   }).toList(),
-                  hint: Text("Please Select Organization"),
+                  value: selectedOrganization,
                   onChanged: (newVal) {
-                    print(newVal);
+                    setState(() {
+                      selectedOrganization = newVal!;
+                    });
                   },
                 ),
               ],
@@ -435,9 +448,14 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   }
 
   Widget _buildOrganizationItem(OrganizationStore organizationStore) {
-    return  Dismissible(
+    return Dismissible(
       key: ValueKey<int>(organizationStore.id!),
-      background: Container(color: Colors.red,child: Icon(Icons.delete),alignment: Alignment.centerRight, padding: EdgeInsets.only(right: 30),),
+      background: Container(
+        color: Colors.red,
+        child: Icon(Icons.delete),
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.only(right: 30),
+      ),
       direction: DismissDirection.endToStart,
       confirmDismiss: (DismissDirection direction) async {
         return await showDialog(
@@ -449,8 +467,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
               actions: <Widget>[
                 GestureDetector(
                     onTap: () => Navigator.of(context).pop(true),
-                    child: const Text("DELETE")
-                ),
+                    child: const Text("DELETE")),
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(false),
                   child: const Text("CANCEL"),
@@ -461,7 +478,8 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
         );
       },
       onDismissed: (DismissDirection direction) {
-        print('Dissmissed');
+        //TODO: Delete from API and Local Database
+        _organizationListStore.deleteOrganization(organizationStore.id!);
       },
       child: Card(
         child: ExpansionTile(
@@ -479,7 +497,8 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
               organizationStore.loading
                   ? ListTile(title: Text("loading.."))
                   : Observer(builder: (_) {
-                      return _buildProjectItemList(organizationStore.projectList);
+                      return _buildProjectItemList(
+                          organizationStore.projectList);
                     })
             ]),
       ),

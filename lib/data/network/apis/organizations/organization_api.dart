@@ -60,7 +60,7 @@ class OrganizationApi {
           description: description,
           userId: 1);
 
-      return await Future.delayed(Duration(seconds: 1), () => org);
+      return await Future.delayed(Duration(seconds: 2), () => org);
     } catch (e) {
       print(e.toString());
       throw e;
