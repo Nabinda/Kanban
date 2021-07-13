@@ -435,25 +435,54 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   }
 
   Widget _buildOrganizationItem(OrganizationStore organizationStore) {
-    return Card(
-      child: ExpansionTile(
-          iconColor: _themeStore.darkMode ? Colors.white : Colors.black,
-          initiallyExpanded: true,
-          maintainState: true,
-          title: Text(
-            organizationStore.title!,
-            style: TextStyle(
-                color: _themeStore.darkMode ? Colors.white : Colors.black,
-                fontSize: 16.0,
-                fontWeight: FontWeight.w500),
-          ),
-          children: <Widget>[
-            organizationStore.loading
-                ? ListTile(title: Text("loading.."))
-                : Observer(builder: (_) {
-                    return _buildProjectItemList(organizationStore.projectList);
-                  })
-          ]),
+    return  Dismissible(
+      key: ValueKey<int>(organizationStore.id!),
+      background: Container(color: Colors.red,child: Icon(Icons.delete),alignment: Alignment.centerRight, padding: EdgeInsets.only(right: 30),),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (DismissDirection direction) async {
+        return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Confirm"),
+              content: const Text("Are you sure you wish to delete this item?"),
+              actions: <Widget>[
+                GestureDetector(
+                    onTap: () => Navigator.of(context).pop(true),
+                    child: const Text("DELETE")
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(false),
+                  child: const Text("CANCEL"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      onDismissed: (DismissDirection direction) {
+        print('Dissmissed');
+      },
+      child: Card(
+        child: ExpansionTile(
+            iconColor: _themeStore.darkMode ? Colors.white : Colors.black,
+            initiallyExpanded: true,
+            maintainState: true,
+            title: Text(
+              organizationStore.title!,
+              style: TextStyle(
+                  color: _themeStore.darkMode ? Colors.white : Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w500),
+            ),
+            children: <Widget>[
+              organizationStore.loading
+                  ? ListTile(title: Text("loading.."))
+                  : Observer(builder: (_) {
+                      return _buildProjectItemList(organizationStore.projectList);
+                    })
+            ]),
+      ),
     );
   }
 
