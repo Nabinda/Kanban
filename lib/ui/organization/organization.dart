@@ -33,11 +33,12 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
       new OrganizationStoreValidation();
   late ThemeStore _themeStore;
   late LanguageStore _languageStore;
-  String selectedOrganization = "1";
   late BoardListStore _boardListStore;
 
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
+
+  String selectedOrganization = "1";
 
   @override
   void initState() {
@@ -63,195 +64,157 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: ExpandableFab(
-        distance: 70.0,
-        children: [
-          ActionButton(
-            onPressed: () => _showAction(context, 0),
-            textWidget:
-                Text("Organization", style: TextStyle(color: Colors.white)),
-            icon: Icon(Icons.home, color: Colors.white),
-          ),
-          ActionButton(
-            onPressed: () => _showAction(context, 1),
-            textWidget: Text("Projects", style: TextStyle(color: Colors.white)),
-            icon: Icon(Icons.file_copy_sharp, color: Colors.white),
-          ),
-        ],
-      ),
+      floatingActionButton: _buildFloatingActionButton(),
       appBar: _buildAppBar(),
-      drawer: Drawer(
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-                margin: EdgeInsets.zero,
-                padding: EdgeInsets.zero,
-                decoration: BoxDecoration(
-                  color: Colors.black12,
-                  border: Border(
-                      bottom: BorderSide(width: 1.0, color: Colors.black12)),
-                ),
-                child: Stack(children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15.0, left: 15.0),
-                    child: CircleAvatar(
-                      radius: 50.0,
-                      backgroundImage:
-                          NetworkImage('https://via.placeholder.com/100'),
-                      backgroundColor: Colors.transparent,
-                    ),
-                  ),
-                  Positioned(
-                      bottom: 12.0,
-                      left: 16.0,
-                      child: Text("John Doe",
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w500))),
-                ])),
-            ListTile(
-              title: Text('Item 1'),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-              },
-            ),
-            ListTile(
-              title: Text('Item 2'),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-              },
-            ),
-            _buildThemeButton(),
-            _buildLanguageButton(),
-            _buildLogoutButton(),
-          ],
-        ),
-      ),
+      drawer: _buildDrawer(),
       body: _buildBody(),
     );
   }
 
-  void _showAction(BuildContext context, int index) {
+  // floating action button methods:-----------------------------------------------------------
+  ExpandableFab _buildFloatingActionButton(){
+    return ExpandableFab(
+      distance: 70.0,
+      children: [
+        ActionButton(
+          onPressed: () => _showBottomSheet(context, 0),
+          textWidget:
+          Text("Organization", style: TextStyle(color: Colors.white)),
+          icon: Icon(Icons.supervised_user_circle_outlined,
+              color: Colors.white),
+        ),
+        ActionButton(
+          onPressed: () => _showBottomSheet(context, 1),
+          textWidget: Text("Project", style: TextStyle(color: Colors.white)),
+          icon: Icon(Icons.table_chart_outlined, color: Colors.white),
+        ),
+      ],
+    );
+  }
+
+  void _showBottomSheet(BuildContext context, int index) {
     showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         builder: (ctx) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter stateSetter) {
-            return Container(
-              height: MediaQuery.of(context).size.height,
-              child:
-                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                SizedBox(
-                  height: 15.0,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 15.0, left: 15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      index == 0
-                          ? Text("Add New Organization")
-                          : Text("Add New Project"),
-                      SizedBox(width: 10.0),
-                      OutlinedButton(
-                        child: Icon(Icons.close),
-                        style: TextButton.styleFrom(
-                            primary: Colors.black45,
-                            onSurface: Colors.red,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(255.0),
-                            )),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
+                return Container(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
                   ),
-                ),
-                index == 0
-                    ? _buildCreateOrganizationForm()
-                    : _buildCreateProjectForm(),
-              ]),
-            );
-          });
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
+                          child: index == 0
+                              ? _buildCreateOrganizationForm()
+                              : _buildCreateProjectForm(),
+                        ),
+                      ]),
+                );
+              });
         });
   }
 
   Widget _buildCreateOrganizationForm() {
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 20.0,
-            ),
-            Observer(builder: (context) {
+    return Container(
+      padding: EdgeInsets.only(left: 15.0, right: 15.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.supervised_user_circle_outlined,
+                      color: _themeStore.darkMode
+                          ? Colors.white
+                          : Colors.blue.shade200),
+                  SizedBox(width: 15.0),
+                  Text("Add New Organization"),
+                ],
+              ),
+              SizedBox(width: 10.0),
+              OutlinedButton(
+                child: Icon(Icons.close,
+                    color:
+                    _themeStore.darkMode ? Colors.white : Colors.black45),
+                style: TextButton.styleFrom(
+                    primary: Colors.black45,
+                    onSurface: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(255.0),
+                    )),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20.0,
+          ),
+          Observer(builder: (context) {
+            return TextFieldWidget(
+              hint: AppLocalizations.of(context)
+                  .translate('organization_tv_title'),
+              inputType: TextInputType.emailAddress,
+              icon: Icons.create,
+              iconColor:
+              _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+              textController: _titleController,
+              inputAction: TextInputAction.next,
+              autoFocus: false,
+              onChanged: (value) {
+                _organizationStoreValidation.setTitle(_titleController.text);
+              },
+              onFieldSubmitted: (value) {
+                //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+              },
+              errorText:
+              _organizationStoreValidation.organizationErrorStore.title,
+            );
+          }),
+          SizedBox(
+            height: 20.0,
+          ),
+          Observer(
+            builder: (context) {
               return TextFieldWidget(
                 hint: AppLocalizations.of(context)
-                    .translate('organization_tv_title'),
+                    .translate('organization_tv_description'),
                 inputType: TextInputType.emailAddress,
-                icon: Icons.create,
+                icon: Icons.wysiwyg_outlined,
                 iconColor: _themeStore.darkMode
                     ? Colors.white70
                     : Colors.blue.shade200,
-                textController: _titleController,
+                textController: _descriptionController,
                 inputAction: TextInputAction.next,
                 autoFocus: false,
                 onChanged: (value) {
-                  _organizationStoreValidation.setTitle(_titleController.text);
+                  _organizationStoreValidation
+                      .setDescription(_descriptionController.text);
                 },
                 onFieldSubmitted: (value) {
                   //  FocusScope.of(context).requestFocus(_passwordFocusNode);
                 },
-                errorText:
-                    _organizationStoreValidation.organizationErrorStore.title,
+                errorText: _organizationStoreValidation
+                    .organizationErrorStore.description,
               );
-            }),
-            SizedBox(
-              height: 20.0,
-            ),
-            Observer(
-              builder: (context) {
-                return TextFieldWidget(
-                  hint: AppLocalizations.of(context)
-                      .translate('organization_tv_description'),
-                  inputType: TextInputType.emailAddress,
-                  icon: Icons.wysiwyg_outlined,
-                  iconColor: _themeStore.darkMode
-                      ? Colors.white70
-                      : Colors.blue.shade200,
-                  textController: _descriptionController,
-                  inputAction: TextInputAction.next,
-                  autoFocus: false,
-                  onChanged: (value) {
-                    _organizationStoreValidation
-                        .setDescription(_descriptionController.text);
-                  },
-                  onFieldSubmitted: (value) {
-                    //  FocusScope.of(context).requestFocus(_passwordFocusNode);
-                  },
-                  errorText: _organizationStoreValidation
-                      .organizationErrorStore.description,
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-      SizedBox(
-        height: 40.0,
-      ),
-      Observer(
-        builder: (context) {
-          return _organizationListStore.insertLoading
-              ? CircularProgressIndicator()
-              : ElevatedButton(
+            },
+          ),
+          SizedBox(
+            height: 40.0,
+          ),
+          Observer(
+            builder: (context) {
+              return _organizationListStore.insertLoading
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
                   child: Text('Save New Organization',
                       style: TextStyle(color: Colors.white)),
                   style: TextButton.styleFrom(
@@ -265,7 +228,8 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                     if (_organizationStoreValidation.canAdd) {
                       DeviceUtils.hideKeyboard(context);
                       _organizationListStore.insertOrganizations(
-                          _titleController.text, _descriptionController.text);
+                          _titleController.text,
+                          _descriptionController.text);
                       Navigator.of(context).pop();
                       _titleController.clear();
                       _descriptionController.clear();
@@ -273,9 +237,11 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                       _showErrorMessage('Please fill in all fields');
                     }
                   });
-        },
+            },
+          )
+        ],
       ),
-    ]);
+    );
   }
 
   Widget _buildCreateProjectForm() {
@@ -284,6 +250,36 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
         padding: const EdgeInsets.only(left: 15.0, right: 15.0),
         child: Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.table_chart_outlined,
+                        color: _themeStore.darkMode
+                            ? Colors.white
+                            : Colors.blue.shade200),
+                    SizedBox(width: 15.0),
+                    Text("Add New Project"),
+                  ],
+                ),
+                SizedBox(width: 10.0),
+                OutlinedButton(
+                  child: Icon(Icons.close,
+                      color:
+                      _themeStore.darkMode ? Colors.white : Colors.black45),
+                  style: TextButton.styleFrom(
+                      primary: Colors.black45,
+                      onSurface: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(255.0),
+                      )),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
             SizedBox(
               height: 20.0,
             ),
@@ -299,7 +295,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                   width: 17.0,
                 ),
                 DropdownButton<String>(
-                  iconEnabledColor: Colors.black,
+                  iconEnabledColor: Colors.white,
                   dropdownColor: Colors.white,
                   style: TextStyle(),
                   items: _organizationListStore.organizationList
@@ -332,7 +328,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
       ),
       ElevatedButton(
           child:
-              Text('Save New Project', style: TextStyle(color: Colors.white)),
+          Text('Save New Project', style: TextStyle(color: Colors.white)),
           style: TextButton.styleFrom(
               primary: Colors.blue,
               onSurface: Colors.red,
@@ -352,7 +348,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
     ]);
   }
 
-// app bar methods:-----------------------------------------------------------
+  // app bar methods:-----------------------------------------------------------
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       iconTheme: IconThemeData(
@@ -361,6 +357,54 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
       title: Text(
         AppLocalizations.of(context).translate('organization_tv_organizations'),
         style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  // drawer methods:-----------------------------------------------------------
+  Drawer _buildDrawer() {
+    return Drawer(
+      child: ListView(
+        // Important: Remove any padding from the ListView.
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+              margin: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
+              decoration: BoxDecoration(
+                color: Colors.black12,
+                border: Border(
+                    bottom: BorderSide(width: 1.0, color: Colors.black12)),
+              ),
+              child: Stack(children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 15.0, left: 15.0),
+                  child: CircleAvatar(
+                    radius: 50.0,
+                    backgroundImage:
+                    NetworkImage('https://via.placeholder.com/100'),
+                    backgroundColor: Colors.blue.shade500,
+                  ),
+                ),
+                Positioned(
+                    bottom: 12.0,
+                    left: 16.0,
+                    child: Text("John Doe",
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.w500))),
+              ])),
+          ListTile(
+            title: Text('Blogs'),
+            onTap: () {
+              Navigator.pushNamed(context, Routes.home);
+            },
+          ),
+          _buildThemeButton(),
+          _buildLanguageButton(),
+          _buildLogoutButton(),
+        ],
       ),
     );
   }
@@ -484,7 +528,6 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
       child: Card(
         child: ExpansionTile(
             iconColor: _themeStore.darkMode ? Colors.white : Colors.black,
-            initiallyExpanded: true,
             maintainState: true,
             title: Text(
               organizationStore.title!,

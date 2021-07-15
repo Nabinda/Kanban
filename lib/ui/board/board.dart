@@ -9,11 +9,9 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:kanban/stores/board/boardItem_store.dart';
 import 'package:kanban/stores/board/board_list_store.dart';
 import 'package:kanban/stores/board/board_store.dart';
-import 'package:kanban/stores/language/language_store.dart';
 import 'package:kanban/stores/theme/theme_store.dart';
 import 'package:kanban/utils/locale/app_localization.dart';
 import 'package:kanban/widgets/progress_indicator_widget.dart';
-import 'package:material_dialog/material_dialog.dart';
 import 'package:provider/provider.dart';
 
 class BoardScreen extends StatefulWidget {
@@ -25,7 +23,6 @@ class _BoardScreenState extends State<BoardScreen> {
   //stores:---------------------------------------------------------------------
   late BoardListStore _boardListStore;
   late ThemeStore _themeStore;
-  late LanguageStore _languageStore;
   BoardViewController boardViewController = new BoardViewController();
 
   @override
@@ -38,7 +35,6 @@ class _BoardScreenState extends State<BoardScreen> {
     super.didChangeDependencies();
 
     // initializing stores
-    _languageStore = Provider.of<LanguageStore>(context);
     _themeStore = Provider.of<ThemeStore>(context);
     _boardListStore = Provider.of<BoardListStore>(context);
 
@@ -90,10 +86,8 @@ class _BoardScreenState extends State<BoardScreen> {
           _lists.add(
               _createBoardList(_boardListStore.boardList[i], i) as BoardList);
         }
+        // Add empty BoardList with "Add Board" button at the end
         _lists.add(BoardList(
-          // headerBackgroundColor: _themeStore.darkMode
-          //     ? Colors.red
-          //     : Color.fromARGB(255, 235, 236, 240),
           backgroundColor: _themeStore.darkMode
               ? Colors.white70
               : Color.fromARGB(255, 235, 236, 240),
@@ -111,6 +105,7 @@ class _BoardScreenState extends State<BoardScreen> {
                 },
               )),
         ));
+
         return Material(
           child: BoardView(
             lists: _lists,
@@ -123,18 +118,31 @@ class _BoardScreenState extends State<BoardScreen> {
 
   //-------------------------Board List-------------------------
   Widget _createBoardList(BoardStore boardStore, int listIndex) {
+    List<BoardItem> items = [];
+
     if (boardStore.loading) {
-      List<BoardItem> items = [];
       items.add(BoardItem(
-          item: Card(
-              child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text("loading.."),
-      ))));
+        item: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Center(
+                child: Container(
+                    margin: EdgeInsets.all(15.0),
+                    child: SizedBox(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                        ),
+                        height: 20.0,
+                        width: 20.0))),
+          ],
+        ),
+      ));
+
       return BoardList(
         items: items,
         headerBackgroundColor: _themeStore.darkMode
-            ? Colors.red
+            ? Colors.black12
             : Color.fromARGB(255, 235, 236, 240),
         backgroundColor: _themeStore.darkMode
             ? Colors.white70
@@ -154,7 +162,6 @@ class _BoardScreenState extends State<BoardScreen> {
         ],
       );
     } else {
-      List<BoardItem> items = [];
       for (int i = 0; i < boardStore.boardItemList.length; i++) {
         items.add(buildBoardItem(boardStore.boardItemList[i]) as BoardItem);
       }
@@ -196,7 +203,6 @@ class _BoardScreenState extends State<BoardScreen> {
           ],
         );
       } else {
-        List<BoardItem> items = [];
         items.add(BoardItem(
             draggable: false,
             item: Card(
@@ -280,62 +286,5 @@ class _BoardScreenState extends State<BoardScreen> {
     });
 
     return SizedBox.shrink();
-  }
-
-  _buildLanguageDialog() {
-    _showDialog<String>(
-      context: context,
-      child: MaterialDialog(
-        borderRadius: 5.0,
-        enableFullWidth: true,
-        title: Text(
-          AppLocalizations.of(context).translate('home_tv_choose_language'),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-          ),
-        ),
-        headerColor: Theme.of(context).primaryColor,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        closeButtonColor: Colors.white,
-        enableCloseButton: true,
-        enableBackButton: false,
-        onCloseButtonClicked: () {
-          Navigator.of(context).pop();
-        },
-        children: _languageStore.supportedLanguages
-            .map(
-              (object) => ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.all(0.0),
-                title: Text(
-                  object.language!,
-                  style: TextStyle(
-                    color: _languageStore.locale == object.locale
-                        ? Theme.of(context).primaryColor
-                        : _themeStore.darkMode
-                            ? Colors.white
-                            : Colors.black,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  // change user language based on selected locale
-                  _languageStore.changeLanguage(object.locale!);
-                },
-              ),
-            )
-            .toList(),
-      ),
-    );
-  }
-
-  _showDialog<T>({required BuildContext context, required Widget child}) {
-    showDialog<T>(
-      context: context,
-      builder: (BuildContext context) => child,
-    ).then<void>((T? value) {
-      // The value passed to Navigator.pop() or null.
-    });
   }
 }

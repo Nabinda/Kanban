@@ -33,21 +33,33 @@ class Repository {
   final SharedPreferenceHelper _sharedPrefsHelper;
 
   // constructor
-  Repository(this._postApi, this._organizationApi, this._projectApi, this._boardApi, this._boardItemApi, this._sharedPrefsHelper,
+  Repository(
+      this._postApi,
+      this._organizationApi,
+      this._projectApi,
+      this._boardApi,
+      this._boardItemApi,
+      this._sharedPrefsHelper,
       this._postDataSource);
 
   // Post: ---------------------------------------------------------------------
   Future<PostList> getPosts() async {
-    // check to see if posts are present in database, then fetch from database
-    // else make a network call to get all posts, store them into database for
-    // later use
-    return await _postApi.getPosts().then((postsList) {
-      postsList.posts?.forEach((post) {
+    try {
+      PostList postList = await _postDataSource.getPostsFromDb();
+      if (postList.posts!.isNotEmpty) {
+        return postList;
+      }
+
+      postList = await _postApi.getPosts();
+
+      postList.posts?.forEach((post) {
         _postDataSource.insert(post);
       });
 
-      return postsList;
-    }).catchError((error) => throw error);
+      return postList;
+    } catch (e) {
+      throw e;
+    }
   }
 
   Future<List<Post>> findPostById(int id) {
@@ -87,10 +99,13 @@ class Repository {
         .then((organizationsList) => organizationsList)
         .catchError((error) => throw error);
   }
-  Future<Organization> insertOrganization(String title, String description) async{
-       return await _organizationApi.insertOrganizations(title, description)
-            .then((org) => org)
-            .catchError((error) => throw error);
+
+  Future<Organization> insertOrganization(
+      String title, String description) async {
+    return await _organizationApi
+        .insertOrganizations(title, description)
+        .then((org) => org)
+        .catchError((error) => throw error);
   }
 
   // Project: ---------------------------------------------------------------------

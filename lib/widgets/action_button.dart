@@ -28,6 +28,7 @@ class ActionButton extends StatelessWidget {
             child: Row(
               children: [
                 icon,
+                SizedBox(width: 3.0),
                 textWidget,
               ],
             ),

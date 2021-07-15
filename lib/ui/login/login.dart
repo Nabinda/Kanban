@@ -124,16 +124,16 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 8.0, bottom: 25.0),
               decoration: BoxDecoration(
                 color: _themeStore.darkMode ? Colors.grey : Colors.white,
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(4.0),
                 boxShadow: [
                   BoxShadow(
                       color: Colors.black12,
                       offset: Offset(0.0, 1.0),
-                      blurRadius: 3.0),
+                      blurRadius: 1.0),
                   BoxShadow(
                       color: Colors.black12,
                       offset: Offset(0.0, -1.0),
-                      blurRadius: 3.0),
+                      blurRadius: 1.0),
                 ],
               ),
               child: Column(
