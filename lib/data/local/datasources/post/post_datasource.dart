@@ -20,7 +20,17 @@ class PostDataSource {
 
   // DB functions:--------------------------------------------------------------
   Future<int> insert(Post post) async {
-    return await _postsStore.add(_db, post.toMap());
+    final finder = Finder(filter: Filter.byKey(post.id));
+    var temp = await _postsStore.findFirst(
+      _db,
+      finder: finder,
+    );
+
+    if (temp == null) {
+      return await _postsStore.add(_db, post.toMap());
+    } else {
+      return 0;
+    }
   }
 
   Future<int> count() async {
@@ -48,9 +58,8 @@ class PostDataSource {
   }
 
   Future<PostList> getPostsFromDb() async {
-
     // post list
-    var postsList;
+    PostList postsList = PostList();
 
     // fetching data
     final recordSnapshots = await _postsStore.find(
@@ -58,14 +67,14 @@ class PostDataSource {
     );
 
     // Making a List<Post> out of List<RecordSnapshot>
-    if(recordSnapshots.length > 0) {
+    if (recordSnapshots.length > 0) {
       postsList = PostList(
           posts: recordSnapshots.map((snapshot) {
-            final post = Post.fromMap(snapshot.value);
-            // An ID is a key of a record from the database.
-            post.id = snapshot.key;
-            return post;
-          }).toList());
+        Post post = Post.fromMap(snapshot.value);
+        // An ID is a key of a record from the database.
+        post.id = snapshot.key;
+        return post;
+      }).toList());
     }
 
     return postsList;
@@ -95,5 +104,4 @@ class PostDataSource {
       _db,
     );
   }
-
 }

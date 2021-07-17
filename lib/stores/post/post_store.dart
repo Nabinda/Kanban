@@ -1,4 +1,5 @@
 import 'package:kanban/data/repository.dart';
+import 'package:kanban/models/post/post.dart';
 import 'package:kanban/models/post/post_list.dart';
 import 'package:kanban/stores/error/error_store.dart';
 import 'package:kanban/utils/dio/dio_error_util.dart';
@@ -27,7 +28,7 @@ abstract class _PostStore with Store {
       ObservableFuture<PostList?>(emptyPostResponse);
 
   @observable
-  PostList? postList;
+  ObservableList<Post> postList = ObservableList<Post>();
 
   @observable
   bool success = false;
@@ -40,11 +41,33 @@ abstract class _PostStore with Store {
   Future getPosts() async {
     final future = _repository.getPosts();
     fetchPostsFuture = ObservableFuture(future);
-
+    this.postList.clear();
     future.then((postList) {
-      this.postList = postList;
+      if (postList.posts != null) {
+        for (Post post in postList.posts!) {
+          this.postList.add(post);
+        }
+      }
     }).catchError((error) {
       errorStore.errorMessage = DioErrorUtil.handleError(error);
     });
+  }
+
+  @action
+  Future deletePost(Post post) async {
+    final future = _repository.deletePost(post);
+    //deletePostFuture = ObservableFuture(future);
+
+    future.then((postList) {
+      print('Success');
+      print(postList);
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
+  }
+
+  @action
+  Future deleteALL() async {
+    _repository.deleteAll();
   }
 }

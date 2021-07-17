@@ -46,18 +46,22 @@ class Repository {
   Future<PostList> getPosts() async {
     try {
       PostList postList = await _postDataSource.getPostsFromDb();
-      if (postList.posts!.isNotEmpty) {
-        return postList;
+      if (postList.posts != null) {
+        if (postList.posts!.length > 0) {
+          return postList;
+        }
       }
 
       postList = await _postApi.getPosts();
 
       postList.posts?.forEach((post) {
+        print(post.id);
         _postDataSource.insert(post);
       });
 
       return postList;
     } catch (e) {
+      print(e);
       throw e;
     }
   }
@@ -87,8 +91,13 @@ class Repository {
       .then((id) => id)
       .catchError((error) => throw error);
 
-  Future<int> delete(Post post) => _postDataSource
-      .update(post)
+  Future<int> deletePost(Post post) => _postDataSource
+      .delete(post)
+      .then((id) => id)
+      .catchError((error) => throw error);
+
+  Future deleteAll() => _postDataSource
+      .deleteAll()
       .then((id) => id)
       .catchError((error) => throw error);
 

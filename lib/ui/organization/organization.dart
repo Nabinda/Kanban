@@ -72,16 +72,16 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   }
 
   // floating action button methods:-----------------------------------------------------------
-  ExpandableFab _buildFloatingActionButton(){
+  ExpandableFab _buildFloatingActionButton() {
     return ExpandableFab(
       distance: 70.0,
       children: [
         ActionButton(
           onPressed: () => _showBottomSheet(context, 0),
           textWidget:
-          Text("Organization", style: TextStyle(color: Colors.white)),
-          icon: Icon(Icons.supervised_user_circle_outlined,
-              color: Colors.white),
+              Text("Organization", style: TextStyle(color: Colors.white)),
+          icon:
+              Icon(Icons.supervised_user_circle_outlined, color: Colors.white),
         ),
         ActionButton(
           onPressed: () => _showBottomSheet(context, 1),
@@ -99,24 +99,24 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
         builder: (ctx) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter stateSetter) {
-                return Container(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                  child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
-                          child: index == 0
-                              ? _buildCreateOrganizationForm()
-                              : _buildCreateProjectForm(),
-                        ),
-                      ]),
-                );
-              });
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
+                      child: index == 0
+                          ? _buildCreateOrganizationForm()
+                          : _buildCreateProjectForm(),
+                    ),
+                  ]),
+            );
+          });
         });
   }
 
@@ -142,7 +142,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
               OutlinedButton(
                 child: Icon(Icons.close,
                     color:
-                    _themeStore.darkMode ? Colors.white : Colors.black45),
+                        _themeStore.darkMode ? Colors.white : Colors.black45),
                 style: TextButton.styleFrom(
                     primary: Colors.black45,
                     onSurface: Colors.red,
@@ -165,7 +165,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
               inputType: TextInputType.emailAddress,
               icon: Icons.create,
               iconColor:
-              _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+                  _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
               textController: _titleController,
               inputAction: TextInputAction.next,
               autoFocus: false,
@@ -176,7 +176,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                 //  FocusScope.of(context).requestFocus(_passwordFocusNode);
               },
               errorText:
-              _organizationStoreValidation.organizationErrorStore.title,
+                  _organizationStoreValidation.organizationErrorStore.title,
             );
           }),
           SizedBox(
@@ -215,28 +215,28 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
               return _organizationListStore.insertLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(
-                  child: Text('Save New Organization',
-                      style: TextStyle(color: Colors.white)),
-                  style: TextButton.styleFrom(
-                      primary: Colors.blue,
-                      onSurface: Colors.red,
-                      minimumSize: Size(128, 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      )),
-                  onPressed: () {
-                    if (_organizationStoreValidation.canAdd) {
-                      DeviceUtils.hideKeyboard(context);
-                      _organizationListStore.insertOrganizations(
-                          _titleController.text,
-                          _descriptionController.text);
-                      Navigator.of(context).pop();
-                      _titleController.clear();
-                      _descriptionController.clear();
-                    } else {
-                      _showErrorMessage('Please fill in all fields');
-                    }
-                  });
+                      child: Text('Save New Organization',
+                          style: TextStyle(color: Colors.white)),
+                      style: TextButton.styleFrom(
+                          primary: Colors.blue,
+                          onSurface: Colors.red,
+                          minimumSize: Size(128, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          )),
+                      onPressed: () {
+                        if (_organizationStoreValidation.canAdd) {
+                          DeviceUtils.hideKeyboard(context);
+                          _organizationListStore.insertOrganizations(
+                              _titleController.text,
+                              _descriptionController.text);
+                          Navigator.of(context).pop();
+                          _titleController.clear();
+                          _descriptionController.clear();
+                        } else {
+                          _showErrorMessage('Please fill in all fields');
+                        }
+                      });
             },
           )
         ],
@@ -267,7 +267,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                 OutlinedButton(
                   child: Icon(Icons.close,
                       color:
-                      _themeStore.darkMode ? Colors.white : Colors.black45),
+                          _themeStore.darkMode ? Colors.white : Colors.black45),
                   style: TextButton.styleFrom(
                       primary: Colors.black45,
                       onSurface: Colors.red,
@@ -328,7 +328,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
       ),
       ElevatedButton(
           child:
-          Text('Save New Project', style: TextStyle(color: Colors.white)),
+              Text('Save New Project', style: TextStyle(color: Colors.white)),
           style: TextButton.styleFrom(
               primary: Colors.blue,
               onSurface: Colors.red,
@@ -372,7 +372,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
               margin: EdgeInsets.zero,
               padding: EdgeInsets.zero,
               decoration: BoxDecoration(
-                color: Colors.black12,
+                color: _themeStore.darkMode ? Colors.black12 : Colors.blue,
                 border: Border(
                     bottom: BorderSide(width: 1.0, color: Colors.black12)),
               ),
@@ -382,7 +382,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                   child: CircleAvatar(
                     radius: 50.0,
                     backgroundImage:
-                    NetworkImage('https://via.placeholder.com/100'),
+                        NetworkImage('https://via.placeholder.com/100'),
                     backgroundColor: Colors.blue.shade500,
                   ),
                 ),
@@ -391,7 +391,9 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                     left: 16.0,
                     child: Text("John Doe",
                         style: TextStyle(
-                            color: Colors.blue,
+                            color: _themeStore.darkMode
+                                ? Colors.blue
+                                : Colors.white,
                             fontSize: 15.0,
                             fontWeight: FontWeight.w500))),
               ])),

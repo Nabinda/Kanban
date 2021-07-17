@@ -34,13 +34,13 @@ mixin _$PostStore on _PostStore, Store {
   final _$postListAtom = Atom(name: '_PostStore.postList');
 
   @override
-  PostList? get postList {
+  ObservableList<Post> get postList {
     _$postListAtom.reportRead();
     return super.postList;
   }
 
   @override
-  set postList(PostList? value) {
+  set postList(ObservableList<Post> value) {
     _$postListAtom.reportWrite(value, super.postList, () {
       super.postList = value;
     });

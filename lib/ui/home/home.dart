@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar_helper.dart';
 import 'package:kanban/data/sharedpref/constants/preferences.dart';
+import 'package:kanban/models/post/post.dart';
 import 'package:kanban/utils/routes/routes.dart';
 import 'package:kanban/stores/language/language_store.dart';
 import 'package:kanban/stores/post/post_store.dart';
@@ -128,14 +129,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildListView() {
-    return _postStore.postList != null
+    return _postStore.postList.length > 0
         ? ListView.separated(
-            itemCount: _postStore.postList!.posts!.length,
+            itemCount: _postStore.postList.length,
             separatorBuilder: (context, position) {
               return Divider();
             },
             itemBuilder: (context, position) {
-              return _buildListItem(position);
+              return _buildListItem(_postStore.postList[position]);
             },
           )
         : Center(
@@ -145,22 +146,56 @@ class _HomeScreenState extends State<HomeScreen> {
           );
   }
 
-  Widget _buildListItem(int position) {
-    return ListTile(
-      dense: true,
-      leading: Icon(Icons.cloud_circle),
-      title: Text(
-        '${_postStore.postList?.posts?[position].title}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        softWrap: false,
-        style: Theme.of(context).textTheme.headline6,
+  Widget _buildListItem(Post post) {
+    return Dismissible(
+      key: UniqueKey(),
+      background: Container(
+        color: Colors.red,
+        child: Icon(Icons.delete),
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.only(right: 30),
       ),
-      subtitle: Text(
-        '${_postStore.postList?.posts?[position].body}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        softWrap: false,
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (DismissDirection direction) async {
+        return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Confirm"),
+              content: const Text("Are you sure you wish to delete this item?"),
+              actions: <Widget>[
+                GestureDetector(
+                    onTap: () => Navigator.of(context).pop(true),
+                    child: const Text("DELETE")),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(false),
+                  child: const Text("CANCEL"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      onDismissed: (DismissDirection direction) {
+        //TODO: Delete from API and Local Database
+        _postStore.deletePost(post);
+      },
+      child: ListTile(
+        dense: true,
+        leading: Icon(Icons.cloud_circle),
+        title: Text(
+          '${post.id}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          softWrap: false,
+          style: Theme.of(context).textTheme.headline6,
+        ),
+        subtitle: Text(
+          '${post.body}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          softWrap: false,
+        ),
       ),
     );
   }

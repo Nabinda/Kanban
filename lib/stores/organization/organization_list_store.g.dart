@@ -15,6 +15,13 @@ mixin _$OrganizationListStore on _OrganizationListStore, Store {
   bool get loading => (_$loadingComputed ??= Computed<bool>(() => super.loading,
           name: '_OrganizationListStore.loading'))
       .value;
+  Computed<bool>? _$insertLoadingComputed;
+
+  @override
+  bool get insertLoading =>
+      (_$insertLoadingComputed ??= Computed<bool>(() => super.insertLoading,
+              name: '_OrganizationListStore.insertLoading'))
+          .value;
 
   final _$fetchOrganizationsFutureAtom =
       Atom(name: '_OrganizationListStore.fetchOrganizationsFuture');
@@ -64,6 +71,39 @@ mixin _$OrganizationListStore on _OrganizationListStore, Store {
     });
   }
 
+  final _$fetchOrganizationInsertFutureAtom =
+      Atom(name: '_OrganizationListStore.fetchOrganizationInsertFuture');
+
+  @override
+  ObservableFuture<Organization?> get fetchOrganizationInsertFuture {
+    _$fetchOrganizationInsertFutureAtom.reportRead();
+    return super.fetchOrganizationInsertFuture;
+  }
+
+  @override
+  set fetchOrganizationInsertFuture(ObservableFuture<Organization?> value) {
+    _$fetchOrganizationInsertFutureAtom
+        .reportWrite(value, super.fetchOrganizationInsertFuture, () {
+      super.fetchOrganizationInsertFuture = value;
+    });
+  }
+
+  final _$insertSuccessAtom =
+      Atom(name: '_OrganizationListStore.insertSuccess');
+
+  @override
+  bool get insertSuccess {
+    _$insertSuccessAtom.reportRead();
+    return super.insertSuccess;
+  }
+
+  @override
+  set insertSuccess(bool value) {
+    _$insertSuccessAtom.reportWrite(value, super.insertSuccess, () {
+      super.insertSuccess = value;
+    });
+  }
+
   final _$getOrganizationsAsyncAction =
       AsyncAction('_OrganizationListStore.getOrganizations');
 
@@ -96,12 +136,26 @@ mixin _$OrganizationListStore on _OrganizationListStore, Store {
   }
 
   @override
+  void deleteOrganization(int id) {
+    final _$actionInfo = _$_OrganizationListStoreActionController.startAction(
+        name: '_OrganizationListStore.deleteOrganization');
+    try {
+      return super.deleteOrganization(id);
+    } finally {
+      _$_OrganizationListStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 fetchOrganizationsFuture: ${fetchOrganizationsFuture},
 organizationList: ${organizationList},
 success: ${success},
-loading: ${loading}
+fetchOrganizationInsertFuture: ${fetchOrganizationInsertFuture},
+insertSuccess: ${insertSuccess},
+loading: ${loading},
+insertLoading: ${insertLoading}
     ''';
   }
 }
