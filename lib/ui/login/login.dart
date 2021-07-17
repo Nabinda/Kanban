@@ -121,7 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 14.0),
             Container(
-              padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 8.0, bottom: 25.0),
+              padding: EdgeInsets.only(
+                  left: 10.0, right: 10.0, top: 8.0, bottom: 25.0),
               decoration: BoxDecoration(
                 color: _themeStore.darkMode ? Colors.grey : Colors.white,
                 borderRadius: BorderRadius.circular(4.0),
@@ -156,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Observer(
       builder: (context) {
         return TextFieldWidget(
-          textColor: _themeStore.darkMode ? Colors.black : Colors.blue,
+          textColor: Theme.of(context).primaryTextTheme.bodyText2!.color,
           hint: AppLocalizations.of(context).translate('login_et_user_email'),
           inputType: TextInputType.emailAddress,
           icon: Icons.person,
@@ -181,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Observer(
       builder: (context) {
         return TextFieldWidget(
-          textColor: _themeStore.darkMode ? Colors.black : Colors.blue,
+          textColor: Theme.of(context).primaryTextTheme.bodyText2!.color,
           hint:
               AppLocalizations.of(context).translate('login_et_user_password'),
           isObscure: true,

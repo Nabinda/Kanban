@@ -26,16 +26,21 @@ import 'package:kanban/constants/font_family.dart';
 import 'package:flutter/material.dart';
 
 final ThemeData themeData = new ThemeData(
+    primaryTextTheme: TextTheme(
+        bodyText1: TextStyle(color: Colors.blue),
+        bodyText2: TextStyle(color: Colors.blue)),
     fontFamily: FontFamily.productSans,
     brightness: Brightness.light,
     primarySwatch: MaterialColor(AppColors.blue[500]!.value, AppColors.blue),
     primaryColor: AppColors.blue[500],
     primaryColorBrightness: Brightness.light,
     accentColor: AppColors.blue[500],
-    accentColorBrightness: Brightness.light
-);
+    accentColorBrightness: Brightness.light);
 
 final ThemeData themeDataDark = ThemeData(
+  primaryTextTheme: TextTheme(
+      bodyText1: TextStyle(color: Colors.white),
+      bodyText2: TextStyle(color: Colors.black)),
   fontFamily: FontFamily.productSans,
   brightness: Brightness.dark,
   primaryColor: AppColors.blue[900],

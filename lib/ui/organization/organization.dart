@@ -398,7 +398,10 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                             fontWeight: FontWeight.w500))),
               ])),
           ListTile(
-            title: Text('Blogs'),
+            title: Text('Blogs',
+                style: TextStyle(
+                    color:
+                        Theme.of(context).primaryTextTheme.bodyText1!.color)),
             onTap: () {
               Navigator.pushNamed(context, Routes.home);
             },
@@ -418,9 +421,14 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
           onTap: () {
             _themeStore.changeBrightnessToDark(!_themeStore.darkMode);
           },
-          title: Text("Toggle Theme"),
+          title: Text(
+            "Toggle Theme",
+            style: TextStyle(
+                color: Theme.of(context).primaryTextTheme.bodyText1!.color),
+          ),
           trailing: Icon(
             _themeStore.darkMode ? Icons.brightness_5 : Icons.brightness_3,
+            color: Theme.of(context).primaryTextTheme.bodyText1!.color,
           ),
         );
       },
@@ -435,8 +443,11 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
           Navigator.of(context).pushReplacementNamed(Routes.login);
         });
       },
-      title: Text("Log Out"),
-      trailing: Icon(Icons.logout),
+      title: Text("Log Out",
+          style: TextStyle(
+              color: Theme.of(context).primaryTextTheme.bodyText1!.color)),
+      trailing: Icon(Icons.logout,
+          color: Theme.of(context).primaryTextTheme.bodyText1!.color),
     );
   }
 
@@ -445,8 +456,13 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
       onTap: () {
         _buildLanguageDialog();
       },
-      title: Text("Choose Language"),
-      trailing: Icon(Icons.language),
+      title: Text("Choose Language",
+          style: TextStyle(
+              color: Theme.of(context).primaryTextTheme.bodyText1!.color)),
+      trailing: Icon(
+        Icons.language,
+        color: Theme.of(context).primaryTextTheme.bodyText1!.color,
+      ),
     );
   }
 

@@ -102,7 +102,8 @@ class _SignupScreenState extends State<SignupScreen> {
             SizedBox(height: 14.0),
             Container(
               margin: const EdgeInsets.only(top: 120),
-              padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 8.0, bottom: 25.0),
+              padding: EdgeInsets.only(
+                  left: 10.0, right: 10.0, top: 8.0, bottom: 25.0),
               decoration: BoxDecoration(
                 color: _themeStore.darkMode ? Colors.grey : Colors.white,
                 borderRadius: BorderRadius.circular(4.0),
@@ -139,7 +140,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return Observer(
       builder: (context) {
         return TextFieldWidget(
-          textColor: _themeStore.darkMode ? Colors.black : Colors.blue,
+          textColor: Theme.of(context).primaryTextTheme.bodyText2!.color,
           hint: AppLocalizations.of(context).translate('login_et_user_email'),
           inputType: TextInputType.emailAddress,
           icon: Icons.person,
@@ -164,7 +165,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return Observer(
       builder: (context) {
         return TextFieldWidget(
-          textColor: _themeStore.darkMode ? Colors.black : Colors.blue,
+          textColor: Theme.of(context).primaryTextTheme.bodyText2!.color,
           hint:
               AppLocalizations.of(context).translate('signup_et_user_password'),
           isObscure: true,
@@ -187,7 +188,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return Observer(
       builder: (context) {
         return TextFieldWidget(
-          textColor: _themeStore.darkMode ? Colors.black : Colors.blue,
+          textColor: Theme.of(context).primaryTextTheme.bodyText2!.color,
           hint: AppLocalizations.of(context)
               .translate('signup_et_user_confirm_password'),
           isObscure: true,
