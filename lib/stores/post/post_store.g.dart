@@ -82,6 +82,13 @@ mixin _$PostStore on _PostStore, Store {
     return _$deleteAllAsyncAction.run(() => super.deleteAll());
   }
 
+  final _$updatePostAsyncAction = AsyncAction('_PostStore.updatePost');
+
+  @override
+  Future<dynamic> updatePost(Post post) {
+    return _$updatePostAsyncAction.run(() => super.updatePost(post));
+  }
+
   @override
   String toString() {
     return '''

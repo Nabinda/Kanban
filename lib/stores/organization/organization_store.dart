@@ -51,7 +51,7 @@ abstract class _OrganizationStore extends Organization with Store {
     future.then((projectList) {
       if (projectList.projects != null) {
         for (Project project in projectList.projects!) {
-          addProject(project);
+          this.projectList.add(project);
         }
       }
     }).catchError((error) {
@@ -60,7 +60,14 @@ abstract class _OrganizationStore extends Organization with Store {
   }
 
   @action
-  void addProject(Project project) {
-    projectList.add(project);
+  Future<Project> insertProject(int orgId, String title, String description) async {
+    Future<Project> future = _repository.insertProject(orgId, title, description);
+    // fetchOrganizationInsertFuture = ObservableFuture(future);
+    future.then((project) {
+      projectList.add(project);
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
+    return future;
   }
 }

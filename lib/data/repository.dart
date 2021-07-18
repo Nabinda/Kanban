@@ -9,10 +9,13 @@ import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/organization/organization_list.dart';
 import 'package:kanban/models/post/post.dart';
 import 'package:kanban/models/post/post_list.dart';
+import 'package:kanban/models/project/project.dart';
 import 'package:kanban/models/project/project_list.dart';
 import 'package:sembast/sembast.dart';
 
 import 'local/constants/db_constants.dart';
+import 'local/datasources/organization/organization_datasource.dart';
+import 'local/datasources/project/project_datasource.dart';
 import 'network/apis/board/boardItem_api.dart';
 import 'network/apis/board/board_api.dart';
 import 'network/apis/posts/post_api.dart';
@@ -21,6 +24,8 @@ import 'network/apis/projects/project_api.dart';
 class Repository {
   // data source object
   final PostDataSource _postDataSource;
+  final OrganizationDataSource _organizationDataSource;
+  final ProjectDataSource _projectDataSource;
 
   // api objects
   final PostApi _postApi;
@@ -34,13 +39,15 @@ class Repository {
 
   // constructor
   Repository(
-      this._postApi,
-      this._organizationApi,
-      this._projectApi,
-      this._boardApi,
-      this._boardItemApi,
-      this._sharedPrefsHelper,
-      this._postDataSource);
+    this._postApi,
+    this._organizationApi,
+    this._projectApi,
+    this._boardApi,
+    this._boardItemApi,
+    this._sharedPrefsHelper,
+    this._postDataSource,
+    this._organizationDataSource, this._projectDataSource,
+  );
 
   // Post: ---------------------------------------------------------------------
   Future<PostList> getPosts() async {
@@ -53,6 +60,7 @@ class Repository {
       }
 
       postList = await _postApi.getPosts();
+      await _postDataSource.deleteAll();
 
       postList.posts?.forEach((post) {
         _postDataSource.insert(post);
@@ -101,19 +109,52 @@ class Repository {
 
   // Organization: ---------------------------------------------------------------------
   Future<OrganizationList> getOrganizations() async {
-    return await _organizationApi
-        .getOrganizations()
-        .then((organizationsList) => organizationsList)
-        .catchError((error) => throw error);
+    try {
+      OrganizationList organizationList =
+          await _organizationDataSource.getOrganizationsFromDb();
+      if (organizationList.organizations != null) {
+        if (organizationList.organizations!.length > 0) {
+          return organizationList;
+        }
+      }
+      organizationList = await _organizationApi.getOrganizations();
+
+      // deleteAll because key might repeat, which messes up the id field of Organization
+      await _organizationDataSource.deleteAll();
+
+      organizationList.organizations?.forEach((org) {
+        _organizationDataSource.insert(org);
+      });
+      return organizationList;
+    } catch (e) {
+      throw e;
+    }
   }
 
   Future<Organization> insertOrganization(
       String title, String description) async {
-    return await _organizationApi
-        .insertOrganizations(title, description)
-        .then((org) => org)
-        .catchError((error) => throw error);
+    Organization org = Organization();
+    try {
+      org = await _organizationApi.insertOrganizations(title, description);
+      var future = await _organizationDataSource.insert(org);
+      if (future != 0) {
+        return org;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return org;
   }
+
+  Future<int> updateOrganization(Organization org) => _organizationDataSource
+      .update(org)
+      .then((id) => id)
+      .catchError((error) => throw error);
+
+  Future<int> deleteOrganization(Organization org) => _organizationDataSource
+      .delete(org)
+      .then((id) => id)
+      .catchError((error) => throw error);
 
   // Project: ---------------------------------------------------------------------
   Future<ProjectList> getProjects(int organizationId) async {
@@ -122,6 +163,22 @@ class Repository {
         .then((projectsList) => projectsList)
         .catchError((error) => throw error);
   }
+
+  Future<Project> insertProject(int orgId,
+      String title, String description) async {
+    Project project = Project();
+    try {
+      project = await _projectApi.insertProject(orgId, title, description);
+      var future = await _projectDataSource.insert(project);
+      if (future != 0) {
+        return project;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return project;
+  }
+
 
   // Board: ---------------------------------------------------------------------
   Future<BoardList> getBoards(int projectId) async {

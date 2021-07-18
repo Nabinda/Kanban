@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'post_store_validation.dart';
+part of 'project_store_validation.dart';
 
 // **************************************************************************
 // StoreGenerator
@@ -8,15 +8,31 @@ part of 'post_store_validation.dart';
 
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
-mixin _$PostStoreValidation on _PostStoreValidation, Store {
+mixin _$ProjectStoreValidation on _ProjectStoreValidation, Store {
   Computed<bool>? _$canAddComputed;
 
   @override
   bool get canAdd => (_$canAddComputed ??= Computed<bool>(() => super.canAdd,
-          name: '_PostStoreValidation.canAdd'))
+          name: '_ProjectStoreValidation.canAdd'))
       .value;
 
-  final _$titleAtom = Atom(name: '_PostStoreValidation.title');
+  final _$selectedOrgIdAtom =
+      Atom(name: '_ProjectStoreValidation.selectedOrgId');
+
+  @override
+  int? get selectedOrgId {
+    _$selectedOrgIdAtom.reportRead();
+    return super.selectedOrgId;
+  }
+
+  @override
+  set selectedOrgId(int? value) {
+    _$selectedOrgIdAtom.reportWrite(value, super.selectedOrgId, () {
+      super.selectedOrgId = value;
+    });
+  }
+
+  final _$titleAtom = Atom(name: '_ProjectStoreValidation.title');
 
   @override
   String get title {
@@ -31,37 +47,7 @@ mixin _$PostStoreValidation on _PostStoreValidation, Store {
     });
   }
 
-  final _$idAtom = Atom(name: '_PostStoreValidation.id');
-
-  @override
-  int get id {
-    _$idAtom.reportRead();
-    return super.id;
-  }
-
-  @override
-  set id(int value) {
-    _$idAtom.reportWrite(value, super.id, () {
-      super.id = value;
-    });
-  }
-
-  final _$userIdAtom = Atom(name: '_PostStoreValidation.userId');
-
-  @override
-  int get userId {
-    _$userIdAtom.reportRead();
-    return super.userId;
-  }
-
-  @override
-  set userId(int value) {
-    _$userIdAtom.reportWrite(value, super.userId, () {
-      super.userId = value;
-    });
-  }
-
-  final _$descriptionAtom = Atom(name: '_PostStoreValidation.description');
+  final _$descriptionAtom = Atom(name: '_ProjectStoreValidation.description');
 
   @override
   String get description {
@@ -76,7 +62,7 @@ mixin _$PostStoreValidation on _PostStoreValidation, Store {
     });
   }
 
-  final _$successAtom = Atom(name: '_PostStoreValidation.success');
+  final _$successAtom = Atom(name: '_ProjectStoreValidation.success');
 
   @override
   bool get success {
@@ -91,7 +77,7 @@ mixin _$PostStoreValidation on _PostStoreValidation, Store {
     });
   }
 
-  final _$loadingAtom = Atom(name: '_PostStoreValidation.loading');
+  final _$loadingAtom = Atom(name: '_ProjectStoreValidation.loading');
 
   @override
   bool get loading {
@@ -106,81 +92,69 @@ mixin _$PostStoreValidation on _PostStoreValidation, Store {
     });
   }
 
-  final _$_PostStoreValidationActionController =
-      ActionController(name: '_PostStoreValidation');
+  final _$_ProjectStoreValidationActionController =
+      ActionController(name: '_ProjectStoreValidation');
 
   @override
   void validateTitle(String value) {
-    final _$actionInfo = _$_PostStoreValidationActionController.startAction(
-        name: '_PostStoreValidation.validateTitle');
+    final _$actionInfo = _$_ProjectStoreValidationActionController.startAction(
+        name: '_ProjectStoreValidation.validateTitle');
     try {
       return super.validateTitle(value);
     } finally {
-      _$_PostStoreValidationActionController.endAction(_$actionInfo);
+      _$_ProjectStoreValidationActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedOrgId(int? value) {
+    final _$actionInfo = _$_ProjectStoreValidationActionController.startAction(
+        name: '_ProjectStoreValidation.setSelectedOrgId');
+    try {
+      return super.setSelectedOrgId(value);
+    } finally {
+      _$_ProjectStoreValidationActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   void setTitle(String value) {
-    final _$actionInfo = _$_PostStoreValidationActionController.startAction(
-        name: '_PostStoreValidation.setTitle');
+    final _$actionInfo = _$_ProjectStoreValidationActionController.startAction(
+        name: '_ProjectStoreValidation.setTitle');
     try {
       return super.setTitle(value);
     } finally {
-      _$_PostStoreValidationActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setId(int value) {
-    final _$actionInfo = _$_PostStoreValidationActionController.startAction(
-        name: '_PostStoreValidation.setId');
-    try {
-      return super.setId(value);
-    } finally {
-      _$_PostStoreValidationActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setUserId(int value) {
-    final _$actionInfo = _$_PostStoreValidationActionController.startAction(
-        name: '_PostStoreValidation.setUserId');
-    try {
-      return super.setUserId(value);
-    } finally {
-      _$_PostStoreValidationActionController.endAction(_$actionInfo);
+      _$_ProjectStoreValidationActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   void setDescription(String value) {
-    final _$actionInfo = _$_PostStoreValidationActionController.startAction(
-        name: '_PostStoreValidation.setDescription');
+    final _$actionInfo = _$_ProjectStoreValidationActionController.startAction(
+        name: '_ProjectStoreValidation.setDescription');
     try {
       return super.setDescription(value);
     } finally {
-      _$_PostStoreValidationActionController.endAction(_$actionInfo);
+      _$_ProjectStoreValidationActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   void validateDescription(String value) {
-    final _$actionInfo = _$_PostStoreValidationActionController.startAction(
-        name: '_PostStoreValidation.validateDescription');
+    final _$actionInfo = _$_ProjectStoreValidationActionController.startAction(
+        name: '_ProjectStoreValidation.validateDescription');
     try {
       return super.validateDescription(value);
     } finally {
-      _$_PostStoreValidationActionController.endAction(_$actionInfo);
+      _$_ProjectStoreValidationActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   String toString() {
     return '''
+selectedOrgId: ${selectedOrgId},
 title: ${title},
-id: ${id},
-userId: ${userId},
 description: ${description},
 success: ${success},
 loading: ${loading},
@@ -189,16 +163,16 @@ canAdd: ${canAdd}
   }
 }
 
-mixin _$PostErrorStore on _PostErrorStore, Store {
+mixin _$ProjectErrorStore on _ProjectErrorStore, Store {
   Computed<bool>? _$hasErrorsValidationComputed;
 
   @override
   bool get hasErrorsValidation => (_$hasErrorsValidationComputed ??=
           Computed<bool>(() => super.hasErrorsValidation,
-              name: '_PostErrorStore.hasErrorsValidation'))
+              name: '_ProjectErrorStore.hasErrorsValidation'))
       .value;
 
-  final _$titleAtom = Atom(name: '_PostErrorStore.title');
+  final _$titleAtom = Atom(name: '_ProjectErrorStore.title');
 
   @override
   String? get title {
@@ -213,7 +187,7 @@ mixin _$PostErrorStore on _PostErrorStore, Store {
     });
   }
 
-  final _$descriptionAtom = Atom(name: '_PostErrorStore.description');
+  final _$descriptionAtom = Atom(name: '_ProjectErrorStore.description');
 
   @override
   String? get description {

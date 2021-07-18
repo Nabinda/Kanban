@@ -116,34 +116,36 @@ mixin _$OrganizationListStore on _OrganizationListStore, Store {
       AsyncAction('_OrganizationListStore.insertOrganizations');
 
   @override
-  Future<dynamic> insertOrganizations(String title, String description) {
+  Future<Organization> insertOrganizations(String title, String description) {
     return _$insertOrganizationsAsyncAction
         .run(() => super.insertOrganizations(title, description));
   }
 
-  final _$_OrganizationListStoreActionController =
-      ActionController(name: '_OrganizationListStore');
+  final _$deleteOrganizationAsyncAction =
+      AsyncAction('_OrganizationListStore.deleteOrganization');
 
   @override
-  void addOrganization(Organization org) {
-    final _$actionInfo = _$_OrganizationListStoreActionController.startAction(
-        name: '_OrganizationListStore.addOrganization');
-    try {
-      return super.addOrganization(org);
-    } finally {
-      _$_OrganizationListStoreActionController.endAction(_$actionInfo);
-    }
+  Future<dynamic> deleteOrganization(Organization org) {
+    return _$deleteOrganizationAsyncAction
+        .run(() => super.deleteOrganization(org));
   }
 
+  final _$updateOrganizationAsyncAction =
+      AsyncAction('_OrganizationListStore.updateOrganization');
+
   @override
-  void deleteOrganization(int id) {
-    final _$actionInfo = _$_OrganizationListStoreActionController.startAction(
-        name: '_OrganizationListStore.deleteOrganization');
-    try {
-      return super.deleteOrganization(id);
-    } finally {
-      _$_OrganizationListStoreActionController.endAction(_$actionInfo);
-    }
+  Future<dynamic> updateOrganization(Organization org) {
+    return _$updateOrganizationAsyncAction
+        .run(() => super.updateOrganization(org));
+  }
+
+  final _$insertProjectAsyncAction =
+      AsyncAction('_OrganizationListStore.insertProject');
+
+  @override
+  Future<Project> insertProject(int orgId, String title, String description) {
+    return _$insertProjectAsyncAction
+        .run(() => super.insertProject(orgId, title, description));
   }
 
   @override

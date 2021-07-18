@@ -44,7 +44,6 @@ class OrganizationApi {
 
       return await Future.delayed(Duration(seconds: 1), () => organizationList);
     } catch (e) {
-      print(e.toString());
       throw e;
     }
   }
@@ -62,7 +61,6 @@ class OrganizationApi {
 
       return await Future.delayed(Duration(seconds: 2), () => org);
     } catch (e) {
-      print(e.toString());
       throw e;
     }
   }

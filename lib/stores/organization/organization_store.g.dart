@@ -70,18 +70,13 @@ mixin _$OrganizationStore on _OrganizationStore, Store {
     return _$getProjectsAsyncAction.run(() => super.getProjects(orgId));
   }
 
-  final _$_OrganizationStoreActionController =
-      ActionController(name: '_OrganizationStore');
+  final _$insertProjectAsyncAction =
+      AsyncAction('_OrganizationStore.insertProject');
 
   @override
-  void addProject(Project project) {
-    final _$actionInfo = _$_OrganizationStoreActionController.startAction(
-        name: '_OrganizationStore.addProject');
-    try {
-      return super.addProject(project);
-    } finally {
-      _$_OrganizationStoreActionController.endAction(_$actionInfo);
-    }
+  Future<Project> insertProject(int orgId, String title, String description) {
+    return _$insertProjectAsyncAction
+        .run(() => super.insertProject(orgId, title, description));
   }
 
   @override

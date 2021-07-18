@@ -43,12 +43,25 @@ class ProjectApi {
           .where((item) => item.organizationId == organizationId)
           .toList();
 
-      ProjectList organizationList =
-          ProjectList(projects: filteredProjects);
+      ProjectList organizationList = ProjectList(projects: filteredProjects);
 
       return await Future.delayed(Duration(seconds: 2), () => organizationList);
     } catch (e) {
-      print(e.toString());
+      throw e;
+    }
+  }
+
+  Future<Project> insertProject(
+      int orgId, String title, String description) async {
+    try {
+      Project project = new Project(
+          id: DateTime.now().millisecond,
+          title: title,
+          description: description,
+          organizationId: orgId);
+
+      return await Future.delayed(Duration(seconds: 2), () => project);
+    } catch (e) {
       throw e;
     }
   }

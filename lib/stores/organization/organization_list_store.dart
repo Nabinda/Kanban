@@ -1,6 +1,7 @@
 import 'package:kanban/data/repository.dart';
 import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/organization/organization_list.dart';
+import 'package:kanban/models/project/project.dart';
 import 'package:kanban/stores/error/error_store.dart';
 import 'package:kanban/stores/organization/organization_store.dart';
 import 'package:kanban/utils/dio/dio_error_util.dart';
@@ -61,8 +62,14 @@ abstract class _OrganizationListStore with Store {
     organizationList.clear();
     future.then((organizationList) {
       if (organizationList.organizations != null) {
-        for (Organization organization in organizationList.organizations!) {
-          addOrganization(organization);
+        for (Organization org in organizationList.organizations!) {
+          OrganizationStore organizationStore = OrganizationStore(_repository,
+              userId: org.userId,
+              id: org.id,
+              title: org.title,
+              description: org.description);
+          this.organizationList.add(organizationStore);
+          organizationStore.getProjects(org.id!);
         }
       }
     }).catchError((error) {
@@ -71,29 +78,51 @@ abstract class _OrganizationListStore with Store {
   }
 
   @action
-  Future insertOrganizations(String title, String description) async {
-    final future = _repository.insertOrganization(title, description);
+  Future<Organization> insertOrganizations(String title, String description) async {
+    Future<Organization> future = _repository.insertOrganization(title, description);
     fetchOrganizationInsertFuture = ObservableFuture(future);
-    future.then((organization) {
-      addOrganization(organization);
+    future.then((org) {
+      OrganizationStore organizationStore = OrganizationStore(_repository,
+          userId: org.userId,
+          id: org.id,
+          title: org.title,
+          description: org.description);
+      this.organizationList.add(organizationStore);
+      organizationStore.getProjects(org.id!);
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
+    return future;
+  }
+
+  @action
+  Future deleteOrganization(Organization org) async {
+    final future = _repository.deleteOrganization(org);
+    //deletePostFuture = ObservableFuture(future);
+    future.then((item) {
+      this.organizationList.removeWhere((orgItem) => orgItem.id==org.id);
     }).catchError((error) {
       errorStore.errorMessage = DioErrorUtil.handleError(error);
     });
   }
 
   @action
-  void addOrganization(Organization org) {
-    OrganizationStore organizationStore = OrganizationStore(_repository,
-        userId: org.userId,
-        id: org.id,
-        title: org.title,
-        description: org.description);
-    organizationList.add(organizationStore);
-    organizationStore.getProjects(org.id!);
+  Future updateOrganization(Organization org) async {
+    final future = _repository.updateOrganization(org);
+    // fetchPostsFuture = ObservableFuture(future);
+    future.then((orgItem) {
+      Organization upOrg =
+      this.organizationList.firstWhere((postItem) => postItem.id == org.id);
+      int index = this.organizationList.indexOf(upOrg);
+      // this.organizationList[index] = org;
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
   }
 
   @action
-  void deleteOrganization(int id) {
-    organizationList.removeWhere((org) => org.id==id);
+  Future<Project> insertProject(int orgId, String title, String description) async {
+    OrganizationStore organizationStore = this.organizationList.firstWhere((element) => element.id == orgId);
+    return organizationStore.insertProject(orgId, title, description);
   }
 }

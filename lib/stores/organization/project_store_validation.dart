@@ -1,15 +1,15 @@
 import 'package:mobx/mobx.dart';
-part 'organization_store_validation.g.dart';
+part 'project_store_validation.g.dart';
 
-class OrganizationStoreValidation = _OrganizationStoreValidation
-    with _$OrganizationStoreValidation;
+class ProjectStoreValidation = _ProjectStoreValidation
+    with _$ProjectStoreValidation;
 
-abstract class _OrganizationStoreValidation with Store {
+abstract class _ProjectStoreValidation with Store {
   // store for handling form errors
-  final OrganizationErrorStore organizationErrorStore =
-      OrganizationErrorStore();
+  ProjectErrorStore projectErrorStore =
+  ProjectErrorStore();
 
-  _OrganizationStoreValidation() {
+  _ProjectStoreValidation() {
     _setupValidations();
   }
 
@@ -25,6 +25,9 @@ abstract class _OrganizationStoreValidation with Store {
 
   // store variables:-----------------------------------------------------------
   @observable
+  int? selectedOrgId;
+
+  @observable
   String title = '';
 
   @observable
@@ -38,20 +41,25 @@ abstract class _OrganizationStoreValidation with Store {
 
   @computed
   bool get canAdd =>
-      !organizationErrorStore.hasErrorsValidation &&
-      title.isNotEmpty &&
-      description.isNotEmpty;
+      !projectErrorStore.hasErrorsValidation &&
+          title.isNotEmpty &&
+          description.isNotEmpty;
 
   // actions:-------------------------------------------------------------------
   @action
   void validateTitle(String value) {
     if (value.isEmpty) {
-      organizationErrorStore.title = "Title can't be empty";
+      projectErrorStore.title = "Title can't be empty";
     } else if (value.length <= 10) {
-      organizationErrorStore.title = "Title is short";
+      projectErrorStore.title = "Title is short";
     } else {
-      organizationErrorStore.title = null;
+      projectErrorStore.title = null;
     }
+  }
+
+  @action
+  void setSelectedOrgId(int? value) {
+    this.selectedOrgId = value;
   }
 
   @action
@@ -67,9 +75,9 @@ abstract class _OrganizationStoreValidation with Store {
   @action
   void validateDescription(String value) {
     if (value.isEmpty) {
-      organizationErrorStore.description = "Description can't be empty";
+      projectErrorStore.description = "Description can't be empty";
     } else {
-      organizationErrorStore.description = null;
+      projectErrorStore.description = null;
     }
   }
 
@@ -91,10 +99,10 @@ abstract class _OrganizationStoreValidation with Store {
   }
 }
 
-class OrganizationErrorStore = _OrganizationErrorStore
-    with _$OrganizationErrorStore;
+class ProjectErrorStore = _ProjectErrorStore
+    with _$ProjectErrorStore;
 
-abstract class _OrganizationErrorStore with Store {
+abstract class _ProjectErrorStore with Store {
   @observable
   String? title;
 

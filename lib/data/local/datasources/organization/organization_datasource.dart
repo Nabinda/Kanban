@@ -50,10 +50,8 @@ class OrganizationDataSource {
   }
 
   Future<OrganizationList> getOrganizationsFromDb() async {
-    print('Loading from database');
-
     // organization list
-    var organizationList;
+    OrganizationList organizationList = OrganizationList();
 
     // fetching data
     final recordSnapshots = await _organizationsStore.find(

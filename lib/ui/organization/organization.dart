@@ -2,12 +2,14 @@ import 'package:another_flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:kanban/data/sharedpref/constants/preferences.dart';
+import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/project/project.dart';
 import 'package:kanban/stores/board/board_list_store.dart';
 import 'package:kanban/stores/language/language_store.dart';
 import 'package:kanban/stores/organization/organization_list_store.dart';
 import 'package:kanban/stores/organization/organization_store.dart';
 import 'package:kanban/stores/organization/organization_store_validation.dart';
+import 'package:kanban/stores/organization/project_store_validation.dart';
 import 'package:kanban/stores/theme/theme_store.dart';
 import 'package:kanban/utils/device/device_utils.dart';
 import 'package:kanban/utils/locale/app_localization.dart';
@@ -31,6 +33,9 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   late OrganizationListStore _organizationListStore;
   late OrganizationStoreValidation _organizationStoreValidation =
       new OrganizationStoreValidation();
+  late ProjectStoreValidation _projectStoreValidation =
+      new ProjectStoreValidation();
+
   late ThemeStore _themeStore;
   late LanguageStore _languageStore;
   late BoardListStore _boardListStore;
@@ -38,7 +43,8 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
 
-  String selectedOrganization = "1";
+  TextEditingController _projectTitleController = TextEditingController();
+  TextEditingController _projectDescriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -83,11 +89,16 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
           icon:
               Icon(Icons.supervised_user_circle_outlined, color: Colors.white),
         ),
-        ActionButton(
-          onPressed: () => _showBottomSheet(context, 1),
-          textWidget: Text("Project", style: TextStyle(color: Colors.white)),
-          icon: Icon(Icons.table_chart_outlined, color: Colors.white),
-        ),
+        Observer(builder: (context) {
+          return _organizationListStore.organizationList.length > 0
+              ? ActionButton(
+                  onPressed: () => _showBottomSheet(context, 1),
+                  textWidget:
+                      Text("Project", style: TextStyle(color: Colors.white)),
+                  icon: Icon(Icons.table_chart_outlined, color: Colors.white),
+                )
+              : SizedBox();
+        }),
       ],
     );
   }
@@ -224,15 +235,17 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           )),
-                      onPressed: () {
+                      onPressed: () async {
                         if (_organizationStoreValidation.canAdd) {
                           DeviceUtils.hideKeyboard(context);
-                          _organizationListStore.insertOrganizations(
+                          await _organizationListStore.insertOrganizations(
                               _titleController.text,
                               _descriptionController.text);
-                          Navigator.of(context).pop();
+
+                          _organizationStoreValidation.reset();
                           _titleController.clear();
                           _descriptionController.clear();
+                          Navigator.of(context).pop();
                         } else {
                           _showErrorMessage('Please fill in all fields');
                         }
@@ -245,10 +258,12 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   }
 
   Widget _buildCreateProjectForm() {
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-        child: Column(
+    _projectStoreValidation
+        .setSelectedOrgId(_organizationListStore.organizationList[0].id);
+    return Container(
+      padding: EdgeInsets.only(left: 15.0, right: 15.0),
+      child: Column(children: [
+        Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -294,26 +309,24 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                 SizedBox(
                   width: 17.0,
                 ),
-                DropdownButton<String>(
-                  iconEnabledColor: Colors.white,
-                  dropdownColor: Colors.white,
-                  style: TextStyle(),
-                  items: _organizationListStore.organizationList
-                      .map((dropdownItem) {
-                    //TODO: Change State
-                    print(dropdownItem.title);
-                    return DropdownMenuItem<String>(
-                      value: dropdownItem.id.toString(),
-                      child: Text(dropdownItem.title!,
-                          style: TextStyle(color: Colors.blue)),
-                    );
-                  }).toList(),
-                  value: selectedOrganization,
-                  onChanged: (newVal) {
-                    setState(() {
-                      selectedOrganization = newVal!;
-                    });
-                  },
+                Observer(
+                  builder: (context) => DropdownButton<String>(
+                    value: _projectStoreValidation.selectedOrgId.toString(),
+                    iconEnabledColor: Colors.white,
+                    dropdownColor: Colors.white,
+                    items: _organizationListStore.organizationList
+                        .map((dropdownItem) {
+                      return DropdownMenuItem<String>(
+                        value: dropdownItem.id.toString(),
+                        child: Text(dropdownItem.title!,
+                            style: TextStyle(color: Colors.blue)),
+                      );
+                    }).toList(),
+                    onChanged: (newVal) {
+                      _projectStoreValidation
+                          .setSelectedOrgId(int.parse(newVal!));
+                    },
+                  ),
                 ),
               ],
             ),
@@ -322,30 +335,83 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
             ),
           ],
         ),
-      ),
-      SizedBox(
-        height: 40.0,
-      ),
-      ElevatedButton(
-          child:
-              Text('Save New Project', style: TextStyle(color: Colors.white)),
-          style: TextButton.styleFrom(
-              primary: Colors.blue,
-              onSurface: Colors.red,
-              minimumSize: Size(128, 40),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-              )),
-          onPressed: () {
-            if (_organizationStoreValidation.canAdd) {
-              DeviceUtils.hideKeyboard(context);
-              _organizationListStore.insertOrganizations(
-                  _titleController.text, _descriptionController.text);
-            } else {
-              _showErrorMessage('Please fill in all fields');
-            }
-          }),
-    ]);
+        Observer(builder: (context) {
+          return TextFieldWidget(
+            hint:
+                AppLocalizations.of(context).translate('project_tv_title'),
+            inputType: TextInputType.emailAddress,
+            icon: Icons.create,
+            iconColor:
+                _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+            textController: _projectTitleController,
+            inputAction: TextInputAction.next,
+            autoFocus: false,
+            onChanged: (value) {
+              _projectStoreValidation.setTitle(_projectTitleController.text);
+            },
+            onFieldSubmitted: (value) {
+              //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+            },
+            errorText:
+                _projectStoreValidation.projectErrorStore.title,
+          );
+        }),
+        SizedBox(
+          height: 20.0,
+        ),
+        Observer(
+          builder: (context) {
+            return TextFieldWidget(
+              hint: AppLocalizations.of(context)
+                  .translate('project_tv_description'),
+              inputType: TextInputType.emailAddress,
+              icon: Icons.wysiwyg_outlined,
+              iconColor:
+                  _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+              textController: _projectDescriptionController,
+              inputAction: TextInputAction.next,
+              autoFocus: false,
+              onChanged: (value) {
+                _projectStoreValidation
+                    .setDescription(_projectDescriptionController.text);
+              },
+              onFieldSubmitted: (value) {
+                //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+              },
+              errorText: _projectStoreValidation
+                  .projectErrorStore.description,
+            );
+          },
+        ),
+        SizedBox(
+          height: 40.0,
+        ),
+        ElevatedButton(
+            child:
+                Text('Save New Project', style: TextStyle(color: Colors.white)),
+            style: TextButton.styleFrom(
+                primary: Colors.blue,
+                onSurface: Colors.red,
+                minimumSize: Size(128, 40),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                )),
+            onPressed: () async {
+              // if (_projectStoreValidation.canAdd) {
+              //   DeviceUtils.hideKeyboard(context);
+              //   await _organizationListStore.insertProject(_projectStoreValidation.selectedOrgId!,
+              //         _projectTitleController.text, _projectDescriptionController.text);
+              //
+              //   _projectStoreValidation.reset();
+              //   _projectTitleController.clear();
+              //   _projectDescriptionController.clear();
+              //   Navigator.of(context).pop();
+              // } else {
+              //   _showErrorMessage('Please fill in all fields');
+              // }
+            }),
+      ]),
+    );
   }
 
   // app bar methods:-----------------------------------------------------------
@@ -529,10 +595,16 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
               actions: <Widget>[
                 GestureDetector(
                     onTap: () => Navigator.of(context).pop(true),
-                    child: const Text("DELETE")),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Text("DELETE"),
+                    )),
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(false),
-                  child: const Text("CANCEL"),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: const Text("CANCEL"),
+                  ),
                 ),
               ],
             );
@@ -540,8 +612,12 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
         );
       },
       onDismissed: (DismissDirection direction) {
-        //TODO: Delete from API and Local Database
-        _organizationListStore.deleteOrganization(organizationStore.id!);
+        Organization org = Organization(
+            id: organizationStore.id,
+            title: organizationStore.title,
+            description: organizationStore.description,
+            userId: organizationStore.userId);
+        _organizationListStore.deleteOrganization(org);
       },
       child: Card(
         child: ExpansionTile(
