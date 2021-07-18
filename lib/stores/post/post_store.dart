@@ -57,17 +57,27 @@ abstract class _PostStore with Store {
   Future deletePost(Post post) async {
     final future = _repository.deletePost(post);
     //deletePostFuture = ObservableFuture(future);
-
-    future.then((postList) {
-      print('Success');
-      print(postList);
-    }).catchError((error) {
+    future.then((postList) {}).catchError((error) {
       errorStore.errorMessage = DioErrorUtil.handleError(error);
     });
   }
 
   @action
-  Future deleteALL() async {
+  Future deleteAll() async {
     _repository.deleteAll();
+  }
+
+  @action
+  Future updatePost(Post post) async {
+    final future = _repository.updatePost(post);
+    // fetchPostsFuture = ObservableFuture(future);
+    future.then((postList) {
+      Post upPost =
+          this.postList.firstWhere((postItem) => postItem.id == post.id);
+      int index = this.postList.indexOf(upPost);
+      this.postList[index] = post;
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
   }
 }

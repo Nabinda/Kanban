@@ -55,13 +55,11 @@ class Repository {
       postList = await _postApi.getPosts();
 
       postList.posts?.forEach((post) {
-        print(post.id);
         _postDataSource.insert(post);
       });
 
       return postList;
     } catch (e) {
-      print(e);
       throw e;
     }
   }
@@ -86,7 +84,7 @@ class Repository {
       .then((id) => id)
       .catchError((error) => throw error);
 
-  Future<int> update(Post post) => _postDataSource
+  Future<int> updatePost(Post post) => _postDataSource
       .update(post)
       .then((id) => id)
       .catchError((error) => throw error);

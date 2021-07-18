@@ -7,7 +7,7 @@ class TextFieldWidget extends StatelessWidget {
   final bool isObscure;
   final bool isIcon;
   final TextInputType? inputType;
-  final TextEditingController textController;
+  final TextEditingController? textController;
   final EdgeInsets padding;
   final Color hintColor;
   final Color iconColor;
@@ -17,6 +17,7 @@ class TextFieldWidget extends StatelessWidget {
   final bool autoFocus;
   final TextInputAction? inputAction;
   final Color? textColor;
+  final String? initValue;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +33,7 @@ class TextFieldWidget extends StatelessWidget {
         obscureText: this.isObscure,
         maxLength: 25,
         keyboardType: this.inputType,
+        initialValue: initValue,
         style: TextStyle(color: textColor),
         decoration: InputDecoration(
             enabledBorder: UnderlineInputBorder(
@@ -59,7 +61,7 @@ class TextFieldWidget extends StatelessWidget {
     Key? key,
     required this.icon,
     required this.errorText,
-    required this.textController,
+    this.textController,
     this.inputType,
     this.hint,
     this.textColor,
@@ -73,5 +75,6 @@ class TextFieldWidget extends StatelessWidget {
     this.onChanged,
     this.autoFocus = false,
     this.inputAction,
+    this.initValue
   }) : super(key: key);
 }
