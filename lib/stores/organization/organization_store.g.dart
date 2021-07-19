@@ -15,6 +15,13 @@ mixin _$OrganizationStore on _OrganizationStore, Store {
   bool get loading => (_$loadingComputed ??= Computed<bool>(() => super.loading,
           name: '_OrganizationStore.loading'))
       .value;
+  Computed<bool>? _$insertLoadingComputed;
+
+  @override
+  bool get insertLoading =>
+      (_$insertLoadingComputed ??= Computed<bool>(() => super.insertLoading,
+              name: '_OrganizationStore.insertLoading'))
+          .value;
 
   final _$fetchProjectFutureAtom =
       Atom(name: '_OrganizationStore.fetchProjectFuture');
@@ -62,6 +69,38 @@ mixin _$OrganizationStore on _OrganizationStore, Store {
     });
   }
 
+  final _$fetchProjectInsertFutureAtom =
+      Atom(name: '_OrganizationStore.fetchProjectInsertFuture');
+
+  @override
+  ObservableFuture<Project?> get fetchProjectInsertFuture {
+    _$fetchProjectInsertFutureAtom.reportRead();
+    return super.fetchProjectInsertFuture;
+  }
+
+  @override
+  set fetchProjectInsertFuture(ObservableFuture<Project?> value) {
+    _$fetchProjectInsertFutureAtom
+        .reportWrite(value, super.fetchProjectInsertFuture, () {
+      super.fetchProjectInsertFuture = value;
+    });
+  }
+
+  final _$insertSuccessAtom = Atom(name: '_OrganizationStore.insertSuccess');
+
+  @override
+  bool get insertSuccess {
+    _$insertSuccessAtom.reportRead();
+    return super.insertSuccess;
+  }
+
+  @override
+  set insertSuccess(bool value) {
+    _$insertSuccessAtom.reportWrite(value, super.insertSuccess, () {
+      super.insertSuccess = value;
+    });
+  }
+
   final _$getProjectsAsyncAction =
       AsyncAction('_OrganizationStore.getProjects');
 
@@ -85,7 +124,10 @@ mixin _$OrganizationStore on _OrganizationStore, Store {
 fetchProjectFuture: ${fetchProjectFuture},
 success: ${success},
 projectList: ${projectList},
-loading: ${loading}
+fetchProjectInsertFuture: ${fetchProjectInsertFuture},
+insertSuccess: ${insertSuccess},
+loading: ${loading},
+insertLoading: ${insertLoading}
     ''';
   }
 }

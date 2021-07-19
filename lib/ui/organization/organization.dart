@@ -83,7 +83,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
       distance: 70.0,
       children: [
         ActionButton(
-          onPressed: () => _showBottomSheet(context, 0),
+          onPressed: () => _showOrganizationBottomSheet(context),
           textWidget:
               Text("Organization", style: TextStyle(color: Colors.white)),
           icon:
@@ -92,7 +92,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
         Observer(builder: (context) {
           return _organizationListStore.organizationList.length > 0
               ? ActionButton(
-                  onPressed: () => _showBottomSheet(context, 1),
+                  onPressed: () => _showProjectBottomSheet(context),
                   textWidget:
                       Text("Project", style: TextStyle(color: Colors.white)),
                   icon: Icon(Icons.table_chart_outlined, color: Colors.white),
@@ -103,7 +103,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
     );
   }
 
-  void _showBottomSheet(BuildContext context, int index) {
+  void _showOrganizationBottomSheet(BuildContext context) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -121,9 +121,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                     Padding(
                       padding: const EdgeInsets.only(
                           top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
-                      child: index == 0
-                          ? _buildCreateOrganizationForm()
-                          : _buildCreateProjectForm(),
+                      child: _buildCreateOrganizationForm(),
                     ),
                   ]),
             );
@@ -257,9 +255,33 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
     );
   }
 
-  Widget _buildCreateProjectForm() {
-    _projectStoreValidation
-        .setSelectedOrgId(_organizationListStore.organizationList[0].id);
+  void _showProjectBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (ctx) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter stateSetter) {
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
+                      child: _buildCreateProjectForm(ctx),
+                    ),
+                  ]),
+            );
+          });
+        });
+  }
+
+  Widget _buildCreateProjectForm(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(left: 15.0, right: 15.0),
       child: Column(children: [
@@ -337,8 +359,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
         ),
         Observer(builder: (context) {
           return TextFieldWidget(
-            hint:
-                AppLocalizations.of(context).translate('project_tv_title'),
+            hint: AppLocalizations.of(context).translate('project_tv_title'),
             inputType: TextInputType.emailAddress,
             icon: Icons.create,
             iconColor:
@@ -352,8 +373,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
             onFieldSubmitted: (value) {
               //  FocusScope.of(context).requestFocus(_passwordFocusNode);
             },
-            errorText:
-                _projectStoreValidation.projectErrorStore.title,
+            errorText: _projectStoreValidation.projectErrorStore.title,
           );
         }),
         SizedBox(
@@ -378,8 +398,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
               onFieldSubmitted: (value) {
                 //  FocusScope.of(context).requestFocus(_passwordFocusNode);
               },
-              errorText: _projectStoreValidation
-                  .projectErrorStore.description,
+              errorText: _projectStoreValidation.projectErrorStore.description,
             );
           },
         ),
@@ -397,18 +416,20 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                   borderRadius: BorderRadius.circular(18.0),
                 )),
             onPressed: () async {
-              // if (_projectStoreValidation.canAdd) {
-              //   DeviceUtils.hideKeyboard(context);
-              //   await _organizationListStore.insertProject(_projectStoreValidation.selectedOrgId!,
-              //         _projectTitleController.text, _projectDescriptionController.text);
-              //
-              //   _projectStoreValidation.reset();
-              //   _projectTitleController.clear();
-              //   _projectDescriptionController.clear();
-              //   Navigator.of(context).pop();
-              // } else {
-              //   _showErrorMessage('Please fill in all fields');
-              // }
+              if (_projectStoreValidation.canAdd) {
+                DeviceUtils.hideKeyboard(context);
+                await _organizationListStore.insertProject(
+                    _projectStoreValidation.selectedOrgId,
+                    _projectTitleController.text,
+                    _projectDescriptionController.text);
+
+                _projectStoreValidation.reset();
+                _projectTitleController.clear();
+                _projectDescriptionController.clear();
+                Navigator.of(context).pop();
+              } else {
+                _showErrorMessage('Please fill in all fields');
+              }
             }),
       ]),
     );
@@ -554,6 +575,8 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   }
 
   Widget _buildProjectsExpansion() {
+    _projectStoreValidation
+        .setSelectedOrgId(_organizationListStore.organizationList[0].id!);
     return _organizationListStore.organizationList.length != 0
         ? ListView.builder(
             scrollDirection: Axis.vertical,

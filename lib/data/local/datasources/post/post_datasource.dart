@@ -20,7 +20,7 @@ class PostDataSource {
 
   // DB functions:--------------------------------------------------------------
   Future<int> insert(Post post) async {
-    final finder = Finder(filter: Filter.byKey(post.id));
+    final finder = Finder(filter: Filter.equals("id", post.id));
     var temp = await _postsStore.findFirst(
       _db,
       finder: finder,

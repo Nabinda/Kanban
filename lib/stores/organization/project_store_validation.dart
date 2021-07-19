@@ -25,7 +25,7 @@ abstract class _ProjectStoreValidation with Store {
 
   // store variables:-----------------------------------------------------------
   @observable
-  int? selectedOrgId;
+  int selectedOrgId = 0;
 
   @observable
   String title = '';
@@ -58,7 +58,7 @@ abstract class _ProjectStoreValidation with Store {
   }
 
   @action
-  void setSelectedOrgId(int? value) {
+  void setSelectedOrgId(int value) {
     this.selectedOrgId = value;
   }
 

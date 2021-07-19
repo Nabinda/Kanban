@@ -43,11 +43,26 @@ abstract class _OrganizationStore extends Organization with Store {
   @observable
   ObservableList<Project> projectList = ObservableList<Project>();
 
+  // store variables:-----------------------------------------------------------
+  static ObservableFuture<Project?> emptyProjectInsertResponse =
+  ObservableFuture.value(null);
+
+  @observable
+  ObservableFuture<Project?> fetchProjectInsertFuture =
+  ObservableFuture<Project?>(emptyProjectInsertResponse);
+
+  @observable
+  bool insertSuccess = false;
+
+  @computed
+  bool get insertLoading => fetchProjectInsertFuture.status == FutureStatus.pending;
+
   @action
   Future getProjects(int orgId) async {
     final future = _repository.getProjects(orgId);
     fetchProjectFuture = ObservableFuture(future);
 
+    projectList.clear();
     future.then((projectList) {
       if (projectList.projects != null) {
         for (Project project in projectList.projects!) {
@@ -62,7 +77,7 @@ abstract class _OrganizationStore extends Organization with Store {
   @action
   Future<Project> insertProject(int orgId, String title, String description) async {
     Future<Project> future = _repository.insertProject(orgId, title, description);
-    // fetchOrganizationInsertFuture = ObservableFuture(future);
+    fetchProjectInsertFuture = ObservableFuture(future);
     future.then((project) {
       projectList.add(project);
     }).catchError((error) {

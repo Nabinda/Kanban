@@ -46,7 +46,8 @@ class Repository {
     this._boardItemApi,
     this._sharedPrefsHelper,
     this._postDataSource,
-    this._organizationDataSource, this._projectDataSource,
+    this._organizationDataSource,
+    this._projectDataSource,
   );
 
   // Post: ---------------------------------------------------------------------
@@ -158,17 +159,35 @@ class Repository {
 
   // Project: ---------------------------------------------------------------------
   Future<ProjectList> getProjects(int organizationId) async {
-    return await _projectApi
-        .getProjects(organizationId)
-        .then((projectsList) => projectsList)
-        .catchError((error) => throw error);
+    try {
+      ProjectList projectList =
+          await _projectDataSource.getProjectsFromDb(organizationId);
+      if (projectList.projects != null) {
+        if (projectList.projects!.length > 0) {
+          return projectList;
+        }
+      }
+      // ProjectList
+      projectList = await _projectApi.getProjects(organizationId);
+
+      // deleteAll because key might repeat, which messes up the id field of Organization
+      await _projectDataSource.deleteAll();
+
+      projectList.projects?.forEach((pro) {
+        _projectDataSource.insert(pro);
+      });
+      return projectList;
+    } catch (e) {
+      throw e;
+    }
   }
 
-  Future<Project> insertProject(int orgId,
-      String title, String description) async {
+  Future<Project> insertProject(
+      int orgId, String title, String description) async {
     Project project = Project();
     try {
       project = await _projectApi.insertProject(orgId, title, description);
+
       var future = await _projectDataSource.insert(project);
       if (future != 0) {
         return project;
@@ -178,7 +197,6 @@ class Repository {
     }
     return project;
   }
-
 
   // Board: ---------------------------------------------------------------------
   Future<BoardList> getBoards(int projectId) async {

@@ -20,13 +20,13 @@ mixin _$ProjectStoreValidation on _ProjectStoreValidation, Store {
       Atom(name: '_ProjectStoreValidation.selectedOrgId');
 
   @override
-  int? get selectedOrgId {
+  int get selectedOrgId {
     _$selectedOrgIdAtom.reportRead();
     return super.selectedOrgId;
   }
 
   @override
-  set selectedOrgId(int? value) {
+  set selectedOrgId(int value) {
     _$selectedOrgIdAtom.reportWrite(value, super.selectedOrgId, () {
       super.selectedOrgId = value;
     });
@@ -107,7 +107,7 @@ mixin _$ProjectStoreValidation on _ProjectStoreValidation, Store {
   }
 
   @override
-  void setSelectedOrgId(int? value) {
+  void setSelectedOrgId(int value) {
     final _$actionInfo = _$_ProjectStoreValidationActionController.startAction(
         name: '_ProjectStoreValidation.setSelectedOrgId');
     try {

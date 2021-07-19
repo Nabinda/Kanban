@@ -21,7 +21,17 @@ class OrganizationDataSource {
 
   // DB functions:--------------------------------------------------------------
   Future<int> insert(Organization organization) async {
-    return await _organizationsStore.add(_db, organization.toMap());
+    final finder = Finder(filter: Filter.equals("id", organization.id));
+    var temp = await _organizationsStore.findFirst(
+      _db,
+      finder: finder,
+    );
+
+    if (temp == null) {
+      return await _organizationsStore.add(_db, organization.toMap());
+    } else {
+      return 0;
+    }
   }
 
   Future<int> count() async {

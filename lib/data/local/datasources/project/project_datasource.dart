@@ -21,7 +21,17 @@ class ProjectDataSource {
 
   // DB functions:--------------------------------------------------------------
   Future<int> insert(Project project) async {
-    return await _projectDataStore.add(_db, project.toMap());
+    final finder = Finder(filter: Filter.equals("id", project.id));
+    var temp = await _projectDataStore.findFirst(
+      _db,
+      finder: finder,
+    );
+
+    if (temp == null) {
+      return await _projectDataStore.add(_db, project.toMap());
+    } else {
+      return 0;
+    }
   }
 
   Future<int> count() async {
@@ -49,13 +59,17 @@ class ProjectDataSource {
     }).toList();
   }
 
-  Future<ProjectList> getOrganizationsFromDb() async {
+  Future<ProjectList> getProjectsFromDb(int orgId) async {
     // project list
     ProjectList projectList = ProjectList();
+
+    // we use a Finder.
+    final finder = Finder(filter: Filter.equals("organizationId", orgId));
 
     // fetching data
     final recordSnapshots = await _projectDataStore.find(
       _db,
+      finder: finder
     );
 
     // Making a List<Project> out of List<RecordSnapshot>
