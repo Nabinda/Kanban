@@ -6,13 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:boardview/board_item.dart';
 import 'package:boardview/board_list.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:kanban/models/project/project.dart';
 import 'package:kanban/stores/board/boardItem_store.dart';
 import 'package:kanban/stores/board/board_list_store.dart';
 import 'package:kanban/stores/board/board_store.dart';
+import 'package:kanban/stores/organization/organization_list_store.dart';
+import 'package:kanban/stores/organization/organization_store.dart';
 import 'package:kanban/stores/organization/organization_store_validation.dart';
+import 'package:kanban/stores/organization/project_store_validation.dart';
 import 'package:kanban/stores/theme/theme_store.dart';
 import 'package:kanban/utils/device/device_utils.dart';
 import 'package:kanban/utils/locale/app_localization.dart';
+import 'package:kanban/utils/routes/routes.dart';
 import 'package:kanban/widgets/progress_indicator_widget.dart';
 import 'package:kanban/widgets/textfield_widget.dart';
 import 'package:provider/provider.dart';
@@ -25,12 +30,18 @@ class BoardScreen extends StatefulWidget {
 class _BoardScreenState extends State<BoardScreen> {
   //stores:---------------------------------------------------------------------
   late BoardListStore _boardListStore;
+  late OrganizationListStore _organizationListStore;
   late ThemeStore _themeStore;
   BoardViewController boardViewController = new BoardViewController();
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   late OrganizationStoreValidation _organizationStoreValidation =
       new OrganizationStoreValidation();
+
+  late ProjectStoreValidation _projectStoreValidation =
+      new ProjectStoreValidation();
+  TextEditingController _titleProjectController = TextEditingController();
+  TextEditingController _descriptionProjectController = TextEditingController();
 
   @override
   void initState() {
@@ -44,6 +55,7 @@ class _BoardScreenState extends State<BoardScreen> {
     // initializing stores
     _themeStore = Provider.of<ThemeStore>(context);
     _boardListStore = Provider.of<BoardListStore>(context);
+    _organizationListStore = Provider.of<OrganizationListStore>(context);
 
     // check to see if already called api
     if (!_boardListStore.loading) {
@@ -54,50 +66,115 @@ class _BoardScreenState extends State<BoardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(context),
       body: _buildBody(),
     );
   }
 
 // app bar methods:-----------------------------------------------------------
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
       actions: <Widget>[
         PopupMenuButton<String>(
           onSelected: (String value) {
             switch (value) {
-              case 'Logout':
+              case "Edit":
+                Project project = _boardListStore.project!;
+
+                int organizationIndex = _organizationListStore
+                    .getOrganizationIndex(project.organizationId!);
+                OrganizationStore orgStore =
+                    _organizationListStore.organizationList[organizationIndex];
+
+                int projectIndex = orgStore.getProjectIndex(project.id!);
+
+                _projectStoreValidation
+                    .setTitle(orgStore.projectList[projectIndex].title!);
+                _projectStoreValidation.setDescription(
+                    orgStore.projectList[projectIndex].description!);
+
+                _showProjectEditBottomSheet(context);
                 break;
-              case 'Settings':
+              case "Delete":
+                showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Confirm'),
+                    content: const Text(
+                        'Are you sure you wish to delete this item?'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Cancel'),
+                        onPressed: () => Navigator.pop(context, 'Cancel'),
+                      ),
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          Project project = _boardListStore.project!;
+
+                          int organizationIndex = _organizationListStore
+                              .getOrganizationIndex(project.organizationId!);
+                          OrganizationStore orgStore = _organizationListStore
+                              .organizationList[organizationIndex];
+
+                          orgStore.deleteProject(project);
+
+                          Navigator.pop(context, 'OK');
+                          Navigator.pushNamed(context, Routes.organizationList);
+
+                        },
+                      ),
+                    ],
+                  ),
+                );
                 break;
             }
           },
-          itemBuilder: (BuildContext context) {
-            return {'Edit', 'Delete'}.map((String choice) {
-              return PopupMenuItem<String>(
-                value: choice,
-                child: Row(
-                  children: [
-                    Icon(choice == 'Edit' ? Icons.edit : Icons.delete,
-                        color: _themeStore.darkMode
-                            ? Colors.white
-                            : Colors.blue.shade200),
-                    SizedBox(width: 15.0),
-                    choice == 'Edit' ? Text("Edit") : Text('Delete'),
-                  ],
-                ),
-              );
-            }).toList();
-          },
+          itemBuilder: (_) => <PopupMenuItem<String>>[
+            PopupMenuItem<String>(
+              value: "Edit",
+              child: Row(
+                children: [
+                  Icon(Icons.edit,
+                      color: _themeStore.darkMode
+                          ? Colors.white
+                          : Colors.blue.shade200),
+                  SizedBox(width: 15.0),
+                  Text("Edit"),
+                ],
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: "Delete",
+              child: Row(
+                children: [
+                  Icon(Icons.delete,
+                      color: _themeStore.darkMode
+                          ? Colors.white
+                          : Colors.blue.shade200),
+                  SizedBox(width: 15.0),
+                  Text("Delete"),
+                ],
+              ),
+            ),
+          ],
         ),
       ],
       iconTheme: IconThemeData(
         color: Colors.white,
       ),
-      title: Text(
-        _boardListStore.project!.title!,
-        style: TextStyle(color: Colors.white),
-      ),
+      title: Observer(builder: (context) {
+        Project project = _boardListStore.project!;
+        int organizationIndex = _organizationListStore
+            .getOrganizationIndex(project.organizationId!);
+        OrganizationStore orgStore =
+            _organizationListStore.organizationList[organizationIndex];
+
+        return Text(
+          orgStore.projectList[orgStore.getProjectIndex(project.id!)].title!,
+          style: TextStyle(color: Colors.white),
+        );
+      }),
     );
   }
 
@@ -108,153 +185,6 @@ class _BoardScreenState extends State<BoardScreen> {
         _handleErrorMessage(),
         _buildProjectsContent(),
       ],
-    );
-  }
-
-  void _showBottomSheet(BuildContext context, int index) {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (ctx) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter stateSetter) {
-            return Container(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
-                      child: index == 0
-                          ? _buildCreateOrganizationForm()
-                          : Column(),
-                    ),
-                  ]),
-            );
-          });
-        });
-  }
-
-  Widget _buildCreateOrganizationForm() {
-    return Container(
-      padding: EdgeInsets.only(left: 15.0, right: 15.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.supervised_user_circle_outlined,
-                      color: _themeStore.darkMode
-                          ? Colors.white
-                          : Colors.blue.shade200),
-                  SizedBox(width: 15.0),
-                  Text("Add New Organization"),
-                ],
-              ),
-              SizedBox(width: 10.0),
-              OutlinedButton(
-                child: Icon(Icons.close,
-                    color:
-                        _themeStore.darkMode ? Colors.white : Colors.black45),
-                style: TextButton.styleFrom(
-                    primary: Colors.black45,
-                    onSurface: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(255.0),
-                    )),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 20.0,
-          ),
-          Observer(builder: (context) {
-            return TextFieldWidget(
-              hint: AppLocalizations.of(context)
-                  .translate('organization_tv_title'),
-              inputType: TextInputType.emailAddress,
-              icon: Icons.create,
-              iconColor:
-                  _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
-              textController: _titleController,
-              inputAction: TextInputAction.next,
-              autoFocus: false,
-              onChanged: (value) {
-                _organizationStoreValidation.setTitle(_titleController.text);
-              },
-              onFieldSubmitted: (value) {
-                //  FocusScope.of(context).requestFocus(_passwordFocusNode);
-              },
-              errorText:
-                  _organizationStoreValidation.organizationErrorStore.title,
-            );
-          }),
-          SizedBox(
-            height: 20.0,
-          ),
-          Observer(
-            builder: (context) {
-              return TextFieldWidget(
-                hint: AppLocalizations.of(context)
-                    .translate('organization_tv_description'),
-                inputType: TextInputType.emailAddress,
-                icon: Icons.wysiwyg_outlined,
-                iconColor: _themeStore.darkMode
-                    ? Colors.white70
-                    : Colors.blue.shade200,
-                textController: _descriptionController,
-                inputAction: TextInputAction.next,
-                autoFocus: false,
-                onChanged: (value) {
-                  _organizationStoreValidation
-                      .setDescription(_descriptionController.text);
-                },
-                onFieldSubmitted: (value) {
-                  //  FocusScope.of(context).requestFocus(_passwordFocusNode);
-                },
-                errorText: _organizationStoreValidation
-                    .organizationErrorStore.description,
-              );
-            },
-          ),
-          SizedBox(
-            height: 40.0,
-          ),
-          Observer(
-            builder: (context) {
-              return ElevatedButton(
-                  child: Text('Save New Organization',
-                      style: TextStyle(color: Colors.white)),
-                  style: TextButton.styleFrom(
-                      primary: Colors.blue,
-                      onSurface: Colors.red,
-                      minimumSize: Size(128, 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      )),
-                  onPressed: () {
-                    if (_organizationStoreValidation.canAdd) {
-                      DeviceUtils.hideKeyboard(context);
-                      Navigator.of(context).pop();
-                      _titleController.clear();
-                      _descriptionController.clear();
-                    } else {
-                      _showErrorMessage('Please fill in all fields');
-                    }
-                  });
-            },
-          )
-        ],
-      ),
     );
   }
 
@@ -271,6 +201,7 @@ class _BoardScreenState extends State<BoardScreen> {
         }
         // Add empty BoardList with "Add Board" button at the end
         _lists.add(BoardList(
+          draggable: false,
           backgroundColor: _themeStore.darkMode
               ? Colors.white70
               : Color.fromARGB(255, 235, 236, 240),
@@ -284,7 +215,7 @@ class _BoardScreenState extends State<BoardScreen> {
                             ? Colors.white70
                             : Colors.black)),
                 onPressed: () {
-                  // displayBottomSheet(context, "Item", listIndex);
+                  _showBoardBottomSheet(context);
                 },
               )),
         ));
@@ -353,7 +284,7 @@ class _BoardScreenState extends State<BoardScreen> {
           items: items,
           footer: IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => _showBottomSheet(context, 0),
+            onPressed: () => _showBoardItemBottomSheet(context, listIndex),
           ),
           onStartDragList: (int? listIndex) {},
           onTapList: (int? listIndex) async {},
@@ -443,6 +374,451 @@ class _BoardScreenState extends State<BoardScreen> {
         ));
   }
 
+  //-------------------------Bottom Sheet-------------------------
+  void _showProjectEditBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (ctx) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter stateSetter) {
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
+                      child: _buildEditProjectForm(),
+                    ),
+                  ]),
+            );
+          });
+        });
+  }
+
+  Widget _buildEditProjectForm() {
+    return Container(
+      padding: EdgeInsets.only(left: 15.0, right: 15.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.supervised_user_circle_outlined,
+                      color: _themeStore.darkMode
+                          ? Colors.white
+                          : Colors.blue.shade200),
+                  SizedBox(width: 15.0),
+                  Text("Edit Project"),
+                ],
+              ),
+              SizedBox(width: 10.0),
+              OutlinedButton(
+                child: Icon(Icons.close,
+                    color:
+                        _themeStore.darkMode ? Colors.white : Colors.black45),
+                style: TextButton.styleFrom(
+                    primary: Colors.black45,
+                    onSurface: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(255.0),
+                    )),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20.0,
+          ),
+          Observer(builder: (context) {
+            return TextFieldWidget(
+              hint: AppLocalizations.of(context).translate('project_tv_title'),
+              inputType: TextInputType.emailAddress,
+              icon: Icons.create,
+              iconColor:
+                  _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+              initValue: _projectStoreValidation.title,
+              inputAction: TextInputAction.next,
+              autoFocus: false,
+              onChanged: (value) {
+                _projectStoreValidation.setTitle(value);
+              },
+              onFieldSubmitted: (value) {
+                //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+              },
+              errorText: _projectStoreValidation.projectErrorStore.title,
+            );
+          }),
+          SizedBox(
+            height: 20.0,
+          ),
+          Observer(
+            builder: (context) {
+              return TextFieldWidget(
+                hint: AppLocalizations.of(context)
+                    .translate('project_tv_description'),
+                inputType: TextInputType.emailAddress,
+                icon: Icons.wysiwyg_outlined,
+                iconColor: _themeStore.darkMode
+                    ? Colors.white70
+                    : Colors.blue.shade200,
+                initValue: _projectStoreValidation.description,
+                inputAction: TextInputAction.next,
+                autoFocus: false,
+                onChanged: (value) {
+                  _projectStoreValidation.setDescription(value);
+                },
+                onFieldSubmitted: (value) {
+                  //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+                },
+                errorText:
+                    _projectStoreValidation.projectErrorStore.description,
+              );
+            },
+          ),
+          SizedBox(
+            height: 40.0,
+          ),
+          Observer(
+            builder: (context) {
+              return ElevatedButton(
+                  child: Text('Update Project',
+                      style: TextStyle(color: Colors.white)),
+                  style: TextButton.styleFrom(
+                      primary: Colors.blue,
+                      onSurface: Colors.red,
+                      minimumSize: Size(128, 40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      )),
+                  onPressed: () {
+                    if (_projectStoreValidation.canAdd) {
+                      Project pr = Project(
+                          organizationId:
+                              _boardListStore.project?.organizationId,
+                          id: _boardListStore.project?.id,
+                          title: _projectStoreValidation.title,
+                          description: _projectStoreValidation.description);
+
+                      _organizationListStore.organizationList[
+                              _organizationListStore.getOrganizationIndex(
+                                  _boardListStore.project?.organizationId)]
+                          .updateProject(pr);
+
+                      DeviceUtils.hideKeyboard(context);
+                      Navigator.of(context).pop();
+                      _titleProjectController.clear();
+                      _descriptionProjectController.clear();
+                    } else {
+                      _showErrorMessage('Please fill in all fields');
+                    }
+                  });
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showBoardBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (ctx) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter stateSetter) {
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
+                      child: _buildCreateBoardForm(),
+                    ),
+                  ]),
+            );
+          });
+        });
+  }
+
+  Widget _buildCreateBoardForm() {
+    return Container(
+      padding: EdgeInsets.only(left: 15.0, right: 15.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.supervised_user_circle_outlined,
+                      color: _themeStore.darkMode
+                          ? Colors.white
+                          : Colors.blue.shade200),
+                  SizedBox(width: 15.0),
+                  Text("Add New Board"),
+                ],
+              ),
+              SizedBox(width: 10.0),
+              OutlinedButton(
+                child: Icon(Icons.close,
+                    color:
+                        _themeStore.darkMode ? Colors.white : Colors.black45),
+                style: TextButton.styleFrom(
+                    primary: Colors.black45,
+                    onSurface: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(255.0),
+                    )),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20.0,
+          ),
+          Observer(builder: (context) {
+            return TextFieldWidget(
+              hint: AppLocalizations.of(context).translate('board_tv_title'),
+              inputType: TextInputType.emailAddress,
+              icon: Icons.create,
+              iconColor:
+                  _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+              textController: _titleController,
+              inputAction: TextInputAction.next,
+              autoFocus: false,
+              onChanged: (value) {
+                _organizationStoreValidation.setTitle(_titleController.text);
+              },
+              onFieldSubmitted: (value) {
+                //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+              },
+              errorText:
+                  _organizationStoreValidation.organizationErrorStore.title,
+            );
+          }),
+          SizedBox(
+            height: 20.0,
+          ),
+          Observer(
+            builder: (context) {
+              return TextFieldWidget(
+                hint: AppLocalizations.of(context)
+                    .translate('board_tv_description'),
+                inputType: TextInputType.emailAddress,
+                icon: Icons.wysiwyg_outlined,
+                iconColor: _themeStore.darkMode
+                    ? Colors.white70
+                    : Colors.blue.shade200,
+                textController: _descriptionController,
+                inputAction: TextInputAction.next,
+                autoFocus: false,
+                onChanged: (value) {
+                  _organizationStoreValidation
+                      .setDescription(_descriptionController.text);
+                },
+                onFieldSubmitted: (value) {
+                  //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+                },
+                errorText: _organizationStoreValidation
+                    .organizationErrorStore.description,
+              );
+            },
+          ),
+          SizedBox(
+            height: 40.0,
+          ),
+          Observer(
+            builder: (context) {
+              return ElevatedButton(
+                  child: Text('Create New Board',
+                      style: TextStyle(color: Colors.white)),
+                  style: TextButton.styleFrom(
+                      primary: Colors.blue,
+                      onSurface: Colors.red,
+                      minimumSize: Size(128, 40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      )),
+                  onPressed: () {
+                    if (_organizationStoreValidation.canAdd) {
+                      DeviceUtils.hideKeyboard(context);
+                      Navigator.of(context).pop();
+                      _titleController.clear();
+                      _descriptionController.clear();
+                    } else {
+                      _showErrorMessage('Please fill in all fields');
+                    }
+                  });
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showBoardItemBottomSheet(BuildContext context, int listIndex) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (ctx) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter stateSetter) {
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
+                      child: _buildCreateBoardItemForm(),
+                    ),
+                  ]),
+            );
+          });
+        });
+  }
+
+  Widget _buildCreateBoardItemForm() {
+    return Container(
+      padding: EdgeInsets.only(left: 15.0, right: 15.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.supervised_user_circle_outlined,
+                      color: _themeStore.darkMode
+                          ? Colors.white
+                          : Colors.blue.shade200),
+                  SizedBox(width: 15.0),
+                  Text("Add New Board Item"),
+                ],
+              ),
+              SizedBox(width: 10.0),
+              OutlinedButton(
+                child: Icon(Icons.close,
+                    color:
+                        _themeStore.darkMode ? Colors.white : Colors.black45),
+                style: TextButton.styleFrom(
+                    primary: Colors.black45,
+                    onSurface: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(255.0),
+                    )),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20.0,
+          ),
+          Observer(builder: (context) {
+            return TextFieldWidget(
+              hint:
+                  AppLocalizations.of(context).translate('boardItem_tv_title'),
+              inputType: TextInputType.emailAddress,
+              icon: Icons.create,
+              iconColor:
+                  _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
+              textController: _titleController,
+              inputAction: TextInputAction.next,
+              autoFocus: false,
+              onChanged: (value) {
+                _organizationStoreValidation.setTitle(_titleController.text);
+              },
+              onFieldSubmitted: (value) {
+                //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+              },
+              errorText:
+                  _organizationStoreValidation.organizationErrorStore.title,
+            );
+          }),
+          SizedBox(
+            height: 20.0,
+          ),
+          Observer(
+            builder: (context) {
+              return TextFieldWidget(
+                hint: AppLocalizations.of(context)
+                    .translate('boardItem_tv_description'),
+                inputType: TextInputType.emailAddress,
+                icon: Icons.wysiwyg_outlined,
+                iconColor: _themeStore.darkMode
+                    ? Colors.white70
+                    : Colors.blue.shade200,
+                textController: _descriptionController,
+                inputAction: TextInputAction.next,
+                autoFocus: false,
+                onChanged: (value) {
+                  _organizationStoreValidation
+                      .setDescription(_descriptionController.text);
+                },
+                onFieldSubmitted: (value) {
+                  //  FocusScope.of(context).requestFocus(_passwordFocusNode);
+                },
+                errorText: _organizationStoreValidation
+                    .organizationErrorStore.description,
+              );
+            },
+          ),
+          SizedBox(
+            height: 40.0,
+          ),
+          Observer(
+            builder: (context) {
+              return ElevatedButton(
+                  child: Text('Create New Board Item',
+                      style: TextStyle(color: Colors.white)),
+                  style: TextButton.styleFrom(
+                      primary: Colors.blue,
+                      onSurface: Colors.red,
+                      minimumSize: Size(128, 40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      )),
+                  onPressed: () {
+                    if (_organizationStoreValidation.canAdd) {
+                      DeviceUtils.hideKeyboard(context);
+                      Navigator.of(context).pop();
+                      _titleController.clear();
+                      _descriptionController.clear();
+                    } else {
+                      _showErrorMessage('Please fill in all fields');
+                    }
+                  });
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  // General Methods:-----------------------------------------------------------
   Widget _handleErrorMessage() {
     return Observer(
       builder: (context) {
@@ -454,7 +830,6 @@ class _BoardScreenState extends State<BoardScreen> {
     );
   }
 
-  // General Methods:-----------------------------------------------------------
   _showErrorMessage(String message) {
     Future.delayed(Duration(milliseconds: 0), () {
       if (message.isNotEmpty) {

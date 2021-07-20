@@ -43,7 +43,7 @@ abstract class _OrganizationStore extends Organization with Store {
   @observable
   ObservableList<Project> projectList = ObservableList<Project>();
 
-  // store variables:-----------------------------------------------------------
+  // insert status :-----------------------------------------------------------
   static ObservableFuture<Project?> emptyProjectInsertResponse =
   ObservableFuture.value(null);
 
@@ -51,11 +51,11 @@ abstract class _OrganizationStore extends Organization with Store {
   ObservableFuture<Project?> fetchProjectInsertFuture =
   ObservableFuture<Project?>(emptyProjectInsertResponse);
 
-  @observable
-  bool insertSuccess = false;
-
   @computed
   bool get insertLoading => fetchProjectInsertFuture.status == FutureStatus.pending;
+
+  int getProjectIndex(proId) =>
+      this.projectList.indexWhere((element) => element.id == proId);
 
   @action
   Future getProjects(int orgId) async {
@@ -79,10 +79,38 @@ abstract class _OrganizationStore extends Organization with Store {
     Future<Project> future = _repository.insertProject(orgId, title, description);
     fetchProjectInsertFuture = ObservableFuture(future);
     future.then((project) {
-      projectList.add(project);
+      this.projectList.add(project);
     }).catchError((error) {
       errorStore.errorMessage = DioErrorUtil.handleError(error);
     });
     return future;
+  }
+
+  @action
+  Future updateProject(Project project) async {
+    final future = _repository.updateProject(project);
+    // fetchPostsFuture = ObservableFuture(future);
+    future.then((projectItem) {
+      Project upProject =
+      this.projectList.firstWhere((postItem) => postItem.id == project.id);
+      int index = this.projectList.indexOf(upProject);
+      this.projectList[index] = project;
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
+  }
+
+  @action
+  Future deleteProject(Project project) async {
+    final future = _repository.deleteProject(project);
+    //deletePostFuture = ObservableFuture(future);
+    future.then((item) {}).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
+  }
+
+  @action
+  Future deleteAll() async {
+    _repository.deleteAll();
   }
 }

@@ -1,7 +1,6 @@
 import 'package:another_flushbar/flushbar_helper.dart';
 import 'package:kanban/data/sharedpref/constants/preferences.dart';
 import 'package:kanban/models/post/post.dart';
-import 'package:kanban/stores/organization/organization_store_validation.dart';
 import 'package:kanban/stores/post/post_store_validation.dart';
 import 'package:kanban/utils/device/device_utils.dart';
 import 'package:kanban/utils/routes/routes.dart';

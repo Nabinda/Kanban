@@ -54,6 +54,9 @@ abstract class _OrganizationListStore with Store {
   @computed
   bool get insertLoading => fetchOrganizationInsertFuture.status == FutureStatus.pending;
 
+  int getOrganizationIndex(orgId) =>
+    this.organizationList.indexWhere((element) => element.id == orgId);
+
   // actions:-------------------------------------------------------------------
   @action
   Future getOrganizations() async {

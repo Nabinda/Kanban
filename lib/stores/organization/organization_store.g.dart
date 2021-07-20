@@ -86,21 +86,6 @@ mixin _$OrganizationStore on _OrganizationStore, Store {
     });
   }
 
-  final _$insertSuccessAtom = Atom(name: '_OrganizationStore.insertSuccess');
-
-  @override
-  bool get insertSuccess {
-    _$insertSuccessAtom.reportRead();
-    return super.insertSuccess;
-  }
-
-  @override
-  set insertSuccess(bool value) {
-    _$insertSuccessAtom.reportWrite(value, super.insertSuccess, () {
-      super.insertSuccess = value;
-    });
-  }
-
   final _$getProjectsAsyncAction =
       AsyncAction('_OrganizationStore.getProjects');
 
@@ -118,6 +103,29 @@ mixin _$OrganizationStore on _OrganizationStore, Store {
         .run(() => super.insertProject(orgId, title, description));
   }
 
+  final _$updateProjectAsyncAction =
+      AsyncAction('_OrganizationStore.updateProject');
+
+  @override
+  Future<dynamic> updateProject(Project project) {
+    return _$updateProjectAsyncAction.run(() => super.updateProject(project));
+  }
+
+  final _$deleteProjectAsyncAction =
+      AsyncAction('_OrganizationStore.deleteProject');
+
+  @override
+  Future<dynamic> deleteProject(Project project) {
+    return _$deleteProjectAsyncAction.run(() => super.deleteProject(project));
+  }
+
+  final _$deleteAllAsyncAction = AsyncAction('_OrganizationStore.deleteAll');
+
+  @override
+  Future<dynamic> deleteAll() {
+    return _$deleteAllAsyncAction.run(() => super.deleteAll());
+  }
+
   @override
   String toString() {
     return '''
@@ -125,7 +133,6 @@ fetchProjectFuture: ${fetchProjectFuture},
 success: ${success},
 projectList: ${projectList},
 fetchProjectInsertFuture: ${fetchProjectInsertFuture},
-insertSuccess: ${insertSuccess},
 loading: ${loading},
 insertLoading: ${insertLoading}
     ''';

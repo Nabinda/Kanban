@@ -182,6 +182,11 @@ class Repository {
     }
   }
 
+  Future<int> updateProject(Project project) => _projectDataSource
+      .update(project)
+      .then((id) => id)
+      .catchError((error) => throw error);
+
   Future<Project> insertProject(
       int orgId, String title, String description) async {
     Project project = Project();
@@ -197,6 +202,11 @@ class Repository {
     }
     return project;
   }
+
+  Future<int> deleteProject(Project project) => _projectDataSource
+      .delete(project)
+      .then((id) => id)
+      .catchError((error) => throw error);
 
   // Board: ---------------------------------------------------------------------
   Future<BoardList> getBoards(int projectId) async {

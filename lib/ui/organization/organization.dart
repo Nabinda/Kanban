@@ -334,14 +334,14 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                 Observer(
                   builder: (context) => DropdownButton<String>(
                     value: _projectStoreValidation.selectedOrgId.toString(),
-                    iconEnabledColor: Colors.white,
+                    iconEnabledColor: _themeStore.darkMode ? Colors.white : Colors.blue,
                     dropdownColor: Colors.white,
                     items: _organizationListStore.organizationList
                         .map((dropdownItem) {
                       return DropdownMenuItem<String>(
                         value: dropdownItem.id.toString(),
                         child: Text(dropdownItem.title!,
-                            style: TextStyle(color: Colors.blue)),
+                            style: TextStyle(color: _themeStore.darkMode ? Colors.white : Colors.blue)),
                       );
                     }).toList(),
                     onChanged: (newVal) {
@@ -405,32 +405,42 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
         SizedBox(
           height: 40.0,
         ),
-        ElevatedButton(
-            child:
-                Text('Save New Project', style: TextStyle(color: Colors.white)),
-            style: TextButton.styleFrom(
-                primary: Colors.blue,
-                onSurface: Colors.red,
-                minimumSize: Size(128, 40),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                )),
-            onPressed: () async {
-              if (_projectStoreValidation.canAdd) {
-                DeviceUtils.hideKeyboard(context);
-                await _organizationListStore.insertProject(
-                    _projectStoreValidation.selectedOrgId,
-                    _projectTitleController.text,
-                    _projectDescriptionController.text);
+        Observer(builder: (context) {
+          return _organizationListStore
+                  .organizationList[_organizationListStore.getOrganizationIndex(
+                      _projectStoreValidation.selectedOrgId)]
+                  .insertLoading
+              ? CircularProgressIndicator()
+              : ElevatedButton(
+                  child: Text('Save New Project',
+                      style: TextStyle(color: Colors.white)),
+                  style: TextButton.styleFrom(
+                      primary: Colors.blue,
+                      onSurface: Colors.red,
+                      minimumSize: Size(128, 40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      )),
+                  onPressed: () async {
+                    if (_projectStoreValidation.canAdd) {
+                      DeviceUtils.hideKeyboard(context);
+                      await _organizationListStore.organizationList[
+                              _organizationListStore.getOrganizationIndex(
+                                  _projectStoreValidation.selectedOrgId)]
+                          .insertProject(
+                              _projectStoreValidation.selectedOrgId,
+                              _projectTitleController.text,
+                              _projectDescriptionController.text);
 
-                _projectStoreValidation.reset();
-                _projectTitleController.clear();
-                _projectDescriptionController.clear();
-                Navigator.of(context).pop();
-              } else {
-                _showErrorMessage('Please fill in all fields');
-              }
-            }),
+                      _projectStoreValidation.reset();
+                      _projectTitleController.clear();
+                      _projectDescriptionController.clear();
+                      Navigator.of(context).pop();
+                    } else {
+                      _showErrorMessage('Please fill in all fields');
+                    }
+                  });
+        }),
       ]),
     );
   }
@@ -575,8 +585,6 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   }
 
   Widget _buildProjectsExpansion() {
-    _projectStoreValidation
-        .setSelectedOrgId(_organizationListStore.organizationList[0].id!);
     return _organizationListStore.organizationList.length != 0
         ? ListView.builder(
             scrollDirection: Axis.vertical,
@@ -585,6 +593,9 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
             itemCount: _organizationListStore.organizationList.length,
             itemBuilder: (BuildContext context, int index) {
               return Observer(builder: (_) {
+                // set firstOrganization for the Dropdown when adding Projects
+                _projectStoreValidation.setSelectedOrgId(
+                    _organizationListStore.organizationList[0].id!);
                 return _buildOrganizationItem(
                     _organizationListStore.organizationList[index]);
               });

@@ -40,7 +40,17 @@
 
   "board_start": "Below are list of strings for board",
   "board_tv_boards": "Boards np",
+  "board_tv_title": "Board Title",
+  "board_tv_description": "Board Description",
   "board_tv_error": "Error",
   "board_tv_no_board_found": "No board found",
-  "board_end": "-------------------------------------------------------------------------------------"
+  "board_end": "-------------------------------------------------------------------------------------",
+
+  "boardItem_start": "Below are list of strings for Board Items",
+  "boardItem_tv_boardItems": "Board Items np",
+  "boardItem_tv_title": "Board Item Title np",
+  "boardItem_tv_description": "Board Item Description",
+  "boardItem_tv_error": "Error",
+  "boardItem_tv_no_boardItem_found": "No board items found",
+  "boardItem_end": "-------------------------------------------------------------------------------------"
 }
