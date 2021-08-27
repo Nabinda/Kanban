@@ -22,25 +22,25 @@ class BoardApi {
         Board(
           projectId: 1,
           id: 1,
-          title: "Project 1 Board 1",
+          title: "Todo",
           description: "desc 1",
         ),
         Board(
           projectId: 1,
           id: 2,
-          title: "Project 1 Board 2",
+          title: "Doing",
           description: "desc 3",
         ),
         Board(
           projectId: 1,
           id: 3,
-          title: "Project 1 Board 3",
+          title: "Done",
           description: "desc 3",
         ),
         Board(
           projectId: 2,
           id: 2,
-          title: "Project 2 Board 1",
+          title: "Todo",
           description: "desc 4",
         ),
       ];

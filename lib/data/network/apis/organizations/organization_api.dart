@@ -22,19 +22,19 @@ class OrganizationApi {
         Organization(
           userId: 1,
           id: 1,
-          title: "Organization 1",
+          title: "Personal Workspace",
           description: "desc lorem",
         ),
         Organization(
           userId: 1,
           id: 2,
-          title: "Organization 2",
+          title: "Company Workspace",
           description: "lorem ipsum doret",
         ),
         Organization(
           userId: 1,
           id: 3,
-          title: "Organization 3",
+          title: "Other",
           description: "lorem ipsum doret",
         ),
       ];

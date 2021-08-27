@@ -341,7 +341,7 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                       return DropdownMenuItem<String>(
                         value: dropdownItem.id.toString(),
                         child: Text(dropdownItem.title!,
-                            style: TextStyle(color: _themeStore.darkMode ? Colors.white : Colors.blue)),
+                            style: TextStyle(color: _themeStore.darkMode ? Colors.blue : Colors.blue)),
                       );
                     }).toList(),
                     onChanged: (newVal) {

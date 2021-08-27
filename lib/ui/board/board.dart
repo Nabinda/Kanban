@@ -83,17 +83,20 @@ class _BoardScreenState extends State<BoardScreen> {
 
                 int organizationIndex = _organizationListStore
                     .getOrganizationIndex(project.organizationId!);
-                OrganizationStore orgStore =
-                    _organizationListStore.organizationList[organizationIndex];
 
-                int projectIndex = orgStore.getProjectIndex(project.id!);
+                if (organizationIndex != -1) {
+                  OrganizationStore orgStore = _organizationListStore
+                      .organizationList[organizationIndex];
 
-                _projectStoreValidation
-                    .setTitle(orgStore.projectList[projectIndex].title!);
-                _projectStoreValidation.setDescription(
-                    orgStore.projectList[projectIndex].description!);
+                  int projectIndex = orgStore.getProjectIndex(project.id!);
 
-                _showProjectEditBottomSheet(context);
+                  _projectStoreValidation
+                      .setTitle(orgStore.projectList[projectIndex].title!);
+                  _projectStoreValidation.setDescription(
+                      orgStore.projectList[projectIndex].description!);
+
+                  _showProjectEditBottomSheet(context);
+                }
                 break;
               case "Delete":
                 showDialog<String>(
@@ -109,19 +112,24 @@ class _BoardScreenState extends State<BoardScreen> {
                       ),
                       TextButton(
                         child: const Text('OK'),
-                        onPressed: () {
+                        onPressed: () async {
                           Project project = _boardListStore.project!;
 
                           int organizationIndex = _organizationListStore
                               .getOrganizationIndex(project.organizationId!);
-                          OrganizationStore orgStore = _organizationListStore
-                              .organizationList[organizationIndex];
 
-                          orgStore.deleteProject(project);
+                          if (organizationIndex != -1) {
+                            OrganizationStore orgStore = _organizationListStore
+                                .organizationList[organizationIndex];
 
-                          Navigator.pop(context, 'OK');
-                          Navigator.pushNamed(context, Routes.organizationList);
+                            await orgStore.deleteProject(project);
+                            _boardListStore.project = null;
 
+
+                            Navigator.pop(context, 'OK');
+                            Navigator.pushNamedAndRemoveUntil(context,
+                                Routes.organizationList, (route) => false);
+                          }
                         },
                       ),
                     ],
@@ -167,13 +175,20 @@ class _BoardScreenState extends State<BoardScreen> {
         Project project = _boardListStore.project!;
         int organizationIndex = _organizationListStore
             .getOrganizationIndex(project.organizationId!);
-        OrganizationStore orgStore =
-            _organizationListStore.organizationList[organizationIndex];
+        if (organizationIndex == -1) {
+          return Text(
+            "Deleted Project",
+            style: TextStyle(color: Colors.white),
+          );
+        } else {
+          OrganizationStore orgStore =
+              _organizationListStore.organizationList[organizationIndex];
 
-        return Text(
-          orgStore.projectList[orgStore.getProjectIndex(project.id!)].title!,
-          style: TextStyle(color: Colors.white),
-        );
+          return Text(
+            orgStore.projectList[orgStore.getProjectIndex(project.id!)].title!,
+            style: TextStyle(color: Colors.white),
+          );
+        }
       }),
     );
   }
@@ -488,42 +503,37 @@ class _BoardScreenState extends State<BoardScreen> {
           SizedBox(
             height: 40.0,
           ),
-          Observer(
-            builder: (context) {
-              return ElevatedButton(
-                  child: Text('Update Project',
-                      style: TextStyle(color: Colors.white)),
-                  style: TextButton.styleFrom(
-                      primary: Colors.blue,
-                      onSurface: Colors.red,
-                      minimumSize: Size(128, 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      )),
-                  onPressed: () {
-                    if (_projectStoreValidation.canAdd) {
-                      Project pr = Project(
-                          organizationId:
-                              _boardListStore.project?.organizationId,
-                          id: _boardListStore.project?.id,
-                          title: _projectStoreValidation.title,
-                          description: _projectStoreValidation.description);
+          ElevatedButton(
+              child:
+                  Text('Update Project', style: TextStyle(color: Colors.white)),
+              style: TextButton.styleFrom(
+                  primary: Colors.blue,
+                  onSurface: Colors.red,
+                  minimumSize: Size(128, 40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  )),
+              onPressed: () {
+                if (_projectStoreValidation.canAdd) {
+                  Project pr = Project(
+                      organizationId: _boardListStore.project?.organizationId,
+                      id: _boardListStore.project?.id,
+                      title: _projectStoreValidation.title,
+                      description: _projectStoreValidation.description);
 
-                      _organizationListStore.organizationList[
-                              _organizationListStore.getOrganizationIndex(
-                                  _boardListStore.project?.organizationId)]
-                          .updateProject(pr);
+                  _organizationListStore.organizationList[
+                          _organizationListStore.getOrganizationIndex(
+                              _boardListStore.project?.organizationId)]
+                      .updateProject(pr);
 
-                      DeviceUtils.hideKeyboard(context);
-                      Navigator.of(context).pop();
-                      _titleProjectController.clear();
-                      _descriptionProjectController.clear();
-                    } else {
-                      _showErrorMessage('Please fill in all fields');
-                    }
-                  });
-            },
-          )
+                  DeviceUtils.hideKeyboard(context);
+                  Navigator.of(context).pop();
+                  _titleProjectController.clear();
+                  _descriptionProjectController.clear();
+                } else {
+                  _showErrorMessage('Please fill in all fields');
+                }
+              }),
         ],
       ),
     );

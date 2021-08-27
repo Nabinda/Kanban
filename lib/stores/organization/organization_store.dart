@@ -104,9 +104,12 @@ abstract class _OrganizationStore extends Organization with Store {
   Future deleteProject(Project project) async {
     final future = _repository.deleteProject(project);
     //deletePostFuture = ObservableFuture(future);
-    future.then((item) {}).catchError((error) {
+    future.then((item) {
+      this.projectList.removeWhere((element) => element.id == project.id);
+    }).catchError((error) {
       errorStore.errorMessage = DioErrorUtil.handleError(error);
     });
+    return future;
   }
 
   @action

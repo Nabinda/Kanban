@@ -22,19 +22,19 @@ class ProjectApi {
         Project(
           organizationId: 1,
           id: 1,
-          title: "Project 1 for Org 1",
+          title: "Summer Project",
           description: "desc lorem ipsum",
         ),
         Project(
           organizationId: 1,
           id: 2,
-          title: "Project 2 for Org 1",
+          title: "Todo",
           description: "desc lorem",
         ),
         Project(
           organizationId: 2,
           id: 2,
-          title: "Project 1 for Org 2",
+          title: "Daily Tasks",
           description: "desc lorem",
         ),
       ];

@@ -98,7 +98,7 @@ class ProjectDataSource {
   }
 
   Future<int> delete(Project project) async {
-    final finder = Finder(filter: Filter.byKey(project.id));
+    final finder = Finder(filter: Filter.equals("id", project.id));
     return await _projectDataStore.delete(
       _db,
       finder: finder,
