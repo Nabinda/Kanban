@@ -21,7 +21,7 @@ class ProjectDataSource {
 
   // DB functions:--------------------------------------------------------------
   Future<int> insert(Project project) async {
-    final finder = Finder(filter: Filter.equals("id", project.id));
+    final finder = Finder(filter: Filter.byKey(project.id));
     var temp = await _projectDataStore.findFirst(
       _db,
       finder: finder,
@@ -77,8 +77,6 @@ class ProjectDataSource {
       projectList = ProjectList(
           projects: recordSnapshots.map((snapshot) {
             final project = Project.fromMap(snapshot.value);
-            // An ID is a key of a record from the database.
-            project.id = snapshot.key;
             return project;
           }).toList());
     }
@@ -99,6 +97,15 @@ class ProjectDataSource {
 
   Future<int> delete(Project project) async {
     final finder = Finder(filter: Filter.equals("id", project.id));
+    return await _projectDataStore.delete(
+      _db,
+      finder: finder,
+    );
+  }
+
+  Future<int> deleteByOrganizationId(int orgId) async {
+    var filter = Filter.equals('organizationId', orgId);
+    var finder = Finder(filter: filter);
     return await _projectDataStore.delete(
       _db,
       finder: finder,

@@ -7,7 +7,7 @@ class BoardItemDataSource {
   // A Store with int keys and Map<String, dynamic> values.
   // This Store acts like a persistent map, values of which are Flogs objects converted to Map
   final _boardItemDataSource =
-  intMapStoreFactory.store(DBConstants.STORE_BOARD);
+  intMapStoreFactory.store(DBConstants.STORE_BOARD_ITEM);
 
   // Private getter to shorten the amount of code needed to get the
   // singleton instance of an opened database.

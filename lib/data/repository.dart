@@ -170,8 +170,7 @@ class Repository {
       // ProjectList
       projectList = await _projectApi.getProjects(organizationId);
 
-      // deleteAll because key might repeat, which messes up the id field of Organization
-      await _projectDataSource.deleteAll();
+      await _projectDataSource.deleteByOrganizationId(organizationId);
 
       projectList.projects?.forEach((pro) {
         _projectDataSource.insert(pro);

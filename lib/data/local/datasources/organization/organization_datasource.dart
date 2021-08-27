@@ -73,8 +73,6 @@ class OrganizationDataSource {
       organizationList = OrganizationList(
           organizations: recordSnapshots.map((snapshot) {
         final organization = Organization.fromMap(snapshot.value);
-        // An ID is a key of a record from the database.
-        organization.id = snapshot.key;
         return organization;
       }).toList());
     }
