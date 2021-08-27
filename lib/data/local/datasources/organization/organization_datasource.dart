@@ -83,7 +83,7 @@ class OrganizationDataSource {
   Future<int> update(Organization organization) async {
     // For filtering by key (ID), RegEx, greater than, and many other criteria,
     // we use a Finder.
-    final finder = Finder(filter: Filter.byKey(organization.id));
+    final finder = Finder(filter: Filter.equals("id", organization.id));
     return await _organizationsStore.update(
       _db,
       organization.toMap(),

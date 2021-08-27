@@ -89,7 +89,7 @@ class BoardItemDataSource {
   Future<int> update(BoardItem boardItem) async {
     // For filtering by key (ID), RegEx, greater than, and many other criteria,
     // we use a Finder.
-    final finder = Finder(filter: Filter.byKey(boardItem.id));
+    final finder = Finder(filter: Filter.equals("id", boardItem.id));
     return await _boardItemDataSource.update(
       _db,
       boardItem.toMap(),

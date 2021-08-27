@@ -530,6 +530,7 @@ class _BoardScreenState extends State<BoardScreen> {
                   Navigator.of(context).pop();
                   _titleProjectController.clear();
                   _descriptionProjectController.clear();
+                  // TODO: update value in database
                 } else {
                   _showErrorMessage('Please fill in all fields');
                 }

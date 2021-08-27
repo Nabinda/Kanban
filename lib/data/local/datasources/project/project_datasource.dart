@@ -21,7 +21,7 @@ class ProjectDataSource {
 
   // DB functions:--------------------------------------------------------------
   Future<int> insert(Project project) async {
-    final finder = Finder(filter: Filter.byKey(project.id));
+    final finder = Finder(filter: Filter.equals("id", project.id));
     var temp = await _projectDataStore.findFirst(
       _db,
       finder: finder,
@@ -87,7 +87,10 @@ class ProjectDataSource {
   Future<int> update(Project project) async {
     // For filtering by key (ID), RegEx, greater than, and many other criteria,
     // we use a Finder.
-    final finder = Finder(filter: Filter.byKey(project.id));
+    print("updating");
+    print(project.title);
+    print(project.id);
+    final finder = Finder(filter: Filter.equals("id", project.id));
     return await _projectDataStore.update(
       _db,
       project.toMap(),
