@@ -38,6 +38,20 @@ abstract class _BoardListStore with Store {
   @computed
   bool get loading => fetchBoardsFuture.status == FutureStatus.pending;
 
+  static ObservableFuture<Board?> emptyBoardInsertResponse =
+      ObservableFuture.value(null);
+
+  @observable
+  ObservableFuture<Board?> fetchBoardInsertFuture =
+      ObservableFuture<Board?>(emptyBoardInsertResponse);
+
+  @observable
+  bool insertSuccess = false;
+
+  @computed
+  bool get insertLoading =>
+      fetchBoardInsertFuture.status == FutureStatus.pending;
+
   @observable
   Project? project;
 
@@ -74,5 +88,23 @@ abstract class _BoardListStore with Store {
   @action
   void setProject(Project project) {
     this.project = project;
+  }
+
+  @action
+  Future<Board> insertBoard(int proId, String title, String description) async {
+    Future<Board> future = _repository.insertBoard(proId, title, description);
+    fetchBoardInsertFuture = ObservableFuture(future);
+    future.then((brd) {
+      BoardStore boardStore = BoardStore(_repository,
+          projectId: brd.projectId,
+          id: brd.id,
+          title: brd.title,
+          description: brd.description);
+      this.boardList.add(boardStore);
+      boardStore.getBoardItems(brd.id!);
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
+    return future;
   }
 }

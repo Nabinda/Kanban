@@ -6,8 +6,7 @@ class ProjectStoreValidation = _ProjectStoreValidation
 
 abstract class _ProjectStoreValidation with Store {
   // store for handling form errors
-  ProjectErrorStore projectErrorStore =
-  ProjectErrorStore();
+  ProjectErrorStore projectErrorStore = ProjectErrorStore();
 
   _ProjectStoreValidation() {
     _setupValidations();
@@ -42,15 +41,15 @@ abstract class _ProjectStoreValidation with Store {
   @computed
   bool get canAdd =>
       !projectErrorStore.hasErrorsValidation &&
-          title.isNotEmpty &&
-          description.isNotEmpty;
+      title.isNotEmpty &&
+      description.isNotEmpty;
 
   // actions:-------------------------------------------------------------------
   @action
   void validateTitle(String value) {
     if (value.isEmpty) {
       projectErrorStore.title = "Title can't be empty";
-    } else if (value.length <= 10) {
+    } else if (value.length <= 3) {
       projectErrorStore.title = "Title is short";
     } else {
       projectErrorStore.title = null;
@@ -88,7 +87,7 @@ abstract class _ProjectStoreValidation with Store {
     }
   }
 
-  void reset(){
+  void reset() {
     setTitle("");
     setDescription("");
   }
@@ -99,8 +98,7 @@ abstract class _ProjectStoreValidation with Store {
   }
 }
 
-class ProjectErrorStore = _ProjectErrorStore
-    with _$ProjectErrorStore;
+class ProjectErrorStore = _ProjectErrorStore with _$ProjectErrorStore;
 
 abstract class _ProjectErrorStore with Store {
   @observable

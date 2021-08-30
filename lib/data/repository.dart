@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:kanban/data/local/datasources/post/post_datasource.dart';
 import 'package:kanban/data/network/apis/organizations/organization_api.dart';
 import 'package:kanban/data/sharedpref/shared_preference_helper.dart';
+import 'package:kanban/models/board/board.dart';
 import 'package:kanban/models/board/board_list.dart';
 import 'package:kanban/models/boardItem/boardItem_list.dart';
 import 'package:kanban/models/organization/organization.dart';
@@ -14,6 +15,7 @@ import 'package:kanban/models/project/project_list.dart';
 import 'package:sembast/sembast.dart';
 
 import 'local/constants/db_constants.dart';
+import 'local/datasources/board/board_datasource.dart';
 import 'local/datasources/organization/organization_datasource.dart';
 import 'local/datasources/project/project_datasource.dart';
 import 'network/apis/board/boardItem_api.dart';
@@ -26,6 +28,7 @@ class Repository {
   final PostDataSource _postDataSource;
   final OrganizationDataSource _organizationDataSource;
   final ProjectDataSource _projectDataSource;
+  final BoardDataSource _boardDataSource;
 
   // api objects
   final PostApi _postApi;
@@ -48,6 +51,7 @@ class Repository {
     this._postDataSource,
     this._organizationDataSource,
     this._projectDataSource,
+    this._boardDataSource,
   );
 
   // Post: ---------------------------------------------------------------------
@@ -214,6 +218,20 @@ class Repository {
         .getBoards(projectId)
         .then((boardsList) => boardsList)
         .catchError((error) => throw error);
+  }
+
+  Future<Board> insertBoard(int proId, String title, String description) async {
+    Board brd = Board();
+    try {
+      brd = await _boardApi.insertBoard(proId, title, description);
+      var future = await _boardDataSource.insert(brd);
+      if (future != 0) {
+        return brd;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return brd;
   }
 
   // BoardItem: ---------------------------------------------------------------------

@@ -84,6 +84,14 @@ mixin _$BoardListStore on _BoardListStore, Store {
     return _$getBoardsAsyncAction.run(() => super.getBoards(projectId));
   }
 
+  final _$insertBoardAsyncAction = AsyncAction('_BoardListStore.insertBoard');
+
+  @override
+  Future<Board> insertBoard(int proId, String title, String description) {
+    return _$insertBoardAsyncAction
+        .run(() => super.insertBoard(proId, title, description));
+  }
+
   final _$_BoardListStoreActionController =
       ActionController(name: '_BoardListStore');
 

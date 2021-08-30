@@ -56,4 +56,21 @@ class BoardApi {
       throw e;
     }
   }
+
+  Future<Board> insertBoard(int proId, String title, String description) async {
+    try {
+      //final res = await _dioClient.post(Endpoints.getOrganization + organization.id.toString());
+      //return OrganizationList.fromJson(res);
+
+      Board brd = new Board(
+          id: DateTime.now().millisecond,
+          title: title,
+          description: description,
+          projectId: proId);
+
+      return await Future.delayed(Duration(seconds: 2), () => brd);
+    } catch (e) {
+      throw e;
+    }
+  }
 }

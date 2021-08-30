@@ -10,6 +10,7 @@ import 'package:kanban/models/project/project.dart';
 import 'package:kanban/stores/board/boardItem_store.dart';
 import 'package:kanban/stores/board/board_list_store.dart';
 import 'package:kanban/stores/board/board_store.dart';
+import 'package:kanban/stores/board/board_store_validation.dart';
 import 'package:kanban/stores/organization/organization_list_store.dart';
 import 'package:kanban/stores/organization/organization_store.dart';
 import 'package:kanban/stores/organization/organization_store_validation.dart';
@@ -37,7 +38,7 @@ class _BoardScreenState extends State<BoardScreen> {
   TextEditingController _descriptionController = TextEditingController();
   late OrganizationStoreValidation _organizationStoreValidation =
       new OrganizationStoreValidation();
-
+  late BoardStoreValidation _boardStoreValidation = new BoardStoreValidation();
   late ProjectStoreValidation _projectStoreValidation =
       new ProjectStoreValidation();
   TextEditingController _titleProjectController = TextEditingController();
@@ -124,7 +125,6 @@ class _BoardScreenState extends State<BoardScreen> {
 
                             await orgStore.deleteProject(project);
                             _boardListStore.project = null;
-
 
                             Navigator.pop(context, 'OK');
                             Navigator.pushNamedAndRemoveUntil(context,
@@ -317,16 +317,17 @@ class _BoardScreenState extends State<BoardScreen> {
               : Color.fromARGB(255, 235, 236, 240),
           header: [
             Expanded(
-                child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      boardStore.title!,
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: _themeStore.darkMode
-                              ? Colors.black38
-                              : Colors.black),
-                    ))),
+              child: Padding(
+                padding: EdgeInsets.all(5),
+                child: Text(
+                  boardStore.title!,
+                  style: TextStyle(
+                      fontSize: 18,
+                      color:
+                          _themeStore.darkMode ? Colors.black38 : Colors.black),
+                ),
+              ),
+            ),
           ],
         );
       } else {
@@ -351,16 +352,17 @@ class _BoardScreenState extends State<BoardScreen> {
           ),
           header: [
             Expanded(
-                child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      boardStore.title!,
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: _themeStore.darkMode
-                              ? Colors.black38
-                              : Colors.black),
-                    ))),
+              child: Padding(
+                padding: EdgeInsets.all(5),
+                child: Text(
+                  boardStore.title!,
+                  style: TextStyle(
+                      fontSize: 18,
+                      color:
+                          _themeStore.darkMode ? Colors.black38 : Colors.black),
+                ),
+              ),
+            ),
           ],
         );
       }
@@ -370,23 +372,24 @@ class _BoardScreenState extends State<BoardScreen> {
   //------------------------Board Item-------------------------
   Widget buildBoardItem(BoardItemStore itemStore) {
     return BoardItem(
-        onStartDragItem:
-            (int? listIndex, int? itemIndex, BoardItemState state) {},
-        onDropItem: (int? listIndex, int? itemIndex, int? oldListIndex,
-            int? oldItemIndex, BoardItemState state) {
-          //Used to update our local item data
-          // var item = _listData[oldListIndex!].items[oldItemIndex];
-          // _listData[oldListIndex].items.removeAt(oldItemIndex);
-          // _listData[listIndex!].items.insert(itemIndex, item);
-        },
-        onTapItem:
-            (int? listIndex, int? itemIndex, BoardItemState state) async {},
-        item: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(itemStore.title!),
-          ),
-        ));
+      onStartDragItem:
+          (int? listIndex, int? itemIndex, BoardItemState state) {},
+      onDropItem: (int? listIndex, int? itemIndex, int? oldListIndex,
+          int? oldItemIndex, BoardItemState state) {
+        //Used to update our local item data
+        // var item = _listData[oldListIndex!].items[oldItemIndex];
+        // _listData[oldListIndex].items.removeAt(oldItemIndex);
+        // _listData[listIndex!].items.insert(itemIndex, item);
+      },
+      onTapItem:
+          (int? listIndex, int? itemIndex, BoardItemState state) async {},
+      item: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(itemStore.title!),
+        ),
+      ),
+    );
   }
 
   //-------------------------Bottom Sheet-------------------------
@@ -615,13 +618,12 @@ class _BoardScreenState extends State<BoardScreen> {
               inputAction: TextInputAction.next,
               autoFocus: false,
               onChanged: (value) {
-                _organizationStoreValidation.setTitle(_titleController.text);
+                _boardStoreValidation.setTitle(_titleController.text);
               },
               onFieldSubmitted: (value) {
                 //  FocusScope.of(context).requestFocus(_passwordFocusNode);
               },
-              errorText:
-                  _organizationStoreValidation.organizationErrorStore.title,
+              errorText: _boardStoreValidation.boardErrorStore.title,
             );
           }),
           SizedBox(
@@ -641,14 +643,13 @@ class _BoardScreenState extends State<BoardScreen> {
                 inputAction: TextInputAction.next,
                 autoFocus: false,
                 onChanged: (value) {
-                  _organizationStoreValidation
+                  _boardStoreValidation
                       .setDescription(_descriptionController.text);
                 },
                 onFieldSubmitted: (value) {
                   //  FocusScope.of(context).requestFocus(_passwordFocusNode);
                 },
-                errorText: _organizationStoreValidation
-                    .organizationErrorStore.description,
+                errorText: _boardStoreValidation.boardErrorStore.description,
               );
             },
           ),
@@ -657,26 +658,34 @@ class _BoardScreenState extends State<BoardScreen> {
           ),
           Observer(
             builder: (context) {
-              return ElevatedButton(
-                  child: Text('Create New Board',
-                      style: TextStyle(color: Colors.white)),
-                  style: TextButton.styleFrom(
-                      primary: Colors.blue,
-                      onSurface: Colors.red,
-                      minimumSize: Size(128, 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      )),
-                  onPressed: () {
-                    if (_organizationStoreValidation.canAdd) {
-                      DeviceUtils.hideKeyboard(context);
-                      Navigator.of(context).pop();
-                      _titleController.clear();
-                      _descriptionController.clear();
-                    } else {
-                      _showErrorMessage('Please fill in all fields');
-                    }
-                  });
+              return _boardListStore.insertLoading
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      child: Text('Create New Board',
+                          style: TextStyle(color: Colors.white)),
+                      style: TextButton.styleFrom(
+                          primary: Colors.blue,
+                          onSurface: Colors.red,
+                          minimumSize: Size(128, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          )),
+                      onPressed: () async {
+                        if (_boardStoreValidation.canAdd) {
+                          DeviceUtils.hideKeyboard(context);
+                          Project project = _boardListStore.project!;
+                          await _boardListStore.insertBoard(
+                              project.id!,
+                              _titleController.text,
+                              _descriptionController.text);
+                          _boardStoreValidation.reset();
+                          _titleController.clear();
+                          _descriptionController.clear();
+                          Navigator.of(context).pop();
+                        } else {
+                          _showErrorMessage('Please fill in all fields');
+                        }
+                      });
             },
           )
         ],
