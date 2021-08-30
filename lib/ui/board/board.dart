@@ -237,6 +237,14 @@ class _BoardScreenState extends State<BoardScreen> {
 
         return Material(
           child: BoardView(
+            middleWidget: _middleWidget(),
+            itemInMiddleWidget: (check) {
+              print(check);
+            },
+            onDropItemInMiddleWidget: (index1, index2, double) {
+              print(index1);
+              print(index2);
+            },
             lists: _lists,
             boardViewController: boardViewController,
           ),
@@ -248,7 +256,7 @@ class _BoardScreenState extends State<BoardScreen> {
   //-------------------------Board List-------------------------
   Widget _createBoardList(BoardStore boardStore, int listIndex) {
     List<BoardItem> items = [];
-
+    print(boardStore.title);
     if (boardStore.loading) {
       items.add(BoardItem(
         item: Column(
@@ -862,5 +870,33 @@ class _BoardScreenState extends State<BoardScreen> {
     });
 
     return SizedBox.shrink();
+  }
+
+  Widget _middleWidget() {
+    return Positioned(
+      bottom: 0,
+      child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 50,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(color: Colors.red),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Delete",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500),
+              ),
+              Icon(
+                Icons.delete,
+                color: Colors.white,
+                size: 20,
+              )
+            ],
+          )),
+    );
   }
 }

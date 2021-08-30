@@ -6,8 +6,7 @@ import 'package:sembast/sembast.dart';
 class BoardDataSource {
   // A Store with int keys and Map<String, dynamic> values.
   // This Store acts like a persistent map, values of which are Flogs objects converted to Map
-  final _boardDataStore =
-  intMapStoreFactory.store(DBConstants.STORE_BOARD);
+  final _boardDataStore = intMapStoreFactory.store(DBConstants.STORE_BOARD);
 
   // Private getter to shorten the amount of code needed to get the
   // singleton instance of an opened database.
@@ -38,8 +37,7 @@ class BoardDataSource {
     return await _boardDataStore.count(_db);
   }
 
-  Future<List<Board>> getAllSortedByFilter(
-      {List<Filter>? filters}) async {
+  Future<List<Board>> getAllSortedByFilter({List<Filter>? filters}) async {
     //creating finder
     final finder = Finder(
         filter: filters != null ? Filter.and(filters) : null,
@@ -52,38 +50,33 @@ class BoardDataSource {
 
     // Making a List<Board> out of List<RecordSnapshot>
     return recordSnapshots.map((snapshot) {
-      final board= Board.fromMap(snapshot.value);
+      final board = Board.fromMap(snapshot.value);
       // An ID is a key of a record from the database.
       board.id = snapshot.key;
       return board;
     }).toList();
   }
 
-  Future<BoardList> getProjectsFromDb(int projectId) async {
+  Future<BoardList> getBoardsFromDb(int projectId) async {
     // boardlist
-    BoardList projectList = BoardList();
+    BoardList boardList = BoardList();
 
     // we use a Finder.
     final finder = Finder(filter: Filter.equals("projectId", projectId));
 
     // fetching data
-    final recordSnapshots = await _boardDataStore.find(
-        _db,
-        finder: finder
-    );
+    final recordSnapshots = await _boardDataStore.find(_db, finder: finder);
 
     // Making a List<Board> out of List<RecordSnapshot>
     if (recordSnapshots.length > 0) {
-      projectList = BoardList(
+      boardList = BoardList(
           boards: recordSnapshots.map((snapshot) {
-            final board= Board.fromMap(snapshot.value);
-            // An ID is a key of a record from the database.
-            board.id = snapshot.key;
-            return board;
-          }).toList());
+        final board = Board.fromMap(snapshot.value);
+        return board;
+      }).toList());
     }
 
-    return projectList;
+    return boardList;
   }
 
   Future<int> update(Board board) async {
@@ -108,6 +101,15 @@ class BoardDataSource {
   Future deleteAll() async {
     await _boardDataStore.drop(
       _db,
+    );
+  }
+
+  Future<int> deleteByProjectId(int proId) async {
+    var filter = Filter.equals('projectId', proId);
+    var finder = Finder(filter: filter);
+    return await _boardDataStore.delete(
+      _db,
+      finder: finder,
     );
   }
 }

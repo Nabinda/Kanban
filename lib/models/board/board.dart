@@ -15,16 +15,16 @@ class Board {
   });
 
   factory Board.fromMap(Map<String, dynamic> json) => Board(
-    projectId: json["userId"],
-    id: json["id"],
-    title: json["title"],
-    description: json["description"],
-  );
+        projectId: json["projectId"],
+        id: json["id"],
+        title: json["title"],
+        description: json["description"],
+      );
 
   Map<String, dynamic> toMap() => {
-    "userId": projectId,
-    "id": id,
-    "title": title,
-    "description": description,
-  };
+        "projectId": projectId,
+        "id": id,
+        "title": title,
+        "description": description,
+      };
 }

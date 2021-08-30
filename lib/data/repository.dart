@@ -214,10 +214,25 @@ class Repository {
   // Board: ---------------------------------------------------------------------
   Future<BoardList> getBoards(int projectId) async {
     // later use
-    return await _boardApi
-        .getBoards(projectId)
-        .then((boardsList) => boardsList)
-        .catchError((error) => throw error);
+    try {
+      BoardList boardList = await _boardDataSource.getBoardsFromDb(projectId);
+      if (boardList.boards != null) {
+        if (boardList.boards!.length > 0) {
+          return boardList;
+        }
+      }
+      // boardList
+      boardList = await _boardApi.getBoards(projectId);
+
+      await _boardDataSource.deleteByProjectId(projectId);
+
+      boardList.boards?.forEach((board) {
+        _boardDataSource.insert(board);
+      });
+      return boardList;
+    } catch (e) {
+      throw e;
+    }
   }
 
   Future<Board> insertBoard(int proId, String title, String description) async {
