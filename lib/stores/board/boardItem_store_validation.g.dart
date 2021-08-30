@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'board_store_validation.dart';
+part of 'boardItem_store_validation.dart';
 
 // **************************************************************************
 // StoreGenerator
@@ -8,15 +8,15 @@ part of 'board_store_validation.dart';
 
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
-mixin _$BoardStoreValidation on _BoardStoreValidation, Store {
+mixin _$BoardItemStoreValidation on _BoardItemStoreValidation, Store {
   Computed<bool>? _$canAddComputed;
 
   @override
   bool get canAdd => (_$canAddComputed ??= Computed<bool>(() => super.canAdd,
-          name: '_BoardStoreValidation.canAdd'))
+          name: '_BoardItemStoreValidation.canAdd'))
       .value;
 
-  final _$titleAtom = Atom(name: '_BoardStoreValidation.title');
+  final _$titleAtom = Atom(name: '_BoardItemStoreValidation.title');
 
   @override
   String get title {
@@ -31,7 +31,7 @@ mixin _$BoardStoreValidation on _BoardStoreValidation, Store {
     });
   }
 
-  final _$descriptionAtom = Atom(name: '_BoardStoreValidation.description');
+  final _$descriptionAtom = Atom(name: '_BoardItemStoreValidation.description');
 
   @override
   String get description {
@@ -46,7 +46,7 @@ mixin _$BoardStoreValidation on _BoardStoreValidation, Store {
     });
   }
 
-  final _$successAtom = Atom(name: '_BoardStoreValidation.success');
+  final _$successAtom = Atom(name: '_BoardItemStoreValidation.success');
 
   @override
   bool get success {
@@ -61,7 +61,7 @@ mixin _$BoardStoreValidation on _BoardStoreValidation, Store {
     });
   }
 
-  final _$loadingAtom = Atom(name: '_BoardStoreValidation.loading');
+  final _$loadingAtom = Atom(name: '_BoardItemStoreValidation.loading');
 
   @override
   bool get loading {
@@ -76,50 +76,50 @@ mixin _$BoardStoreValidation on _BoardStoreValidation, Store {
     });
   }
 
-  final _$_BoardStoreValidationActionController =
-      ActionController(name: '_BoardStoreValidation');
+  final _$_BoardItemStoreValidationActionController =
+      ActionController(name: '_BoardItemStoreValidation');
 
   @override
   void validateTitle(String value) {
-    final _$actionInfo = _$_BoardStoreValidationActionController.startAction(
-        name: '_BoardStoreValidation.validateTitle');
+    final _$actionInfo = _$_BoardItemStoreValidationActionController
+        .startAction(name: '_BoardItemStoreValidation.validateTitle');
     try {
       return super.validateTitle(value);
     } finally {
-      _$_BoardStoreValidationActionController.endAction(_$actionInfo);
+      _$_BoardItemStoreValidationActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   void setTitle(String value) {
-    final _$actionInfo = _$_BoardStoreValidationActionController.startAction(
-        name: '_BoardStoreValidation.setTitle');
+    final _$actionInfo = _$_BoardItemStoreValidationActionController
+        .startAction(name: '_BoardItemStoreValidation.setTitle');
     try {
       return super.setTitle(value);
     } finally {
-      _$_BoardStoreValidationActionController.endAction(_$actionInfo);
+      _$_BoardItemStoreValidationActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   void setDescription(String value) {
-    final _$actionInfo = _$_BoardStoreValidationActionController.startAction(
-        name: '_BoardStoreValidation.setDescription');
+    final _$actionInfo = _$_BoardItemStoreValidationActionController
+        .startAction(name: '_BoardItemStoreValidation.setDescription');
     try {
       return super.setDescription(value);
     } finally {
-      _$_BoardStoreValidationActionController.endAction(_$actionInfo);
+      _$_BoardItemStoreValidationActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   void validateDescription(String value) {
-    final _$actionInfo = _$_BoardStoreValidationActionController.startAction(
-        name: '_BoardStoreValidation.validateDescription');
+    final _$actionInfo = _$_BoardItemStoreValidationActionController
+        .startAction(name: '_BoardItemStoreValidation.validateDescription');
     try {
       return super.validateDescription(value);
     } finally {
-      _$_BoardStoreValidationActionController.endAction(_$actionInfo);
+      _$_BoardItemStoreValidationActionController.endAction(_$actionInfo);
     }
   }
 
@@ -135,16 +135,16 @@ canAdd: ${canAdd}
   }
 }
 
-mixin _$BoardErrorStore on _BoardErrorStore, Store {
+mixin _$BoardItemErrorStore on _BoardItemErrorStore, Store {
   Computed<bool>? _$hasErrorsValidationComputed;
 
   @override
   bool get hasErrorsValidation => (_$hasErrorsValidationComputed ??=
           Computed<bool>(() => super.hasErrorsValidation,
-              name: '_BoardErrorStore.hasErrorsValidation'))
+              name: '_BoardItemErrorStore.hasErrorsValidation'))
       .value;
 
-  final _$titleAtom = Atom(name: '_BoardErrorStore.title');
+  final _$titleAtom = Atom(name: '_BoardItemErrorStore.title');
 
   @override
   String? get title {
@@ -159,7 +159,7 @@ mixin _$BoardErrorStore on _BoardErrorStore, Store {
     });
   }
 
-  final _$descriptionAtom = Atom(name: '_BoardErrorStore.description');
+  final _$descriptionAtom = Atom(name: '_BoardItemErrorStore.description');
 
   @override
   String? get description {

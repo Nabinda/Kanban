@@ -5,6 +5,7 @@ import 'package:kanban/data/network/apis/organizations/organization_api.dart';
 import 'package:kanban/data/sharedpref/shared_preference_helper.dart';
 import 'package:kanban/models/board/board.dart';
 import 'package:kanban/models/board/board_list.dart';
+import 'package:kanban/models/boardItem/boardItem.dart';
 import 'package:kanban/models/boardItem/boardItem_list.dart';
 import 'package:kanban/models/organization/organization.dart';
 import 'package:kanban/models/organization/organization_list.dart';
@@ -16,6 +17,7 @@ import 'package:sembast/sembast.dart';
 
 import 'local/constants/db_constants.dart';
 import 'local/datasources/board/board_datasource.dart';
+import 'local/datasources/boardItem/boardItem_datasource.dart';
 import 'local/datasources/organization/organization_datasource.dart';
 import 'local/datasources/project/project_datasource.dart';
 import 'network/apis/board/boardItem_api.dart';
@@ -29,6 +31,7 @@ class Repository {
   final OrganizationDataSource _organizationDataSource;
   final ProjectDataSource _projectDataSource;
   final BoardDataSource _boardDataSource;
+  final BoardItemDataSource _boardItemDataSource;
 
   // api objects
   final PostApi _postApi;
@@ -52,6 +55,7 @@ class Repository {
     this._organizationDataSource,
     this._projectDataSource,
     this._boardDataSource,
+    this._boardItemDataSource,
   );
 
   // Post: ---------------------------------------------------------------------
@@ -266,10 +270,54 @@ class Repository {
   // BoardItem: ---------------------------------------------------------------------
   Future<BoardItemList> getBoardItems(int boardId) async {
     // later use
-    return await _boardItemApi
-        .getBoardItems(boardId)
-        .then((boardItemsList) => boardItemsList)
-        .catchError((error) => throw error);
+    try {
+      BoardItemList boardItemList = await _boardItemDataSource.getBoardItemsFromDb(boardId);
+      if (boardItemList.boardItemList != null) {
+        if (boardItemList.boardItemList!.length > 0) {
+          return boardItemList;
+        }
+      }
+      // boardItemList
+      boardItemList = await _boardItemApi.getBoardItems(boardId);
+
+      await _boardItemDataSource.deleteByBoardId(boardId);
+
+      boardItemList.boardItemList?.forEach((boardItem) {
+        _boardItemDataSource.insert(boardItem);
+      });
+      return boardItemList;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<BoardItem> insertBoardItem(
+      int boardId, String title, String description) async {
+    BoardItem brd = BoardItem();
+    try {
+      brd = await _boardItemApi.insertBoard(boardId, title, description);
+      var future = await _boardItemDataSource.insert(brd);
+      if (future != 0) {
+        return brd;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return brd;
+  }
+
+  Future<int> deleteBoardItem(int boardItemId) async {
+    var boardItem = 0;
+    try {
+      boardItem = await _boardApi.deleteBoard(boardItemId);
+      var future = await _boardDataSource.delete(boardItem);
+      if (future != 0) {
+        return boardItem;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return boardItem;
   }
 
   // Login:---------------------------------------------------------------------

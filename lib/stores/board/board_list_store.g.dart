@@ -15,6 +15,13 @@ mixin _$BoardListStore on _BoardListStore, Store {
   bool get loading => (_$loadingComputed ??=
           Computed<bool>(() => super.loading, name: '_BoardListStore.loading'))
       .value;
+  Computed<bool>? _$insertLoadingComputed;
+
+  @override
+  bool get insertLoading =>
+      (_$insertLoadingComputed ??= Computed<bool>(() => super.insertLoading,
+              name: '_BoardListStore.insertLoading'))
+          .value;
 
   final _$fetchBoardsFutureAtom =
       Atom(name: '_BoardListStore.fetchBoardsFuture');
@@ -62,6 +69,38 @@ mixin _$BoardListStore on _BoardListStore, Store {
     });
   }
 
+  final _$fetchBoardInsertFutureAtom =
+      Atom(name: '_BoardListStore.fetchBoardInsertFuture');
+
+  @override
+  ObservableFuture<Board?> get fetchBoardInsertFuture {
+    _$fetchBoardInsertFutureAtom.reportRead();
+    return super.fetchBoardInsertFuture;
+  }
+
+  @override
+  set fetchBoardInsertFuture(ObservableFuture<Board?> value) {
+    _$fetchBoardInsertFutureAtom
+        .reportWrite(value, super.fetchBoardInsertFuture, () {
+      super.fetchBoardInsertFuture = value;
+    });
+  }
+
+  final _$insertSuccessAtom = Atom(name: '_BoardListStore.insertSuccess');
+
+  @override
+  bool get insertSuccess {
+    _$insertSuccessAtom.reportRead();
+    return super.insertSuccess;
+  }
+
+  @override
+  set insertSuccess(bool value) {
+    _$insertSuccessAtom.reportWrite(value, super.insertSuccess, () {
+      super.insertSuccess = value;
+    });
+  }
+
   final _$projectAtom = Atom(name: '_BoardListStore.project');
 
   @override
@@ -90,6 +129,13 @@ mixin _$BoardListStore on _BoardListStore, Store {
   Future<Board> insertBoard(int proId, String title, String description) {
     return _$insertBoardAsyncAction
         .run(() => super.insertBoard(proId, title, description));
+  }
+
+  final _$deleteBoardAsyncAction = AsyncAction('_BoardListStore.deleteBoard');
+
+  @override
+  Future<dynamic> deleteBoard(Board board) {
+    return _$deleteBoardAsyncAction.run(() => super.deleteBoard(board));
   }
 
   final _$_BoardListStoreActionController =
@@ -123,8 +169,11 @@ mixin _$BoardListStore on _BoardListStore, Store {
 fetchBoardsFuture: ${fetchBoardsFuture},
 boardList: ${boardList},
 success: ${success},
+fetchBoardInsertFuture: ${fetchBoardInsertFuture},
+insertSuccess: ${insertSuccess},
 project: ${project},
-loading: ${loading}
+loading: ${loading},
+insertLoading: ${insertLoading}
     ''';
   }
 }

@@ -1,13 +1,13 @@
 import 'package:mobx/mobx.dart';
-part 'board_store_validation.g.dart';
+part 'boardItem_store_validation.g.dart';
 
-class BoardStoreValidation = _BoardStoreValidation with _$BoardStoreValidation;
+class BoardItemStoreValidation = _BoardItemStoreValidation with _$BoardItemStoreValidation;
 
-abstract class _BoardStoreValidation with Store {
+abstract class _BoardItemStoreValidation with Store {
   // store for handling form errors
-  BoardErrorStore boardErrorStore = BoardErrorStore();
+  BoardItemErrorStore boardItemErrorStore = BoardItemErrorStore();
 
-  _BoardStoreValidation() {
+  _BoardItemStoreValidation() {
     _setupValidations();
   }
 
@@ -36,19 +36,19 @@ abstract class _BoardStoreValidation with Store {
 
   @computed
   bool get canAdd =>
-      !boardErrorStore.hasErrorsValidation &&
-      title.isNotEmpty &&
-      description.isNotEmpty;
+      !boardItemErrorStore.hasErrorsValidation &&
+          title.isNotEmpty &&
+          description.isNotEmpty;
 
   // actions:-------------------------------------------------------------------
   @action
   void validateTitle(String value) {
     if (value.isEmpty) {
-      boardErrorStore.title = "Title can't be empty";
+      boardItemErrorStore.title = "Title can't be empty";
     } else if (value.length <= 3) {
-      boardErrorStore.title = "Title is short";
+      boardItemErrorStore.title = "Title is short";
     } else {
-      boardErrorStore.title = null;
+      boardItemErrorStore.title = null;
     }
   }
 
@@ -65,9 +65,9 @@ abstract class _BoardStoreValidation with Store {
   @action
   void validateDescription(String value) {
     if (value.isEmpty) {
-      boardErrorStore.description = "Description can't be empty";
+      boardItemErrorStore.description = "Description can't be empty";
     } else {
-      boardErrorStore.description = null;
+      boardItemErrorStore.description = null;
     }
   }
 
@@ -89,9 +89,9 @@ abstract class _BoardStoreValidation with Store {
   }
 }
 
-class BoardErrorStore = _BoardErrorStore with _$BoardErrorStore;
+class BoardItemErrorStore = _BoardItemErrorStore with _$BoardItemErrorStore;
 
-abstract class _BoardErrorStore with Store {
+abstract class _BoardItemErrorStore with Store {
   @observable
   String? title;
 

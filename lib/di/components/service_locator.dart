@@ -1,4 +1,5 @@
 import 'package:kanban/data/local/datasources/board/board_datasource.dart';
+import 'package:kanban/data/local/datasources/boardItem/boardItem_datasource.dart';
 import 'package:kanban/data/local/datasources/organization/organization_datasource.dart';
 import 'package:kanban/data/local/datasources/post/post_datasource.dart';
 import 'package:kanban/data/local/datasources/project/project_datasource.dart';
@@ -58,6 +59,7 @@ Future<void> setupLocator() async {
       OrganizationDataSource(await getIt.getAsync<Database>()));
   getIt.registerSingleton(ProjectDataSource(await getIt.getAsync<Database>()));
   getIt.registerSingleton(BoardDataSource(await getIt.getAsync<Database>()));
+  getIt.registerSingleton(BoardItemDataSource(await getIt.getAsync<Database>()));
 
   // repository:----------------------------------------------------------------
   getIt.registerSingleton(Repository(
@@ -71,6 +73,7 @@ Future<void> setupLocator() async {
     getIt<OrganizationDataSource>(),
     getIt<ProjectDataSource>(),
     getIt<BoardDataSource>(),
+    getIt<BoardItemDataSource>(),
   ));
 
   // stores:--------------------------------------------------------------------

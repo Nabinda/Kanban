@@ -8,6 +8,7 @@ import 'package:boardview/board_list.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:kanban/models/project/project.dart';
 import 'package:kanban/stores/board/boardItem_store.dart';
+import 'package:kanban/stores/board/boardItem_store_validation.dart';
 import 'package:kanban/stores/board/board_list_store.dart';
 import 'package:kanban/stores/board/board_store.dart';
 import 'package:kanban/stores/board/board_store_validation.dart';
@@ -34,15 +35,22 @@ class _BoardScreenState extends State<BoardScreen> {
   late OrganizationListStore _organizationListStore;
   late ThemeStore _themeStore;
   BoardViewController boardViewController = new BoardViewController();
+
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
+
   late OrganizationStoreValidation _organizationStoreValidation =
       new OrganizationStoreValidation();
   late BoardStoreValidation _boardStoreValidation = new BoardStoreValidation();
+  late BoardItemStoreValidation _boardItemStoreValidation = new BoardItemStoreValidation();
   late ProjectStoreValidation _projectStoreValidation =
       new ProjectStoreValidation();
+
   TextEditingController _titleProjectController = TextEditingController();
   TextEditingController _descriptionProjectController = TextEditingController();
+
+  TextEditingController _boardItemTitleController = TextEditingController();
+  TextEditingController _boardItemDescriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -256,7 +264,6 @@ class _BoardScreenState extends State<BoardScreen> {
   //-------------------------Board List-------------------------
   Widget _createBoardList(BoardStore boardStore, int listIndex) {
     List<BoardItem> items = [];
-    print(boardStore.title);
     if (boardStore.loading) {
       items.add(BoardItem(
         item: Column(
@@ -719,7 +726,7 @@ class _BoardScreenState extends State<BoardScreen> {
                     Padding(
                       padding: const EdgeInsets.only(
                           top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
-                      child: _buildCreateBoardItemForm(),
+                      child: _buildCreateBoardItemForm(listIndex),
                     ),
                   ]),
             );
@@ -727,7 +734,7 @@ class _BoardScreenState extends State<BoardScreen> {
         });
   }
 
-  Widget _buildCreateBoardItemForm() {
+  Widget _buildCreateBoardItemForm(int listIndex) {
     return Container(
       padding: EdgeInsets.only(left: 15.0, right: 15.0),
       child: Column(
@@ -773,17 +780,17 @@ class _BoardScreenState extends State<BoardScreen> {
               icon: Icons.create,
               iconColor:
                   _themeStore.darkMode ? Colors.white70 : Colors.blue.shade200,
-              textController: _titleController,
+              textController: _boardItemTitleController,
               inputAction: TextInputAction.next,
               autoFocus: false,
               onChanged: (value) {
-                _organizationStoreValidation.setTitle(_titleController.text);
+                _boardItemStoreValidation.setTitle(_boardItemTitleController.text);
               },
               onFieldSubmitted: (value) {
                 //  FocusScope.of(context).requestFocus(_passwordFocusNode);
               },
               errorText:
-                  _organizationStoreValidation.organizationErrorStore.title,
+                  _boardItemStoreValidation.boardItemErrorStore.title,
             );
           }),
           SizedBox(
@@ -799,18 +806,18 @@ class _BoardScreenState extends State<BoardScreen> {
                 iconColor: _themeStore.darkMode
                     ? Colors.white70
                     : Colors.blue.shade200,
-                textController: _descriptionController,
+                textController: _boardItemDescriptionController,
                 inputAction: TextInputAction.next,
                 autoFocus: false,
                 onChanged: (value) {
-                  _organizationStoreValidation
-                      .setDescription(_descriptionController.text);
+                  _boardItemStoreValidation
+                      .setDescription(_boardItemDescriptionController.text);
                 },
                 onFieldSubmitted: (value) {
                   //  FocusScope.of(context).requestFocus(_passwordFocusNode);
                 },
-                errorText: _organizationStoreValidation
-                    .organizationErrorStore.description,
+                errorText: _boardItemStoreValidation
+                    .boardItemErrorStore.description,
               );
             },
           ),
@@ -829,12 +836,15 @@ class _BoardScreenState extends State<BoardScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18.0),
                       )),
-                  onPressed: () {
-                    if (_organizationStoreValidation.canAdd) {
+                  onPressed: () async {
+                    if (_boardItemStoreValidation.canAdd) {
                       DeviceUtils.hideKeyboard(context);
+                      BoardStore boardStore = _boardListStore.boardList[listIndex];
+                      boardStore.insertBoardItem(boardStore.id!, _boardItemTitleController.text, _boardItemDescriptionController.text);
+                      _boardItemStoreValidation.reset();
+                      _boardItemTitleController.clear();
+                      _boardItemDescriptionController.clear();
                       Navigator.of(context).pop();
-                      _titleController.clear();
-                      _descriptionController.clear();
                     } else {
                       _showErrorMessage('Please fill in all fields');
                     }

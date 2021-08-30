@@ -50,4 +50,32 @@ class BoardItemApi {
       throw e;
     }
   }
+
+  Future<BoardItem> insertBoard(int boardId, String title, String description) async {
+    try {
+      //final res = await _dioClient.post(Endpoints.getOrganization + organization.id.toString());
+      //return OrganizationList.fromJson(res);
+
+      BoardItem brdItem = new BoardItem(
+          id: DateTime.now().millisecond,
+          title: title,
+          description: description,
+          boardId: boardId);
+
+      return await Future.delayed(Duration(seconds: 2), () => brdItem);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<int> deleteBoardItem(int boardItemId) async {
+    try {
+      //final res = await _dioClient.delete(Endpoints.deleteBoard + boardId.toString());
+      //return Board.fromJson(res);
+
+      return await Future.delayed(Duration(seconds: 2), () => boardItemId);
+    } catch (e) {
+      throw e;
+    }
+  }
 }

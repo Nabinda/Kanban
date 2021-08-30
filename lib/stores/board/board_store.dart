@@ -77,4 +77,33 @@ abstract class _BoardStore extends Board with Store {
         description: boardItem.description);
     boardItemList.add(boardItemStore);
   }
+
+  @action
+  Future<BoardItem> insertBoardItem(int boardId, String title, String description) async {
+    Future<BoardItem> future = _repository.insertBoardItem(boardId, title, description);
+    // fetchBoardInsertFuture = ObservableFuture(future);
+    future.then((boardItem) {
+      BoardItemStore boardStore = BoardItemStore(_repository,
+          boardId: boardId,
+          id: boardItem.id,
+          title: boardItem.title,
+          description: boardItem.description);
+      this.boardItemList.add(boardStore);
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
+    return future;
+  }
+
+  @action
+  Future deleteBoard(BoardItem boardItem) async {
+    final future = _repository.deleteBoardItem(boardItem.id!);
+    //deletePostFuture = ObservableFuture(future);
+    future.then((item) {
+      this.boardItemList.removeWhere((element) => element.id == boardItem.id);
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
+    return future;
+  }
 }

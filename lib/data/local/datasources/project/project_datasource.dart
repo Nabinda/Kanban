@@ -87,9 +87,6 @@ class ProjectDataSource {
   Future<int> update(Project project) async {
     // For filtering by key (ID), RegEx, greater than, and many other criteria,
     // we use a Finder.
-    print("updating");
-    print(project.title);
-    print(project.id);
     final finder = Finder(filter: Filter.equals("id", project.id));
     return await _projectDataStore.update(
       _db,

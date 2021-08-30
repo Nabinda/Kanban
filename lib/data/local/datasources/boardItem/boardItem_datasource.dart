@@ -59,7 +59,7 @@ class BoardItemDataSource {
     }).toList();
   }
 
-  Future<BoardItemList> getProjectsFromDb(int boardId) async {
+  Future<BoardItemList> getBoardItemsFromDb(int boardId) async {
     // boardlist
     BoardItemList boardItemList = BoardItemList();
 
@@ -77,8 +77,6 @@ class BoardItemDataSource {
       boardItemList = BoardItemList(
           boardItemList: recordSnapshots.map((snapshot) {
             final boardItem= BoardItem.fromMap(snapshot.value);
-            // An ID is a key of a record from the database.
-            boardItem.id = snapshot.key;
             return boardItem;
           }).toList());
     }
@@ -108,6 +106,15 @@ class BoardItemDataSource {
   Future deleteAll() async {
     await _boardItemDataSource.drop(
       _db,
+    );
+  }
+
+  Future<int> deleteByBoardId(int boardId) async {
+    var filter = Filter.equals('boardId', boardId);
+    var finder = Finder(filter: filter);
+    return await _boardItemDataSource.delete(
+      _db,
+      finder: finder,
     );
   }
 }
