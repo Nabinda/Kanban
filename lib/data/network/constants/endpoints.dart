@@ -14,4 +14,5 @@ class Endpoints {
   static const String getPosts = baseUrl + "/users/1/posts";
   static const String getOrganizations = baseUrl + "/organizations";
   static const String getProjects = baseUrl + "/projects";
+  static const String deleteBoard = baseUrl + "/boards";
 }

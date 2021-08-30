@@ -20,7 +20,7 @@ class BoardApi {
       // Fake API
       List<Board> boards = [
         Board(
-          projectId: 454,
+          projectId: 1,
           id: 1,
           title: "Todo",
           description: "desc 1",
@@ -69,6 +69,17 @@ class BoardApi {
           projectId: proId);
 
       return await Future.delayed(Duration(seconds: 2), () => brd);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<int> deleteBoard(int boardId) async {
+    try {
+      //final res = await _dioClient.delete(Endpoints.deleteBoard + boardId.toString());
+      //return Board.fromJson(res);
+
+      return await Future.delayed(Duration(seconds: 2), () => boardId);
     } catch (e) {
       throw e;
     }

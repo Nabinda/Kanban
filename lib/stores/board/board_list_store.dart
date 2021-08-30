@@ -107,4 +107,16 @@ abstract class _BoardListStore with Store {
     });
     return future;
   }
+
+  @action
+  Future deleteBoard(Board board) async {
+    final future = _repository.deleteBoard(board.id!);
+    //deletePostFuture = ObservableFuture(future);
+    future.then((item) {
+      this.boardList.removeWhere((element) => element.id == board.id);
+    }).catchError((error) {
+      errorStore.errorMessage = DioErrorUtil.handleError(error);
+    });
+    return future;
+  }
 }

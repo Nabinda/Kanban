@@ -249,6 +249,20 @@ class Repository {
     return brd;
   }
 
+  Future<int> deleteBoard(int boardId) async {
+    var brd = 0;
+    try {
+      brd = await _boardApi.deleteBoard(boardId);
+      var future = await _boardDataSource.delete(brd);
+      if (future != 0) {
+        return brd;
+      }
+    } catch (e) {
+      throw e;
+    }
+    return brd;
+  }
+
   // BoardItem: ---------------------------------------------------------------------
   Future<BoardItemList> getBoardItems(int boardId) async {
     // later use

@@ -242,8 +242,8 @@ class _BoardScreenState extends State<BoardScreen> {
               print(check);
             },
             onDropItemInMiddleWidget: (index1, index2, double) {
-              print(index1);
-              print(index2);
+              var deleteBoard = _boardListStore.boardList[index1!];
+              _boardListStore.deleteBoard(deleteBoard);
             },
             lists: _lists,
             boardViewController: boardViewController,

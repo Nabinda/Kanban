@@ -90,8 +90,8 @@ class BoardDataSource {
     );
   }
 
-  Future<int> delete(Board board) async {
-    final finder = Finder(filter: Filter.equals("id", board.id));
+  Future<int> delete(int boardId) async {
+    final finder = Finder(filter: Filter.equals("id", boardId));
     return await _boardDataStore.delete(
       _db,
       finder: finder,
