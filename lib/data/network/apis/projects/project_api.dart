@@ -18,28 +18,8 @@ class ProjectApi {
       //return ProjectList.fromJson(res);
 
       // Fake API
-      List<Project> organizations = [
-        Project(
-          organizationId: 1,
-          id: 1,
-          title: "Summer Project",
-          description: "desc lorem ipsum",
-        ),
-        Project(
-          organizationId: 1,
-          id: 2,
-          title: "Todo",
-          description: "desc lorem",
-        ),
-        Project(
-          organizationId: 2,
-          id: 2,
-          title: "Daily Tasks",
-          description: "desc lorem",
-        ),
-      ];
-
-      List<Project> filteredProjects = organizations
+      List<Project> projects = [];
+      List<Project> filteredProjects = projects
           .where((item) => item.organizationId == organizationId)
           .toList();
 

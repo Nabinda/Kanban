@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:boardview/board_item.dart';
 import 'package:boardview/board_list.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:kanban/models/board/board.dart';
 import 'package:kanban/models/project/project.dart';
 import 'package:kanban/stores/board/boardItem_store.dart';
 import 'package:kanban/stores/board/boardItem_store_validation.dart';
@@ -42,7 +43,8 @@ class _BoardScreenState extends State<BoardScreen> {
   late OrganizationStoreValidation _organizationStoreValidation =
       new OrganizationStoreValidation();
   late BoardStoreValidation _boardStoreValidation = new BoardStoreValidation();
-  late BoardItemStoreValidation _boardItemStoreValidation = new BoardItemStoreValidation();
+  late BoardItemStoreValidation _boardItemStoreValidation =
+      new BoardItemStoreValidation();
   late ProjectStoreValidation _projectStoreValidation =
       new ProjectStoreValidation();
 
@@ -50,7 +52,8 @@ class _BoardScreenState extends State<BoardScreen> {
   TextEditingController _descriptionProjectController = TextEditingController();
 
   TextEditingController _boardItemTitleController = TextEditingController();
-  TextEditingController _boardItemDescriptionController = TextEditingController();
+  TextEditingController _boardItemDescriptionController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -224,7 +227,12 @@ class _BoardScreenState extends State<BoardScreen> {
         }
         // Add empty BoardList with "Add Board" button at the end
         _lists.add(BoardList(
+          items: [],
           draggable: false,
+          onStartDragList: (int? listIndex) {},
+          onDropList: (int? listIndex, int? oldListIndex) {
+            //TODO: return boardItem to original board
+          },
           backgroundColor: _themeStore.darkMode
               ? Colors.white70
               : Color.fromARGB(255, 235, 236, 240),
@@ -249,9 +257,17 @@ class _BoardScreenState extends State<BoardScreen> {
             itemInMiddleWidget: (check) {
               print(check);
             },
-            onDropItemInMiddleWidget: (index1, index2, double) {
-              var deleteBoard = _boardListStore.boardList[index1!];
-              _boardListStore.deleteBoard(deleteBoard);
+            onDropItemInMiddleWidget: (index1, index2, double) async {
+              if (index1 != null && index2 == null) {
+                Board deleteBoard = _boardListStore.boardList[index1];
+                _showDeleteLoadingMessage("Deleting board.");
+                await _boardListStore.deleteBoard(deleteBoard);
+              }
+
+              if (index1 != null && index2 != null) {
+                _showDeleteLoadingMessage("Deleting board item.");
+                await _boardListStore.deleteBoardItem(index1, index2);
+              }
             },
             lists: _lists,
             boardViewController: boardViewController,
@@ -264,6 +280,7 @@ class _BoardScreenState extends State<BoardScreen> {
   //-------------------------Board List-------------------------
   Widget _createBoardList(BoardStore boardStore, int listIndex) {
     List<BoardItem> items = [];
+
     if (boardStore.loading) {
       items.add(BoardItem(
         item: Column(
@@ -309,78 +326,43 @@ class _BoardScreenState extends State<BoardScreen> {
       for (int i = 0; i < boardStore.boardItemList.length; i++) {
         items.add(buildBoardItem(boardStore.boardItemList[i]) as BoardItem);
       }
-      if (items.length > 0) {
-        return BoardList(
-          items: items,
-          footer: IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _showBoardItemBottomSheet(context, listIndex),
-          ),
-          onStartDragList: (int? listIndex) {},
-          onTapList: (int? listIndex) async {},
-          onDropList: (int? listIndex, int? oldListIndex) {
-            //Update our local list data
-            // var list = _listData[oldListIndex!];
-            // _listData.removeAt(oldListIndex);
-            // _listData.insert(listIndex!, list);
+      return BoardList(
+        items: items,
+        footer: IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () {
+            _showBoardItemBottomSheet(context, listIndex);
           },
-          headerBackgroundColor: _themeStore.darkMode
-              ? Colors.white70
-              : Color.fromARGB(255, 235, 236, 240),
-          backgroundColor: _themeStore.darkMode
-              ? Colors.white70
-              : Color.fromARGB(255, 235, 236, 240),
-          header: [
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(5),
-                child: Text(
-                  boardStore.title!,
-                  style: TextStyle(
-                      fontSize: 18,
-                      color:
-                          _themeStore.darkMode ? Colors.black38 : Colors.black),
-                ),
+        ),
+        onStartDragList: (int? listIndex) {},
+        onTapList: (int? listIndex) async {},
+        onDropList: (int? listIndex, int? oldListIndex) {
+          //Update our local list data
+          // var list = _listData[oldListIndex!];
+          // _listData.removeAt(oldListIndex);
+          // _listData.insert(listIndex!, list);
+        },
+        headerBackgroundColor: _themeStore.darkMode
+            ? Colors.white70
+            : Color.fromARGB(255, 235, 236, 240),
+        backgroundColor: _themeStore.darkMode
+            ? Colors.white70
+            : Color.fromARGB(255, 235, 236, 240),
+        header: [
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(5),
+              child: Text(
+                boardStore.title!,
+                style: TextStyle(
+                    fontSize: 18,
+                    color:
+                        _themeStore.darkMode ? Colors.black38 : Colors.black),
               ),
             ),
-          ],
-        );
-      } else {
-        items.add(BoardItem(
-            draggable: false,
-            item: Card(
-              color: Colors.transparent,
-            )));
-        return BoardList(
-          items: items,
-          headerBackgroundColor: _themeStore.darkMode
-              ? Colors.white70
-              : Color.fromARGB(255, 235, 236, 240),
-          backgroundColor: _themeStore.darkMode
-              ? Colors.white70
-              : Color.fromARGB(255, 235, 236, 240),
-          footer: IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              // displayBottomSheet(context, "Item", listIndex);
-            },
           ),
-          header: [
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(5),
-                child: Text(
-                  boardStore.title!,
-                  style: TextStyle(
-                      fontSize: 18,
-                      color:
-                          _themeStore.darkMode ? Colors.black38 : Colors.black),
-                ),
-              ),
-            ),
-          ],
-        );
-      }
+        ],
+      );
     }
   }
 
@@ -673,7 +655,7 @@ class _BoardScreenState extends State<BoardScreen> {
           ),
           Observer(
             builder: (context) {
-              return _boardListStore.insertLoading
+              return _boardListStore.insertBoardLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(
                       child: Text('Create New Board',
@@ -784,13 +766,13 @@ class _BoardScreenState extends State<BoardScreen> {
               inputAction: TextInputAction.next,
               autoFocus: false,
               onChanged: (value) {
-                _boardItemStoreValidation.setTitle(_boardItemTitleController.text);
+                _boardItemStoreValidation
+                    .setTitle(_boardItemTitleController.text);
               },
               onFieldSubmitted: (value) {
                 //  FocusScope.of(context).requestFocus(_passwordFocusNode);
               },
-              errorText:
-                  _boardItemStoreValidation.boardItemErrorStore.title,
+              errorText: _boardItemStoreValidation.boardItemErrorStore.title,
             );
           }),
           SizedBox(
@@ -816,8 +798,8 @@ class _BoardScreenState extends State<BoardScreen> {
                 onFieldSubmitted: (value) {
                   //  FocusScope.of(context).requestFocus(_passwordFocusNode);
                 },
-                errorText: _boardItemStoreValidation
-                    .boardItemErrorStore.description,
+                errorText:
+                    _boardItemStoreValidation.boardItemErrorStore.description,
               );
             },
           ),
@@ -826,33 +808,67 @@ class _BoardScreenState extends State<BoardScreen> {
           ),
           Observer(
             builder: (context) {
-              return ElevatedButton(
-                  child: Text('Create New Board Item',
-                      style: TextStyle(color: Colors.white)),
-                  style: TextButton.styleFrom(
-                      primary: Colors.blue,
-                      onSurface: Colors.red,
-                      minimumSize: Size(128, 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      )),
-                  onPressed: () async {
-                    if (_boardItemStoreValidation.canAdd) {
-                      DeviceUtils.hideKeyboard(context);
-                      BoardStore boardStore = _boardListStore.boardList[listIndex];
-                      boardStore.insertBoardItem(boardStore.id!, _boardItemTitleController.text, _boardItemDescriptionController.text);
-                      _boardItemStoreValidation.reset();
-                      _boardItemTitleController.clear();
-                      _boardItemDescriptionController.clear();
-                      Navigator.of(context).pop();
-                    } else {
-                      _showErrorMessage('Please fill in all fields');
-                    }
-                  });
+              return _boardListStore.insertBoardItemLoading
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      child: Text('Create New Board Item',
+                          style: TextStyle(color: Colors.white)),
+                      style: TextButton.styleFrom(
+                          primary: Colors.blue,
+                          onSurface: Colors.red,
+                          minimumSize: Size(128, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          )),
+                      onPressed: () async {
+                        if (_boardItemStoreValidation.canAdd) {
+                          DeviceUtils.hideKeyboard(context);
+                          BoardStore boardStore =
+                              _boardListStore.boardList[listIndex];
+                          await _boardListStore.insertBoardItem(
+                              boardStore.id!,
+                              _boardItemTitleController.text,
+                              _boardItemDescriptionController.text);
+                          _boardItemStoreValidation.reset();
+                          _boardItemTitleController.clear();
+                          _boardItemDescriptionController.clear();
+                          Navigator.of(context).pop();
+                        } else {
+                          _showErrorMessage('Please fill in all fields');
+                        }
+                      });
             },
           )
         ],
       ),
+    );
+  }
+
+  Widget _middleWidget() {
+    return Positioned(
+      bottom: 0,
+      child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 50,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(color: Colors.red),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Delete",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500),
+              ),
+              Icon(
+                Icons.delete,
+                color: Colors.white,
+                size: 20,
+              )
+            ],
+          )),
     );
   }
 
@@ -882,31 +898,16 @@ class _BoardScreenState extends State<BoardScreen> {
     return SizedBox.shrink();
   }
 
-  Widget _middleWidget() {
-    return Positioned(
-      bottom: 0,
-      child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: 50,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(color: Colors.red),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Delete",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500),
-              ),
-              Icon(
-                Icons.delete,
-                color: Colors.white,
-                size: 20,
-              )
-            ],
-          )),
-    );
+  _showDeleteLoadingMessage(String message) {
+    Future.delayed(Duration(milliseconds: 0), () {
+      FlushbarHelper.createLoading(
+        linearProgressIndicator: LinearProgressIndicator(),
+        message: message,
+        title: "Delete",
+        duration: Duration(seconds: 2),
+      )..show(context);
+    });
+
+    return SizedBox.shrink();
   }
 }

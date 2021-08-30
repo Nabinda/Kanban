@@ -23,19 +23,7 @@ class OrganizationApi {
           userId: 1,
           id: 1,
           title: "Personal Workspace",
-          description: "desc lorem",
-        ),
-        Organization(
-          userId: 1,
-          id: 2,
-          title: "Company Workspace",
-          description: "lorem ipsum doret",
-        ),
-        Organization(
-          userId: 1,
-          id: 3,
-          title: "Other",
-          description: "lorem ipsum doret",
+          description: "Your personal workspace",
         ),
       ];
 

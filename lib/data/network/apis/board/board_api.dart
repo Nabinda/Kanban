@@ -18,32 +18,7 @@ class BoardApi {
       //return BoardList.fromJson(res);
 
       // Fake API
-      List<Board> boards = [
-        Board(
-          projectId: 1,
-          id: 1,
-          title: "Todo",
-          description: "desc 1",
-        ),
-        Board(
-          projectId: 1,
-          id: 2,
-          title: "Doing",
-          description: "desc 3",
-        ),
-        Board(
-          projectId: 1,
-          id: 3,
-          title: "Done",
-          description: "desc 3",
-        ),
-        Board(
-          projectId: 2,
-          id: 2,
-          title: "Todo",
-          description: "desc 4",
-        ),
-      ];
+      List<Board> boards = [];
 
       List<Board> filteredBoards =
           boards.where((item) => item.projectId == projectId).toList();
@@ -84,5 +59,4 @@ class BoardApi {
       throw e;
     }
   }
-
 }

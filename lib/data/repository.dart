@@ -128,8 +128,13 @@ class Repository {
       }
       organizationList = await _organizationApi.getOrganizations();
 
-      // deleteAll because key might repeat, which messes up the id field of Organization
+      // deleteAll because key might repeat, which messes up the id field
       await _organizationDataSource.deleteAll();
+
+      //TODO: do these separately
+      await _projectDataSource.deleteAll();
+      await _boardDataSource.deleteAll();
+      await _boardItemDataSource.deleteAll();
 
       organizationList.organizations?.forEach((org) {
         _organizationDataSource.insert(org);
@@ -307,17 +312,16 @@ class Repository {
   }
 
   Future<int> deleteBoardItem(int boardItemId) async {
-    var boardItem = 0;
     try {
-      boardItem = await _boardApi.deleteBoard(boardItemId);
-      var future = await _boardDataSource.delete(boardItem);
+      boardItemId = await _boardItemApi.deleteBoardItem(boardItemId);
+      var future = await _boardItemDataSource.delete(boardItemId);
       if (future != 0) {
-        return boardItem;
+        return boardItemId;
       }
     } catch (e) {
       throw e;
     }
-    return boardItem;
+    return boardItemId;
   }
 
   // Login:---------------------------------------------------------------------

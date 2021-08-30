@@ -15,27 +15,47 @@ mixin _$BoardListStore on _BoardListStore, Store {
   bool get loading => (_$loadingComputed ??=
           Computed<bool>(() => super.loading, name: '_BoardListStore.loading'))
       .value;
-  Computed<bool>? _$insertLoadingComputed;
+  Computed<bool>? _$insertBoardLoadingComputed;
 
   @override
-  bool get insertLoading =>
-      (_$insertLoadingComputed ??= Computed<bool>(() => super.insertLoading,
-              name: '_BoardListStore.insertLoading'))
-          .value;
-
-  final _$fetchBoardsFutureAtom =
-      Atom(name: '_BoardListStore.fetchBoardsFuture');
+  bool get insertBoardLoading => (_$insertBoardLoadingComputed ??=
+          Computed<bool>(() => super.insertBoardLoading,
+              name: '_BoardListStore.insertBoardLoading'))
+      .value;
+  Computed<bool>? _$deleteBoardLoadingComputed;
 
   @override
-  ObservableFuture<BoardList?> get fetchBoardsFuture {
-    _$fetchBoardsFutureAtom.reportRead();
-    return super.fetchBoardsFuture;
+  bool get deleteBoardLoading => (_$deleteBoardLoadingComputed ??=
+          Computed<bool>(() => super.deleteBoardLoading,
+              name: '_BoardListStore.deleteBoardLoading'))
+      .value;
+  Computed<bool>? _$insertBoardItemLoadingComputed;
+
+  @override
+  bool get insertBoardItemLoading => (_$insertBoardItemLoadingComputed ??=
+          Computed<bool>(() => super.insertBoardItemLoading,
+              name: '_BoardListStore.insertBoardItemLoading'))
+      .value;
+  Computed<bool>? _$deleteBoardItemLoadingComputed;
+
+  @override
+  bool get deleteBoardItemLoading => (_$deleteBoardItemLoadingComputed ??=
+          Computed<bool>(() => super.deleteBoardItemLoading,
+              name: '_BoardListStore.deleteBoardItemLoading'))
+      .value;
+
+  final _$projectAtom = Atom(name: '_BoardListStore.project');
+
+  @override
+  Project? get project {
+    _$projectAtom.reportRead();
+    return super.project;
   }
 
   @override
-  set fetchBoardsFuture(ObservableFuture<BoardList?> value) {
-    _$fetchBoardsFutureAtom.reportWrite(value, super.fetchBoardsFuture, () {
-      super.fetchBoardsFuture = value;
+  set project(Project? value) {
+    _$projectAtom.reportWrite(value, super.project, () {
+      super.project = value;
     });
   }
 
@@ -69,6 +89,22 @@ mixin _$BoardListStore on _BoardListStore, Store {
     });
   }
 
+  final _$fetchBoardsFutureAtom =
+      Atom(name: '_BoardListStore.fetchBoardsFuture');
+
+  @override
+  ObservableFuture<BoardList?> get fetchBoardsFuture {
+    _$fetchBoardsFutureAtom.reportRead();
+    return super.fetchBoardsFuture;
+  }
+
+  @override
+  set fetchBoardsFuture(ObservableFuture<BoardList?> value) {
+    _$fetchBoardsFutureAtom.reportWrite(value, super.fetchBoardsFuture, () {
+      super.fetchBoardsFuture = value;
+    });
+  }
+
   final _$fetchBoardInsertFutureAtom =
       Atom(name: '_BoardListStore.fetchBoardInsertFuture');
 
@@ -86,33 +122,53 @@ mixin _$BoardListStore on _BoardListStore, Store {
     });
   }
 
-  final _$insertSuccessAtom = Atom(name: '_BoardListStore.insertSuccess');
+  final _$boardDeleteFutureAtom =
+      Atom(name: '_BoardListStore.boardDeleteFuture');
 
   @override
-  bool get insertSuccess {
-    _$insertSuccessAtom.reportRead();
-    return super.insertSuccess;
+  ObservableFuture<int?> get boardDeleteFuture {
+    _$boardDeleteFutureAtom.reportRead();
+    return super.boardDeleteFuture;
   }
 
   @override
-  set insertSuccess(bool value) {
-    _$insertSuccessAtom.reportWrite(value, super.insertSuccess, () {
-      super.insertSuccess = value;
+  set boardDeleteFuture(ObservableFuture<int?> value) {
+    _$boardDeleteFutureAtom.reportWrite(value, super.boardDeleteFuture, () {
+      super.boardDeleteFuture = value;
     });
   }
 
-  final _$projectAtom = Atom(name: '_BoardListStore.project');
+  final _$boardItemInsertFutureAtom =
+      Atom(name: '_BoardListStore.boardItemInsertFuture');
 
   @override
-  Project? get project {
-    _$projectAtom.reportRead();
-    return super.project;
+  ObservableFuture<BoardItem?> get boardItemInsertFuture {
+    _$boardItemInsertFutureAtom.reportRead();
+    return super.boardItemInsertFuture;
   }
 
   @override
-  set project(Project? value) {
-    _$projectAtom.reportWrite(value, super.project, () {
-      super.project = value;
+  set boardItemInsertFuture(ObservableFuture<BoardItem?> value) {
+    _$boardItemInsertFutureAtom.reportWrite(value, super.boardItemInsertFuture,
+        () {
+      super.boardItemInsertFuture = value;
+    });
+  }
+
+  final _$boardItemDeleteFutureAtom =
+      Atom(name: '_BoardListStore.boardItemDeleteFuture');
+
+  @override
+  ObservableFuture<int?> get boardItemDeleteFuture {
+    _$boardItemDeleteFutureAtom.reportRead();
+    return super.boardItemDeleteFuture;
+  }
+
+  @override
+  set boardItemDeleteFuture(ObservableFuture<int?> value) {
+    _$boardItemDeleteFutureAtom.reportWrite(value, super.boardItemDeleteFuture,
+        () {
+      super.boardItemDeleteFuture = value;
     });
   }
 
@@ -136,6 +192,25 @@ mixin _$BoardListStore on _BoardListStore, Store {
   @override
   Future<dynamic> deleteBoard(Board board) {
     return _$deleteBoardAsyncAction.run(() => super.deleteBoard(board));
+  }
+
+  final _$insertBoardItemAsyncAction =
+      AsyncAction('_BoardListStore.insertBoardItem');
+
+  @override
+  Future<BoardItem> insertBoardItem(
+      int boardId, String title, String description) {
+    return _$insertBoardItemAsyncAction
+        .run(() => super.insertBoardItem(boardId, title, description));
+  }
+
+  final _$deleteBoardItemAsyncAction =
+      AsyncAction('_BoardListStore.deleteBoardItem');
+
+  @override
+  Future<int> deleteBoardItem(int boardIndex, int boardItemIndex) {
+    return _$deleteBoardItemAsyncAction
+        .run(() => super.deleteBoardItem(boardIndex, boardItemIndex));
   }
 
   final _$_BoardListStoreActionController =
@@ -166,14 +241,19 @@ mixin _$BoardListStore on _BoardListStore, Store {
   @override
   String toString() {
     return '''
-fetchBoardsFuture: ${fetchBoardsFuture},
+project: ${project},
 boardList: ${boardList},
 success: ${success},
+fetchBoardsFuture: ${fetchBoardsFuture},
 fetchBoardInsertFuture: ${fetchBoardInsertFuture},
-insertSuccess: ${insertSuccess},
-project: ${project},
+boardDeleteFuture: ${boardDeleteFuture},
+boardItemInsertFuture: ${boardItemInsertFuture},
+boardItemDeleteFuture: ${boardItemDeleteFuture},
 loading: ${loading},
-insertLoading: ${insertLoading}
+insertBoardLoading: ${insertBoardLoading},
+deleteBoardLoading: ${deleteBoardLoading},
+insertBoardItemLoading: ${insertBoardItemLoading},
+deleteBoardItemLoading: ${deleteBoardItemLoading}
     ''';
   }
 }

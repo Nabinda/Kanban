@@ -68,23 +68,6 @@ mixin _$BoardStore on _BoardStore, Store {
     return _$getBoardItemsAsyncAction.run(() => super.getBoardItems(boardId));
   }
 
-  final _$insertBoardItemAsyncAction =
-      AsyncAction('_BoardStore.insertBoardItem');
-
-  @override
-  Future<BoardItem> insertBoardItem(
-      int boardId, String title, String description) {
-    return _$insertBoardItemAsyncAction
-        .run(() => super.insertBoardItem(boardId, title, description));
-  }
-
-  final _$deleteBoardAsyncAction = AsyncAction('_BoardStore.deleteBoard');
-
-  @override
-  Future<dynamic> deleteBoard(BoardItem boardItem) {
-    return _$deleteBoardAsyncAction.run(() => super.deleteBoard(boardItem));
-  }
-
   final _$_BoardStoreActionController = ActionController(name: '_BoardStore');
 
   @override

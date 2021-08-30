@@ -95,8 +95,8 @@ class BoardItemDataSource {
     );
   }
 
-  Future<int> delete(BoardItem boardItem) async {
-    final finder = Finder(filter: Filter.equals("id", boardItem.id));
+  Future<int> delete(int boardItemId) async {
+    final finder = Finder(filter: Filter.equals("id", boardItemId));
     return await _boardItemDataSource.delete(
       _db,
       finder: finder,
