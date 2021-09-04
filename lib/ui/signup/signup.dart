@@ -1,4 +1,5 @@
 import 'package:another_flushbar/flushbar_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kanban/data/sharedpref/constants/preferences.dart';
 import 'package:kanban/stores/form/signUp_form_store.dart';
 import 'package:kanban/utils/routes/routes.dart';
@@ -45,6 +46,17 @@ class _SignupScreenState extends State<SignupScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _themeStore = Provider.of<ThemeStore>(context);
+  }
+
+  Future<void> signUp(String? email, String? password) async{
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email!, password: password!).catchError((error){
+      if(error.code == "email-already-in-use"){
+        print(error.code);
+       return _showErrorMessage('Email Already in Use');
+      }
+    }).then((_){
+      Navigator.pushNamed(context, Routes.login);
+    });
   }
 
   @override
@@ -216,7 +228,7 @@ class _SignupScreenState extends State<SignupScreen> {
         if (_signupStore.canRegister) {
           DeviceUtils.hideKeyboard(context);
           _signupStore.register();
-          Navigator.pushNamed(context, Routes.login);
+          signUp(_userEmailController.text, _passwordController.text);
         } else {
           _showErrorMessage('Please fill in all fields');
         }
@@ -226,13 +238,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Widget navigate(BuildContext context) {
     SharedPreferences.getInstance().then((prefs) {
-      prefs.setBool(Preferences.is_logged_in, true);
+      prefs.setBool(Preferences.is_logged_in, false);
     });
 
-    Future.delayed(Duration(milliseconds: 0), () {
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          Routes.organizationList, (Route<dynamic> route) => false);
-    });
 
     return Container();
   }

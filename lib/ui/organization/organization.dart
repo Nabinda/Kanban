@@ -1,4 +1,5 @@
 import 'package:another_flushbar/flushbar_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:kanban/data/sharedpref/constants/preferences.dart';
@@ -39,6 +40,8 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
   late ThemeStore _themeStore;
   late LanguageStore _languageStore;
   late BoardListStore _boardListStore;
+
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
@@ -486,13 +489,13 @@ class _OrganizationScreenState extends State<OrganizationScreen> {
                 Positioned(
                     bottom: 12.0,
                     left: 16.0,
-                    child: Text("John Doe",
+                    child: currentUser!.email !=null?Text(currentUser!.email!,
                         style: TextStyle(
                             color: _themeStore.darkMode
                                 ? Colors.blue
                                 : Colors.white,
                             fontSize: 15.0,
-                            fontWeight: FontWeight.w500))),
+                            fontWeight: FontWeight.w500)):Text("John Doe"),)
               ])),
           ListTile(
             title: Text('Blogs',

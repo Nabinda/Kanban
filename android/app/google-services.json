@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "885977515031",
+    "project_id": "kanban-21f9b",
+    "storage_bucket": "kanban-21f9b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885977515031:android:2081da2d1dc425a9b2c852",
+        "android_client_info": {
+          "package_name": "np.com.psykho.kanban"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "885977515031-rs8kr97thovr7o1675m3oq1elonet8fu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3-C3ssbTMKg9Uj36qpvWNBekB5BkM5Sk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "885977515031-rs8kr97thovr7o1675m3oq1elonet8fu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

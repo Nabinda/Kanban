@@ -1,4 +1,5 @@
 import 'package:another_flushbar/flushbar_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kanban/constants/assets.dart';
 import 'package:kanban/data/sharedpref/constants/preferences.dart';
 import 'package:kanban/utils/routes/routes.dart';
@@ -41,10 +42,53 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordFocusNode = FocusNode();
   }
 
+  Future<void> resetPassword(String email) async{
+      FirebaseAuth.instance.sendPasswordResetEmail(email: email).then((e){
+        return _showMessage("Reset Password Mail Sent");
+      }).catchError((error){
+        return showDialog(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: Text("Unable to send password reset mail"),
+                actions: <Widget>[
+                  InkWell(
+                      child: Text("OK"),
+                      onTap: () {
+                        Navigator.pop(context);
+                      })
+                ],
+              );
+            });
+      });
+  }
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _themeStore = Provider.of<ThemeStore>(context);
+  }
+  Future<void> login(String email, String password) async{
+    await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password).catchError((error){
+      print(error.code);
+      if(error.code=="invalid-email"){
+        return _showErrorMessage("Invalid Email Address");
+      }
+      if(error.code=="wrong-password"){
+        return _showErrorMessage("Incorrect Password");
+      }
+      if(error.code=="user-not-found"){
+        return _showErrorMessage("Incorrect Password");
+      }
+    }).then((_){
+      _store.login();
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.setBool(Preferences.is_logged_in, true);
+      });
+      Future.delayed(Duration(milliseconds: 0), () {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            Routes.organizationList, (Route<dynamic> route) => false);
+      });
+    });
   }
 
   @override
@@ -210,7 +254,9 @@ class _LoginScreenState extends State<LoginScreen> {
           style:
               Theme.of(context).textTheme.caption?.copyWith(color: Colors.blue),
         ),
-        onPressed: () {},
+        onPressed: () {
+          _showBoardBottomSheet(context);
+        },
       ),
     );
   }
@@ -223,6 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
       onPressed: () async {
         if (_store.canLogin) {
           DeviceUtils.hideKeyboard(context);
+          login(_userEmailController.text,_passwordController.text);
           _store.login();
         } else {
           _showErrorMessage('Please fill in all fields');
@@ -248,15 +295,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget navigate(BuildContext context) {
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.setBool(Preferences.is_logged_in, true);
-    });
-
-    Future.delayed(Duration(milliseconds: 0), () {
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          Routes.organizationList, (Route<dynamic> route) => false);
-    });
-
     return Container();
   }
 
@@ -273,6 +311,132 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       });
     }
+
+    return SizedBox.shrink();
+  }
+  void _showBoardBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (ctx) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter stateSetter) {
+                return Container(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 15.0, left: 10.0, right: 10.0, bottom: 15.0),
+                          child: _buildCreateBoardForm(),
+                        ),
+                      ]),
+                );
+              });
+        });
+  }
+
+  Widget _buildCreateBoardForm() {
+    return Container(
+      padding: EdgeInsets.only(left: 15.0, right: 15.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.supervised_user_circle_outlined,
+                      color: _themeStore.darkMode
+                          ? Colors.white
+                          : Colors.blue.shade200),
+                  SizedBox(width: 15.0),
+                  Text("Reset Password"),
+                ],
+              ),
+              SizedBox(width: 10.0),
+              OutlinedButton(
+                child: Icon(Icons.close,
+                    color:
+                    _themeStore.darkMode ? Colors.white : Colors.black45),
+                style: TextButton.styleFrom(
+                    primary: Colors.black45,
+                    onSurface: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(255.0),
+                    )),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20.0,
+          ),
+          Observer(builder: (context) {
+             return TextFieldWidget(
+              textColor: Theme.of(context).primaryTextTheme.bodyText2!.color,
+              hint: AppLocalizations.of(context).translate('login_et_user_email'),
+              inputType: TextInputType.emailAddress,
+              icon: Icons.person,
+              iconColor: _themeStore.darkMode ? Colors.black : Colors.blue,
+              hintColor: _themeStore.darkMode ? Colors.black : Colors.blue,
+              textController: _userEmailController,
+              inputAction: TextInputAction.next,
+              autoFocus: false,
+              onChanged: (value) {
+                _store.setUserId(_userEmailController.text);
+              },
+              onFieldSubmitted: (value) {
+                FocusScope.of(context).requestFocus(_passwordFocusNode);
+              },
+              errorText: _store.formErrorStore.userEmail,
+            );
+          }),
+          SizedBox(
+            height: 40.0,
+          ),
+          Observer(
+            builder: (context) {
+              return ElevatedButton(
+                  child: Text('Reset Password',
+                      style: TextStyle(color: Colors.white)),
+                  style: TextButton.styleFrom(
+                      primary: Colors.blue,
+                      onSurface: Colors.red,
+                      minimumSize: Size(128, 40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      )),
+                  onPressed: () async {
+                    if (_userEmailController.text != "") {
+                      DeviceUtils.hideKeyboard(context);
+                      resetPassword(_userEmailController.text);
+                    } else {
+                      _showErrorMessage('Please fill in all fields');
+                    }
+                  });
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  _showMessage(String message) {
+    Future.delayed(Duration(milliseconds: 0), () {
+      FlushbarHelper.createLoading(
+        linearProgressIndicator: LinearProgressIndicator(),
+        message: message,
+        title: "Message Sent",
+        duration: Duration(seconds: 2),
+      )..show(context);
+    });
 
     return SizedBox.shrink();
   }
